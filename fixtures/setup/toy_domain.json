@@ -1,0 +1,22 @@
+{
+  "_why": "The exact wizard inputs the fixtures under fixtures/llm/setup_*/ were recorded from. Every fixture key is a sha over the assembled prompt, and the descriptor and these three free-text fields are spliced into every one of them -- so a replay that retypes them by hand misses every fixture. Read the inputs from here; never restate them.",
+  "descriptor": {
+    "slug": "artificial-intelligence",
+    "display_name": "Artificial intelligence",
+    "tagline": "AI-industry intelligence: research, score, graph, brief.",
+    "login_blurb": "venona runs a research pipeline over the AI trade press and keeps what it learns."
+  },
+  "generate": {
+    "persona": "An analyst at a venture firm covering the AI infrastructure and model-developer market. Reads to keep track of who is building what, which labs and chip vendors are tied to which customers, and where capital and compute are moving.",
+    "priorities": "Model releases and capability claims; compute and chip supply; funding rounds and acquisitions; safety and regulation that changes what can ship.",
+    "seeds": "Anthropic, OpenAI, Google DeepMind, Nvidia, Mistral",
+    "refresh_survey": false
+  },
+  "recorded": {
+    "on": "2026-09-01",
+    "runs": 3,
+    "llm_calls": 21,
+    "cost_usd": 7.95,
+    "note": "fixtures/llm/setup_*/ hold the envelopes. The dossier beside this file is the survey stage's stored output: replay MUST preload it, because the survey prompt gets `Today's date: ...` appended only when live, so a live-recorded setup_survey envelope is keyed on a prompt an offline run never assembles."
+  }
+}

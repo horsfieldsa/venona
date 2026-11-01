@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "2aa6beed2b555ff2f438dd2534883b84edae2ef4cd46309d69adcaf1f86d754e",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: OM Defence Systems demonstrates X7 interceptor at NATO trials",
+  "user_content_sha": "fe5c0d9bed5f0ba7b739b4b56f6274b7ec6cefe4b21effc8783189dea6ee9ed8"
+}

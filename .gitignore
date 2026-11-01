@@ -1,0 +1,64 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+node_modules/
+web/dist/
+web/.vite/
+
+data/
+!data/.gitkeep
+
+# Every .env variant, then re-admit the templates. Secrets live in these files,
+# and one omission here is undone by a `git add -A`.
+.env
+.env.*
+!.env.example
+!.env.hub.example
+
+# Snapshots taken before every config-editor save, pruned to 20 per document.
+# They sit beside the file they shadow, so there is one per editable directory.
+profile/.history/
+config/.history/
+
+# Chromium scoped_dir temp directories, left behind by `make ui-smoke`.
+.tmpshot/
+
+# The extension's CRX signing key. `manifest.json` carries the PUBLIC half,
+# committed on purpose -- it pins the extension id, and the id is what
+# `host_permissions` and any `VENONA_CORS_ORIGINS` entry name. The private half
+# is a signing credential and never belongs in the repository.
+extension/key.pem
+extension/dist/
+# Database dumps. A git remote is somewhere other than this machine, which is
+# exactly the problem.
+backups/
+*.sql.gz
+*.dump
+
+# `make ext-package` output. Built from committed sources on demand; a release
+# artifact is not a source file.
+extension/venona-*.zip
+# Generated from web/src/styles/{tokens,prose}.css at build time. Committing it
+# would put a file of resolved hex literals in the tree, which is precisely
+# what `scripts/lint_tokens.py` exists to refuse.
+extension/generated/
+
+# Design bundles are handed over as archives and unpacked into web/src/styles;
+# the zip itself is an input, not a source, and a binary one at that.
+*.zip
+
+
+# The hub's operator bundle. Vite writes it straight into the package the hub
+# ships, so it sits under `hub/hub/` and has to be named here rather than
+# caught by a `dist/` rule.
+hub/hub/static/app/
+
+*.log
+.DS_Store
+
+# Local instance scaffolds -- per-machine port blocks and per-instance
+# config/profile/data trees (make new-local-instance).
+/local/

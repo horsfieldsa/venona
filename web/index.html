@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- NO `data-theme` HERE, and its absence is the feature.
+     `tokens.css` declares `color-scheme: light dark` on the bare `:root` and
+     overrides it only under `[data-theme]`, so an absent attribute IS System.
+     With `data-theme="dark"` on this line the document is pinned before any
+     script runs, for every reader, whatever their OS says -- and `theme-boot.js`
+     below could only ever move it to the OTHER explicit choice. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- The mark, served from `public/` rather than imported from `src/assets/`:
+         a favicon is requested by the browser at a fixed URL before any module
+         graph exists, so it cannot be a hashed build asset. Every file these
+         four links name is written by `make icons` from
+         `src/assets/icons/venona-mark-aqua.svg`, and the same set ships on the
+         front site and the hub. The .ico carries `sizes` so a browser that
+         reads SVG prefers the SVG; Safari and iOS take the .ico and the touch
+         icon, Android's launcher takes the manifest's PNGs. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/venona-mark.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- The mark's own plate. This is the ONE place in the project a raw hex is
+         correct: `<meta>` cannot read a custom property, and the browser paints
+         this chrome before any stylesheet loads. `lint_tokens.py` does not scan
+         .html for exactly this reason. It is `--aqua-600`; move it with that. -->
+    <meta name="theme-color" content="#1891ac" />
+    <title>Venona</title>
+    <script src="/theme-boot.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

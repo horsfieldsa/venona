@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: DIU awards Shield AI GPS-denied autonomy work",
+  "user_content_sha": "0e7214ca5028c576a637dceea069b09bbe3bb8f986fbe3738bbee0fedc323ca8"
+}

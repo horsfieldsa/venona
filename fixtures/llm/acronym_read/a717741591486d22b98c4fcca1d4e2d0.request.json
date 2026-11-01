@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "expansion",
+    "found",
+    "quote"
+  ],
+  "system_prompt_sha": "8e8124f9e85251f56437847d219c8c09bea55519238e3ff29dfa03f4effa66a6",
+  "task": "acronym_read",
+  "tools": [],
+  "user_content_preview": "ACRONYM: XLUUV",
+  "user_content_sha": "cf5f732b1df955640969046178f34bbe9162e6ecb0da9038957ee27c8e330efc"
+}

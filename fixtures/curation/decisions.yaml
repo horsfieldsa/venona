@@ -1,0 +1,502 @@
+# What Venona should decide about two entities that might be one.
+#
+# Read by `tests/decisions.py` and asserted against `_classify`,
+# `identical_pairs` and the resolver's containment veto, so one row drives the
+# classifier, the merger and the resolver at once. When those three disagree
+# about a pair, exactly one of them is wrong and this file says which.
+#
+# EVERY ROW CARRIES `reason`. These are judgement calls about real
+# organisations, and a future reader has to be able to audit one without
+# re-deriving the domain knowledge that produced it. The loader refuses a row
+# without one, the same way `tests/test_declared_entities.py` refuses an
+# allowlist entry without a note.
+#
+# `filed_by` records WHICH filer notices the pair, because a pair no filer sees
+# is a pair nobody decides -- and that, not the classifier, is what hid three of
+# the four live splits:
+#
+#   alias_collision  the resolver, asked to write a surface a rival of the same
+#                    type already owns
+#   containment      the resolver, declining a token-subset match and minting
+#                    separately
+#   detector         `curate._file_entity_duplicates`, reading the corpus back
+#                    -- the only one that sees a pair whose conflict was never
+#                    filed at write time
+#
+# The four rows marked LIVE SPLIT were found in the production corpus on
+# 2026-08-27, each one fragmenting a real company's evidence across two ids.
+# They are the reason the rest of this file exists.
+
+cases:
+  # ── decided automatically: provable identity ─────────────────────
+  - key: mda-acronym-of-expansion
+    filed_by: alias_collision
+    surface: MDA
+    a: { id: company:mda, name: MDA }
+    b: { id: company:missile-defense-agency, name: Missile Defense Agency }
+    verdict: merge
+    survivor: b
+    why: acronym of
+    classify: duplicate
+    reason: >-
+      `MDA` is an acronym that `acronym_variants("Missile Defense Agency")`
+      generates. Derivational, not fuzzy, which is the basis the auto-merge ban
+      was scoped on. The expansion survives so cards and graph nodes read
+      properly; the acronym keeps matching because aliases move with the merge.
+
+  - key: ngc2-parenthetical-gloss
+    filed_by: alias_collision
+    surface: NGC2
+    a: { id: prog:ngc2-glossed, name: "Next-Generation Command and Control (NGC2)" }
+    b: { id: prog:next-generation-command-and-control,
+         name: Next Generation Command and Control }
+    verdict: merge
+    survivor: b
+    why: same name
+    classify: duplicate
+    reason: >-
+      A hyphen and a trailing acronym gloss are spelling. Raw, this pair scored
+      77.9 and was filed as a collision, which put the same program against
+      itself twice on the live corpus. Compared as `_comparable()` forms it is
+      100.
+
+  # ── the live splits ──────────────────────────────────────────────
+  - key: palantir-corporate-form
+    filed_by: containment
+    surface: Palantir
+    a: { id: company:palantir, name: Palantir }
+    b: { id: company:palantir-technologies, name: Palantir Technologies }
+    verdict: merge
+    survivor: b
+    why: corporate form
+    classify: duplicate
+    containment_veto: true
+    reason: >-
+      LIVE SPLIT. `Technologies` is corporate form on this name: there is no
+      Palantir that is not Palantir Technologies, and the trade press uses both
+      bylines for the same filings. Split, every Maven and NGC2 fact about it
+      read SINGLE-SOURCE, because source counts are per id. The fuller name
+      survives: it is the declared entity and the one carrying the edges.
+      The resolver still vetoes and still mints -- that is what
+      `containment_veto: true` records -- and the curator is what decides.
+
+  - key: hellfire-equipment-tail
+    filed_by: containment
+    surface: Hellfire
+    a: { id: plat:hellfire, name: Hellfire }
+    b: { id: plat:hellfire-missile, name: Hellfire Missile }
+    verdict: merge
+    survivor: a
+    why: generic tail
+    classify: duplicate
+    containment_veto: true
+    reason: >-
+      LIVE QUEUE, 2026-09-17. The first of a class the queue produced on its
+      own: a piece of hardware named, then named again with the category noun
+      a writer appends. `missile`, `missiles`, `radars`, `aircraft`, `drone`,
+      `vehicle`, `interceptor`, `kits`, `architecture` and `constellation` each
+      rescued one or two rows and nothing else, read pair by pair before any of
+      them was added. Each counts only when it TRAILS, so `Missile Defense
+      Agency` is untouched: the token has to be the whole of the difference.
+
+  - key: aesa-radars-tail
+    filed_by: containment
+    surface: active electronically scanned array
+    a: { id: tech:aesa, name: active electronically scanned array }
+    b: { id: tech:aesa-radars, name: active electronically scanned array radars }
+    verdict: merge
+    survivor: a
+    why: generic tail
+    classify: duplicate
+    containment_veto: true
+    reason: >-
+      LIVE QUEUE, 2026-09-17. An AESA is a radar, so the tail names the
+      category the entity already belongs to rather than distinguishing a
+      second thing. The plural is in the lexicon and the singular is not,
+      because `radar` rescued nothing: a vocabulary earns its words from the
+      queue rather than from symmetry, and an unread token is the widening the
+      asymmetry exists to prevent.
+
+  - key: maven-generic-tail
+    filed_by: containment
+    surface: Maven Smart System
+    a: { id: plat:maven-smart-system, name: Maven Smart System }
+    b: { id: plat:maven-smart-system-platform, name: Maven Smart System platform }
+    verdict: merge
+    survivor: a
+    why: generic tail
+    classify: duplicate
+    containment_veto: true
+    reason: >-
+      LIVE SPLIT. `platform` is the ontology's own word for what a `plat:` id
+      already is, so the tail carries no distinguishing content. Counted only
+      because it TRAILS the longer name; the same token buried mid-name would
+      be qualifying it. The form without the tail survives, by the rule that
+      prefers the un-glossed form.
+
+  - key: general-atomics-subsidiary
+    filed_by: containment
+    surface: General Atomics Aeronautical Systems
+    a: { id: company:general-atomics, name: General Atomics }
+    b: { id: company:general-atomics-aeronautical-systems,
+         name: General Atomics Aeronautical Systems }
+    verdict: relate
+    predicate: PART_OF
+    child: b
+    classify: containment
+    containment_veto: true
+    reason: >-
+      REVERSED, 2026-09-01. This row read `merge`, on the ground that a person
+      had declared `General Atomics Aeronautical Systems` an alias of
+      `company:general-atomics` in `profile/anchors.yaml`. A curator had
+      separately ruled the live pair `related`, so the two human statements
+      contradicted each other and the audit reported it every time. The curator
+      is right: GA-ASI is a subsidiary with its own programs and its own press,
+      the same shape as `lockheed-business-unit` above, and merging it made
+      every GA-ASI mention evidence for the parent. The anchors declaration is
+      withdrawn and both alias rows are deleted in migration 0020. See
+      docs/adr/0188.
+
+  - key: maven-cross-type
+    filed_by: detector
+    surface: Maven Smart System
+    a: { id: plat:maven-smart-system, name: Maven Smart System }
+    b: { id: prog:maven-smart-system, name: Maven Smart System }
+    verdict: escalate
+    classify: cross_type
+    reason: >-
+      LIVE SPLIT, and NOT a merge. A Program and the Platform it delivers are
+      two things and the ontology distinguishes them deliberately. Until the
+      duplicate detector landed this pair was structurally invisible: alias
+      conflicts are filed per type, so nothing in the pipeline could see it at
+      all. `test_declared_entities.py::ALLOWED_SHARED_NAMES` records the same
+      pair from the YAML side, with the operator's note that renaming the
+      Program is the real fix and only its owner may make it.
+
+  # ── reserved for a human ─────────────────────────────────────────
+  - key: dia-acronym-collision
+    filed_by: alias_collision
+    surface: DIA
+    a: { id: govt:dia-intelligence, name: Defense Intelligence Agency }
+    b: { id: govt:dia-investment, name: Defense Investment Agency }
+    verdict: keep_apart
+    classify: collision
+    reason: >-
+      BOTH names generate DIA and they are different bodies. `_classify` must
+      reach `collision` before `identical_pairs` ever sees the row: merging
+      these is the expensive mistake, because every claim about one silently
+      becomes a claim about the other. The ORDER of the checks in `_classify` is
+      the only thing preventing it.
+
+  - key: general-atomics-typo
+    filed_by: alias_collision
+    surface: GAES
+    a: { id: company:ga-electromagnetic,
+         name: General Atomics Electromagnetic Systems }
+    b: { id: company:ga-electronagnetic,
+         name: General Atomics Electronagnetic Systems }
+    verdict: escalate
+    reason: >-
+      A single transposed letter. Similarity ONLY -- no derivation connects the
+      two strings -- so it stays a human decision. That boundary is the whole
+      argument for auto-merging everything above it. The live `Maj. Gen. Partick
+      Ellis` / `Patrick Ellis` pair is the same shape.
+
+  - key: lockheed-business-unit
+    filed_by: containment
+    surface: Lockheed Martin
+    a: { id: company:lockheed-martin-rotary-and-mission-systems,
+         name: Lockheed Martin Rotary and Mission Systems }
+    b: { id: company:lockheed-martin, name: Lockheed Martin }
+    verdict: relate
+    predicate: PART_OF
+    child: a
+    classify: containment
+    containment_veto: true
+    reason: >-
+      A real business unit with its own contracts and its own press. Token
+      containment cannot separate "X Corp is the full name of X" from "X
+      Division is part of X" -- hand-checking twelve such pairs found `U.S. Army
+      PART_OF Army` and `Anduril Industries PART_OF Anduril` both wrong in the
+      opposite direction. So the structural rule vetoes and a reader decides.
+      What is asserted offline is the deterministic half: that the ontology
+      yields PART_OF between two companies.
+
+  - key: air-force-school
+    filed_by: containment
+    surface: Air Force
+    a: { id: unit:air-force, name: Air Force }
+    b: { id: unit:air-force-test-pilot-school, name: Air Force Test Pilot School }
+    verdict: keep_apart
+    classify: containment
+    containment_veto: true
+    reason: >-
+      The guard on the generic-tail rule. `school` is not a generic head noun
+      and the extra tokens do not trail a name that would still mean the same
+      thing without them. If this ever auto-merges, the tail list has grown a
+      word that names things rather than decorating them.
+
+  - key: thales-country-arm
+    filed_by: containment
+    surface: Thales
+    a: { id: company:thales, name: Thales }
+    b: { id: company:thales-australia, name: Thales Australia }
+    verdict: keep_apart
+    classify: containment
+    containment_veto: true
+    reason: >-
+      A national subsidiary, and one of the three that were wrongly merged
+      before the containment veto existed (with Amazon into Amazon Web Services
+      and General Dynamics into GDIT), on ACTIVE entities already annotating
+      briefs.
+
+  - key: bae-systems-is-the-company
+    filed_by: containment
+    surface: BAE
+    a: { id: company:bae, name: BAE }
+    b: { id: company:bae-systems, name: BAE Systems }
+    verdict: keep_apart
+    classify: containment
+    containment_veto: true
+    reason: >-
+      The guard on the corporate-form rule, and the reason `systems` is not in
+      it. "BAE Systems" is the company's name, not a form of "BAE". If this ever
+      auto-merges, `systems` or `services` has been added to `corporate_form`
+      and the operator should have been asked first.
+
+  # ── cross-type, which is three problems wearing one label ────────
+  - key: havoc-cross-type-collision
+    filed_by: detector
+    surface: Havoc
+    a: { id: company:havoc, name: Havoc }
+    b: { id: plat:havoc, name: Havoc }
+    verdict: keep_apart
+    classify: cross_type
+    reason: >-
+      LIVE. Two unrelated things sharing a name, found by reading the evidence:
+      one is "Havoc, a leader in all-domain collaborative autonomy" partnering
+      with Red Cat Holdings, the other is "a new hypersonic missile system named
+      HAVOC" from Ursa Major. This is a COLLISION that happens to cross types,
+      not a duplicate, and the surface is genuinely ambiguous: it belongs on the
+      ambiguous list so the resolver stops trying, the same treatment DIA gets.
+
+  - key: ge-f414-typing-inconsistency
+    filed_by: detector
+    surface: GE F414
+    a: { id: plat:ge-f414, name: GE F414 }
+    b: { id: tech:ge-f414, name: GE F414 }
+    verdict: escalate
+    classify: type_conflict
+    reason: >-
+      LIVE, and the OPPOSITE of the row above despite looking identical. Both
+      sides are the same engine: "the American GE F414 engine" and "an
+      artificial intelligence-driven GE F414 engine -- the same American engine
+      used in the Gripen E/F". One thing the extractor typed Platform in one
+      article and Technology in another.
+      The two rows are separated by the ONTOLOGY, not by anything in the names:
+      Platform/Technology is declared `confusable_with` and Company/Platform is
+      not. Auto-merge still refuses both, because a rule loose enough to merge
+      this one would also merge Havoc; what a person does here is name the kind,
+      and both readings fold into one entry under it.
+
+  # ── the gloss the all-caps rule could not see ────────────────────
+  - key: prsm-mixed-case-gloss
+    filed_by: detector
+    surface: Precision Strike Missile
+    a: { id: prog:precision-strike-missile-prsm,
+         name: "Precision Strike Missile (PrSM)" }
+    b: { id: prog:precision-strike-missile, name: Precision Strike Missile }
+    verdict: merge
+    survivor: b
+    why: same name
+    classify: duplicate
+    reason: >-
+      LIVE SPLIT, and the same claim as `ngc2-parenthetical-gloss` with one
+      lowercase letter in it. `PrSM` is how the Army writes the acronym, and a
+      gloss rule that admitted only capitals left this name comparing as
+      `precision strike missile prsm` -- a key nothing else could ever hold. So
+      the pair was invisible to the detector, to `identical_pairs` and to
+      `graph_health` at once, all three of which read `_comparable`. The
+      declared entity survives: it carries the PEO Missiles and Space
+      relationship and the clean display name.
+
+  # ── a merge is not a statement about which side survives ─────────
+  - key: sda-declared-over-mint
+    filed_by: detector
+    surface: Space Development Agency
+    a: { id: govt:space-development-agency-sda,
+         name: "Space Development Agency (SDA)" }
+    b: { id: govt:space-development-agency, name: Space Development Agency }
+    verdict: merge
+    survivor: b
+    why: same name
+    classify: duplicate
+    reason: >-
+      LIVE SPLIT. One agency, read once from an article that spelled the gloss
+      out. The direction is the whole point of the row: the declared entity is
+      the survivor, because status travels with the survivor and everything
+      downstream reads it. Merged the other way round on 2026-08-18, this pair
+      flagged every Space Development Agency mention `single_source` and demoted
+      its grounded `SDA` definition, while the anchors document kept declaring
+      the loser and reviving it on every apply.
+
+  # ── people, whose names differ by rank and not by identity ───────
+  # Every Person containment pair open on the live queue on 2026-09-12 was one
+  # person twice. Not a similarity judgement in any of them: the difference is
+  # a rank, an honorific, a middle initial or a post-nominal, each of which is
+  # a token a human listed in `profile/lexicon.yaml::person_titles`.
+  - key: trump-honorific
+    filed_by: containment
+    surface: Donald Trump
+    a: { id: person:donald-trump, name: Donald Trump }
+    b: { id: person:president-donald-trump, name: President Donald Trump }
+    verdict: merge
+    survivor: a
+    why: person form
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE. `President` is an office, and a name carrying one is the same
+      person as the name without it. The bare name survives because a title is
+      the part that expires: he is the same entity before and after the term,
+      and the card should not read as though the office were his surname.
+
+  - key: guillot-middle-initial
+    filed_by: containment
+    surface: Gregory Guillot
+    a: { id: person:gen-gregory-m-guillot, name: "Gen. Gregory M. Guillot" }
+    b: { id: person:gen-gregory-guillot, name: "Gen. Gregory Guillot" }
+    verdict: merge
+    survivor: a
+    why: person form
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE. One general, written with and without a middle initial by two
+      outlets. A single letter followed by a stop carries no identity of its own
+      -- it disambiguates only against a namesake, and a namesake would differ
+      in the surname or the rank as well. The fuller name survives because it is
+      the one a reader can match against an official listing.
+
+  - key: collins-differing-ranks
+    filed_by: containment
+    surface: Heath Collins
+    a: { id: person:lt-gen-heath-collins, name: "Lt. Gen. Heath Collins" }
+    b: { id: person:gen-heath-collins, name: "Gen. Heath Collins" }
+    verdict: merge
+    survivor: a
+    why: person form
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE, and the case that proves ranks must be STRIPPED rather than
+      compared. The two spellings disagree about the rank, because one outlet
+      abbreviated it and a promotion changes it -- so a rule that required the
+      ranks to match would keep this pair open forever. What has to match is the
+      name underneath. The fuller rank survives as the more precise reading.
+
+  - key: mcphail-postnominal
+    filed_by: containment
+    surface: Jacqueline McPhail
+    a: { id: person:maj-gen-jacqueline-mcphail, name: "Maj. Gen. Jacqueline McPhail" }
+    b: { id: person:maj-gen-jacqueline-d-mcphail-usa,
+         name: "Maj. Gen. Jacqueline D. McPhail, USA" }
+    verdict: merge
+    survivor: b
+    why: person form
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE. A service post-nominal and a middle initial, together. `USA`
+      names the branch she serves in and is not part of anybody's name; it is
+      listed beside the ranks for that reason.
+
+  # ── the guard on the person rule ─────────────────────────────────
+  - key: ellis-generational-suffix
+    filed_by: containment
+    surface: Patrick Ellis
+    a: { id: person:patrick-ellis, name: Patrick Ellis }
+    b: { id: person:patrick-ellis-jr, name: "Patrick Ellis Jr." }
+    verdict: keep_apart
+    classify: containment
+    containment_veto: true
+    reason: >-
+      THE GUARD, and writing it found the defect it guards. `Jr.` is the one
+      kind of post-nominal that DISTINGUISHES two people rather than decorating
+      one: a father and a son share every other token in their names, so a
+      suffix list carrying `jr`, `sr` and `iii` would merge them silently. Those
+      four were in `person_suffixes` until this row was written and are not now.
+      A branch (`USA`) or a qualification (`PhD`) names no person and stays.
+
+  # ── a gloss written in place of its expansion (2026-10-25) ─────────
+  #
+  # LIVE SPLIT. PAC-3 MSE was three active ids, so `Boeing PRODUCES` read two
+  # sources on one and one on another, and Lockheed Martin, the prime, read
+  # single-source. No filer saw any of it: the two names key apart.
+  - key: pac-3-mse-gloss-form
+    surface: PAC-3 MSE
+    a: { id: plat:pac-3-mse, name: PAC-3 MSE }
+    b: { id: plat:pac-3-missile-segment-enhancement-mse,
+         name: "PAC-3 Missile Segment Enhancement (MSE)" }
+    verdict: merge
+    survivor: b
+    why: gloss form
+    classify: duplicate
+    reason: >-
+      LIVE SPLIT. The longer name states that MSE abbreviates Missile Segment
+      Enhancement, so the shorter one is it written the short way: read off
+      the name, not scored. The expansion survives, as for `acronym of`, and
+      `PAC-3 MSE` keeps resolving because aliases move with the merge.
+
+  - key: pac-3-mse-gloss-and-tail
+    surface: PAC-3 MSE
+    a: { id: plat:pac-3-mse, name: PAC-3 MSE }
+    b: { id: plat:pac-3-mse-interceptor,
+         name: "PAC-3 Missile Segment Enhancement (MSE) interceptor" }
+    verdict: merge
+    survivor: a
+    why: gloss form
+    classify: duplicate
+    reason: >-
+      LIVE SPLIT, the third id. The gloss substitution leaves `PAC-3 MSE
+      interceptor`, and `interceptor` is a generic tail the lexicon already
+      carries, so both halves of the difference are on a list or in the name.
+      The tail rule's survivor wins, so the three fold onto one id in either
+      order.
+
+  - key: devcom-arl-gloss-form
+    filed_by: containment
+    surface: DEVCOM ARL
+    a: { id: research:devcom-arl, name: DEVCOM ARL }
+    b: { id: research:devcom-army-research-laboratory-arl,
+         name: "DEVCOM Army Research Laboratory (ARL)" }
+    verdict: merge
+    survivor: b
+    why: gloss form
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE, filed as `resolver_error` since 2026-09-14 and shown to
+      nobody. One laboratory: the longer name glosses ARL, and DEVCOM is the
+      command that owns it, kept in both spellings.
+
+  - key: a330-mrtt-plus-is-the-next-airframe
+    filed_by: containment
+    surface: A330 MRTT+
+    a: { id: plat:a330-mrtt-plus, name: A330 MRTT+ }
+    b: { id: plat:a330-multi-role-tanker-transport-mrtt,
+         name: "A330 Multi Role Tanker Transport (MRTT)" }
+    verdict: keep_apart
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE. Airbus's A330 MRTT+ is a newer tanker on the A330neo, not a
+      spelling of the MRTT, and `normalize` drops the plus sign that says so.
+      Without the guard the gloss class would merge the two. It is still a
+      question for a curator, which is why it is a duplicate and not our bug.
+
+  - key: patriot-interceptor-plural
+    surface: Patriot interceptor
+    a: { id: plat:patriot-interceptor, name: Patriot interceptor }
+    b: { id: plat:patriot-interceptors, name: Patriot interceptors }
+    verdict: escalate
+    classify: duplicate
+    reason: >-
+      LIVE QUEUE, two active ids, filed as `resolver_error` because the
+      detector's key strips both tails and nothing else proves the pair. A
+      plural is a similarity judgement this table does not make alone, so it
+      goes to a curator, which is exactly where `resolver_error` kept it from.

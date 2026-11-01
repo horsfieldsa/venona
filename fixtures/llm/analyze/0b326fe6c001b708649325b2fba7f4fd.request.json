@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: 325 Narcan doses, 43 lost children: DC National Guard mission wraps first year",
+  "user_content_sha": "8ff31d07fbc418ec9b6390e65f1498ed9ed8fc4bb0fcbc282ff891fa4d20f500"
+}

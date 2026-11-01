@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: The confidence deficit in space",
+  "user_content_sha": "588d121891374bb9b4cb939ee2f568a9dffae9a2a0fe23e041d0a3303cc5a315"
+}

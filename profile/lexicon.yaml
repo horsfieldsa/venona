@@ -1,0 +1,320 @@
+# Abbreviation expansions and the acronym stoplist. USER-EDITABLE.
+#
+# Feeds two things that must never diverge:
+#   * acronym_variants() -- generating alias forms so "NGC2",
+#     "Next Generation Command and Control" and "next-gen C2" collapse to one id
+#   * the Tier-1 grounding gate -- verifying that a parenthetical expansion
+#     actually generates the acronym it claims
+
+# Phrase -> alternative writings. The cross product with initial-compression is
+# what produces NGC2 from "Next Generation Command and Control" automatically.
+expansions:
+  "next generation": [next-gen, nextgen, ng]
+  "command and control": [c2]
+  "intelligence surveillance and reconnaissance": [isr]
+  "electronic warfare": [ew]
+  "unmanned aerial system": [uas, uav, drone]
+  "unmanned surface vessel": [usv]
+  "unmanned ground vehicle": [ugv]
+  "artificial intelligence": [ai]
+  "machine learning": [ml]
+  "positioning navigation and timing": [pnt]
+  "size weight and power": [swap]
+  "program executive office": [peo]
+  "project manager": [pm]
+
+  # ── acquisition mechanics ────────────────────────────────────────
+  # Named in `relevance_profile.md` and absent here, so every one arrived in the
+  # definitions queue to be looked up on the web -- vocabulary already declared.
+  "other transaction authority": [ota, otas]
+  "other transaction agreement": [ota]
+  "commercial solutions opening": [cso]
+  "authority to operate": [ato]
+  "middle tier acquisition": [mta]
+  "program of record": [por]
+  "request for information": [rfi]
+  "request for proposals": [rfp, rfps]
+  "indefinite delivery indefinite quantity": [idiq]
+  "broad agency announcement": [baa]
+
+  # ── the thesis, spelled out ──────────────────────────────────────
+  # DDIL is the profile's first priority and expands four ways in the wild;
+  # without it the acronym gate treats each spelling as a new surface.
+  "denied degraded intermittent and limited": [ddil]
+  "denied degraded intermittent limited": [ddil]
+  "full motion video": [fmv]
+  "joint all-domain command and control": [jadc2]
+  "combined joint all-domain command and control": [cjadc2]
+
+  # ── programs and platforms the sweeps already name ───────────────
+  # Each is a `tags:` entry in config/sources.yaml, so a sweep searched for the
+  # name while the resolver could not connect the expansion to the acronym.
+  "tactical intelligence targeting access node": [titan]
+  "extra large unmanned undersea vehicle": [xluuv]
+  "large unmanned surface vessel": [lusv]
+  "medium unmanned surface vessel": [musv]
+  "ground moving target indicator": [gmti]
+  "counter unmanned aerial system": [c-uas, cuas, c-uas]
+  "counter small unmanned aerial system": [c-suas, csuas]
+  "integrated battle command system": [ibcs]
+
+# Never treated as an acronym worth defining or matching. Either too common,
+# too short, or universally understood.
+stoplist:
+  - US
+  - USA
+  - DC
+  - CEO
+  - CTO
+  - CFO
+  - COO
+  - IT
+  - AI
+  - ML
+  - PC
+  - TV
+  - UK
+  - EU
+  - UN
+  - NATO
+  - GPS
+  - RF
+  - IP
+  - API
+  - OS
+  # Measured: these still cleared the Tier-3 web-lookup gate after the
+  # shouted-word filter. Corporate furniture, not defence vocabulary.
+  - LLC
+  - INC
+  - LTD
+  - MVP
+  - CPR
+  - RKLB   # ticker symbol; the company is already an entity
+  # A broadcaster, in prose about who reported something. It reads as an
+  # acronym and is not one anybody here needs expanded. Measured: of the 53
+  # surfaces the acronym generator used to hold on people's initials, this is
+  # the only one that appears in the corpus and is not real vocabulary --
+  # `CSG` is the other, and that one IS Carrier Strike Group, which a person's
+  # initials had been quietly sitting on.
+  - ABC
+  # Fiscal years. `FY27`, `FY28` -- a new one every year, never a definition.
+  - FY26
+  - FY27
+  - FY28
+  - FY29
+  - FY30
+  - III
+
+# Two-character acronyms that ARE meaningful here, so they survive the
+# minimum-length rule. Everything else under 3 characters is dropped.
+short_whitelist:
+  - C2
+  - EW
+  - PM
+  - AI   # only as an entity alias (e.g. "Scale AI"), never as a definition
+
+# ── containment guard ────────────────────────────────────────────────
+# Tokens that do NOT distinguish one organisation from another. `token_set_ratio`
+# scores a token SUBSET as an exact match, so "Amazon" hits "Amazon Web Services"
+# at 100 -- but "Air Force" -> "United States Air Force" IS the same body. What
+# separates them is the extra tokens, and a containment match is accepted only
+# when every extra token appears below. Anything else is filed in
+# `alias_conflicts` for review.
+#
+# Add a token when two names are wrongly kept apart; remove one when two are
+# wrongly merged.
+non_distinguishing:
+  # grammatical
+  - of
+  - the
+  - and
+  - for
+  # jurisdiction, almost always a formalising prefix
+  - united
+  - states
+  - u.s.
+  - us
+  - usa
+  - american
+  - national
+  - federal
+  # corporate and legal form
+  - inc
+  - inc.
+  - llc
+  - ltd
+  - limited
+  - corp
+  - corp.
+  - corporation
+  - company
+  - co
+  - holdings
+  - group
+  - laboratories
+  - labs
+# Deliberately NOT here: `systems`, `technologies`, `services` -- substantive in
+# defense names ("BAE Systems" is the company), and a wrong merge costs far more
+# than a missed one, which only lands in the review queue.
+
+# Tokens naming a company's legal or corporate FORM rather than a different
+# company. Read only by the curation classifier, never by the resolver: the
+# resolver must keep declining, minting and filing the pair, because a token
+# added to `non_distinguishing` above makes it accept a fuzzy containment match
+# silently -- writing an alias, taking the surface, filing nothing and showing
+# nobody. What this list buys is that the filed pair is then classified as one
+# thing spelled two ways instead of as a parent and a subsidiary, which is the
+# difference between a decision the system can make and one that waits for you.
+#
+# `systems` and `services` stay out for the reason above them: "BAE Systems" is
+# the company, not a form of "BAE".
+corporate_form:
+  - technologies
+  - technology
+  - industries
+  - division
+  - divisions
+  - international
+  - holdings
+
+# Head nouns a writer appends without naming a different thing. Counted ONLY
+# when they trail the longer name, so "Air Force Test Pilot School" keeps its
+# school and only "Maven Smart System platform" loses its tail.
+generic_tails:
+  - platform
+  - program
+  - programme
+  - project
+  - system
+  - initiative
+  - effort
+  - capability
+  - suite
+  - family
+  # The equipment head nouns, each earned from the live queue on 2026-09-17 and
+  # each read pair by pair before it was added: one or two rows apiece, no
+  # surprises among them. `radar` and `drones` are absent because they rescued
+  # nothing, and a token nobody has seen work is the unread widening this list
+  # exists to avoid. Trailing-only still holds, so "Missile Defense Agency" and
+  # "Aircraft Carrier Industrial Base" are untouched.
+  - missile
+  - missiles
+  - radars
+  - aircraft
+  - drone
+  - vehicle
+  - interceptor
+  - kits
+  - architecture
+  - constellation
+  - radar
+  - drones
+  - vehicles
+  - interceptors
+  - rocket
+  - rockets
+  - launcher
+  - launchers
+  - munitions
+  - portfolio
+  - satellite
+  - satellites
+  - sensor
+  - sensors
+
+# Ranks, honorifics and post-nominals: what a person's name carries that is not
+# their name. Counted only for entities typed Person, and only as a PREFIX or a
+# SUFFIX -- a token in the middle of a name is part of it.
+#
+# STRIPPED, never compared. `Lt. Gen. Heath Collins` and `Gen. Heath Collins`
+# are one officer written by two outlets, one of which abbreviated and one of
+# which did not, and a promotion changes the rank anyway. A rule that required
+# the ranks to agree would keep that pair open forever.
+#
+# What makes this safe is that the REMAINDER has to match entirely. `Patrick
+# Ellis` and `James Ellis` share a surname and nothing else, so they stay two
+# people; `Partick Ellis` differs inside a token rather than by a token, which
+# is similarity and stays a human decision.
+#
+# Written without stops so the matcher can strip them itself: an outlet writes
+# `Lt Gen`, `Lt. Gen.` and `LTG` for one rank.
+person_titles:
+  # An office held for now, and the service a rank is written with: `Acting
+  # Army Secretary Adam Telle`, `Air Force Lt. Gen. David Sanford`. `marine` is
+  # absent because it is also a given name.
+  - acting
+  - army
+  - navy
+  - air force
+  - space force
+  - president
+  - vice president
+  - secretary
+  - deputy secretary
+  - under secretary
+  - assistant secretary
+  - ambassador
+  - senator
+  - sen
+  - representative
+  - rep
+  - congressman
+  - congresswoman
+  - governor
+  - gov
+  - admiral
+  - adm
+  - vice adm
+  - vice admiral
+  - rear adm
+  - rear admiral
+  - general
+  - gen
+  - lt gen
+  - lieutenant general
+  - maj gen
+  - major general
+  - brig gen
+  - brigadier general
+  - brigadier
+  - colonel
+  - col
+  - lt col
+  - lieutenant colonel
+  - major
+  - maj
+  - captain
+  - capt
+  - commander
+  - cmdr
+  - lieutenant
+  - lt
+  - sergeant
+  - sgt
+  - chief
+  - dr
+  - prof
+  - professor
+  - sir
+  - dame
+  - mr
+  - mrs
+  - ms
+
+# Letters after a name: a service branch or a qualification. Never part of the
+# name, and always a suffix.
+#
+# GENERATIONAL SUFFIXES ARE NOT HERE, and their absence is the point. `Jr.`,
+# `Sr.`, `III` are the one kind of post-nominal that DISTINGUISHES two people:
+# a father and a son share every other token in their names, so stripping these
+# would merge them and the merge would be invisible. `fixtures/curation/
+# decisions.yaml::ellis-generational-suffix` is the guard.
+person_suffixes:
+  - usa
+  - usaf
+  - usn
+  - usmc
+  - uscg
+  - ret
+  - phd
+  - md

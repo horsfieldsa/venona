@@ -1,0 +1,98 @@
+# Scoring rubric. USER-EDITABLE.
+#
+# The model's JSON Schema is GENERATED from this file at runtime, so axis ids
+# are never hardcoded. The model scores each axis 0-5; `overall` is computed in
+# PYTHON as round(100 * sum(score/5 * weight)), never by the model.
+#
+# Reweighting is FREE -- `POST /api/rescore` recomputes from stored axis scores.
+# Editing a DESCRIPTION changes what the model is asked, so it needs re-analysis
+# and real spend; the UI warns first.
+#
+# Two audiences per axis, deliberately separate. `description` is the MODEL's
+# scoring contract and never reaches a reader. `label` and `plain` are what a
+# READER sees when tuning their own emphasis: a plain name and one sentence a
+# new person can answer on day one, with no scoring rules and no strategy
+# knowledge. Editing label/plain is free everywhere -- it is copy, not contract.
+
+scale:
+  min: 0
+  max: 5
+
+# Must sum to 1.0; validation rejects otherwise.
+axes:
+  - id: product_overlap
+    label: Core technology
+    plain: New defense technology being built, tested and fielded.
+    weight: 0.26
+    description: >-
+      How central is this to defense TECHNOLOGY itself -- a system, a
+      capability, software or hardware being built, demonstrated or fielded
+      -- rather than policy, administration or commentary? Score 5 for a
+      concrete capability demonstrated or fielded; 3 for real technology
+      named inside a broader story; 0 for no technology content at all.
+
+  - id: competitive_threat
+    label: Competition
+    plain: Companies winning work or gaining ground against each other.
+    weight: 0.16
+    description: >-
+      Does a named vendor gain or lose ground against rivals? Score 5 for a
+      vendor winning or being selected for a contested slot; 3 for a
+      capability announcement that overlaps a rival's; 0 for no competitive
+      movement.
+
+  - id: customer_program
+    label: Programs and buyers
+    plain: News from defense programs and the offices that buy for them.
+    weight: 0.18
+    description: >-
+      Does this involve a named defense program or buying office? Score 5
+      for a named program with a concrete development; 2 for a service-level
+      story with no program attached; 0 for none.
+
+  - id: technology_signal
+    label: Where tech is heading
+    plain: Signs any part of the field is changing direction.
+    weight: 0.18
+    description: >-
+      Does this shift a technical direction the field is arguing about --
+      edge versus cloud, crewed versus uncrewed, exquisite versus attritable
+      mass? Score 5 for explicit requirements or architecture decisions that
+      pick a side. Score strong COUNTER-signals just as high: a trend
+      breaking is exactly as important as a trend confirmed, and the note
+      must say which direction the evidence points.
+
+  - id: budget_procurement
+    label: Money and contracts
+    plain: Contract awards, budget moves, and changes in who can compete.
+    weight: 0.10
+    description: >-
+      Money or acquisition-pathway movement: awards, vehicles, OTAs, budget
+      lines, protests, schedule changes. Score 5 for a named award or a pathway
+      change that alters who can compete.
+
+  - id: partnership_channel
+    label: Teaming
+    plain: Companies pairing up in ways that open or close doors.
+    weight: 0.06
+    description: >-
+      Teaming, reseller, integration or channel movement that could open or
+      close a route to a buyer. Score 5 for a teaming arrangement on a
+      tracked program.
+
+  - id: talent_people
+    label: People
+    plain: Leaders changing jobs in ways that change relationships.
+    weight: 0.06
+    description: >-
+      Personnel moves that change a relationship or signal a direction -- a
+      program lead changing, a vendor hiring into a contested area. Score 5
+      for a named leader of a tracked program moving.
+
+# Cut points for `overall`, used to rank and filter the brief. Set against what
+# a SINGULAR story can actually reach: the three core axes at 5/5 tops out at 62
+# under the weights above, so the old cut of 70 was unreachable in principle.
+tiers:
+  must_read: 50
+  worth_knowing: 25
+  background: 10

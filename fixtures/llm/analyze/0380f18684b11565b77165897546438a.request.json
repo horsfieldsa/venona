@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Army seeks next-gen missile that could shoot down small drones for less than $150K a pop",
+  "user_content_sha": "269f265fff1e492a81b5b5b74cdaa12658236b47e51807dad41e2360757a49f9"
+}

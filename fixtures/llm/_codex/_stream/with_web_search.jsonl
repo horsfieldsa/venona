@@ -1,0 +1,6 @@
+{"type":"thread.started","thread_id":"01a08cb9-3c39-76b3-8e59-31e186540ce2"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"exec-b822bc5a-150a-4101-9b0e-4e5518fba513","type":"web_search","query":"","action":{"type":"other"}}}
+{"type":"item.completed","item":{"id":"exec-b822bc5a-150a-4101-9b0e-4e5518fba513","type":"web_search","query":"NATO acronym expansion official","action":{"type":"search","query":"NATO acronym expansion official"}}}
+{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"{\"answer\":\"NATO stands for **North Atlantic Treaty Organization**. [NATO](https://www.nato.int/en)\",\"note\":null}"}}
+{"type":"turn.completed","usage":{"input_tokens":31528,"cached_input_tokens":13056,"cache_write_input_tokens":0,"output_tokens":94,"reasoning_output_tokens":10}}

@@ -1,0 +1,41 @@
+[project]
+name = "venona-hub"
+version = "1.0.0"
+description = "The hub: directory, portal, SSO and management channel for venona instances."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+    "psycopg[binary]>=3.2",
+    # RFC 6749 §4.1.3 REQUIRES the token endpoint to accept
+    # `application/x-www-form-urlencoded`; FastAPI's `Form()` needs this to
+    # parse it. Same reasoning as the instance's own OAuth routes.
+    "python-multipart>=0.0.20",
+    "uuid7>=0.1",
+    # The sanctioned exception to the repo's no-cryptography stance
+    # (docs/pm/NOT-DOING.md rejects it for the INSTANCE, whose auth needs are
+    # HMAC and a server-to-server exchange). The hub IS an identity provider:
+    # RS256 over the id_token and Fernet over instance mgmt tokens at rest are
+    # its core competence, not an accessory. docs/adr/0141.
+    "cryptography>=44",
+    # The notice core, shared with the instance. Stdlib only by construction --
+    # see its own pyproject -- so it costs this image nothing but its own source.
+    "venona-notices",
+]
+
+[project.scripts]
+hub = "hub.cli:main"
+
+[tool.uv.sources]
+venona-notices = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hub"]

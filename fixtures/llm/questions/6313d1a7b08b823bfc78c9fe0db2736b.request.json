@@ -1,0 +1,12 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "questions"
+  ],
+  "system_prompt_sha": "3e829e0dbd2103c4be4d375efdfa4394a882de43a0c1fcad617629600289a3f6",
+  "task": "questions",
+  "tools": [],
+  "user_content_preview": "[1] Golden Dome test 'successes' arrive as independent MDA scrutiny disappears",
+  "user_content_sha": "fc1fc98c0e719649fbdcc37d670423a0f675d026afc443a77b82ee2e1f52a3ad"
+}

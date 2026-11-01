@@ -1,0 +1,6 @@
+# Skeleton — replaced by the setup wizard's draft. Structurally empty: the
+# loader accepts zero types and zero predicates, every consumer degrades to
+# "nothing yet", and the wizard's draft (version 1 or later) applies over it.
+version: 0
+entity_types: {}
+predicates: {}

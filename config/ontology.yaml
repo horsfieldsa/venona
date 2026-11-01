@@ -1,0 +1,590 @@
+# venona ontology -- THE contract between research and graph.
+#
+# The single source of truth for what the pipeline may assert. The model's
+# schema enums, the analyze extraction guide, the writer's predicate whitelist,
+# the projector's filter, docs/graph-schema.md and the --entity-* tokens are all
+# GENERATED from it.
+#
+# A data file rather than Python constants because an enum enforces MEMBERSHIP
+# but not MEANING: a design probe produced `Anduril --AWARDED_TO--> "$99M OTA"`,
+# a whitelisted predicate used backwards. `domain` and `range` reject that at
+# load time instead of letting it rot in the graph.
+#
+# Changing this is cheap BECAUSE the graph is a projection: edit, bump
+# `version`, add a changelog line, `venona graph rebuild`. Retiring a predicate
+# stops it projecting; its assertions stay on disk and return if you re-add it.
+
+version: 6
+
+# ── the organisation family ──────────────────────────────────────────
+#
+# Four types, not the one `Organization` this started with. With buyer and
+# seller in one type no predicate could tell them apart, so "which companies
+# compete for the programs my customer runs" was not expressible. `org_type`
+# carries the finer distinction inside each. See docs/adr/.
+
+entity_types:
+  Company:
+    # color_slot indexes the --entity-slot-* palette in tokens.css; the app
+    # maps --entity-<prefix> onto the slot at boot. Unique per type, 1..9.
+    color_slot: 1
+    prefix: company
+    description: >-
+      A commercial firm: a prime, a defense-tech startup, an integrator, a
+      supplier, or an investor putting money into any of those.
+    guidance: >-
+      Anything that SELLS, or funds selling. A subsidiary or a named division is
+      its own Company, attached with PART_OF -- "HII's Newport News Shipbuilding"
+      is not Huntington Ingalls. A university spin-out that has taken investment
+      is a Company; the university is a ResearchOrg.
+    examples: [Anduril Industries, SpaceX, RTX, Bain Capital]
+    org_types:
+      - prime            # major defense contractor
+      - startup          # venture-backed defense tech
+      - integrator       # systems integrator / consultancy
+      - supplier         # component, subsystem, materials
+      - investor         # VC, PE, sovereign fund
+    # A university spin-out reads as a Company or a ResearchOrg depending on
+    # which half of the sentence you weigh. NOT confusable with Platform:
+    # `Havoc` is a company AND, separately, another firm's missile, and
+    # merging those two would be the expensive mistake.
+    confusable_with: [ResearchOrg, GovernmentBody]
+
+  GovernmentBody:
+    color_slot: 2
+    prefix: govt
+    description: >-
+      A civilian arm of a state: a department, an agency, a program or
+      acquisition office, a regulator, a legislative committee, or a
+      multinational body with staff and a budget.
+    guidance: >-
+      Anything that BUYS, funds, regulates or oversees. Prefer the most specific
+      body named -- "PEO C3N" is a GovernmentBody, not a property of the Army,
+      and PART_OF is what makes the hierarchy queryable. NATO and the EU belong
+      here: they are named bodies with secretariats. AUKUS and Five Eyes do not
+      -- they are arrangements, so their named efforts are Programs and the
+      arrangement itself is nothing.
+    examples: [DARPA, Defense Innovation Unit, PEO C3N, Ministry of Defence]
+    org_types:
+      - department       # cabinet-level
+      - agency           # DARPA, DIU, SDA, OSD-level bodies
+      - program_office   # PEO, PM, product office
+      - legislative      # committees, GAO, CBO
+      - regulator
+      - multinational    # NATO, EU
+    # A body is one body, and which of the four organisation types it lands in
+    # is a reading of the same sentence. `Air Force Research Laboratory` arrived
+    # as both a GovernmentBody and a ResearchOrg from two articles.
+    confusable_with: [ResearchOrg, MilitaryUnit, Company]
+
+  MilitaryUnit:
+    color_slot: 3
+    prefix: unit
+    description: >-
+      A uniformed service, combatant command, formation, or standing joint task
+      force.
+    guidance: >-
+      The operational side, as distinct from the acquisition side: the Army is a
+      MilitaryUnit, PEO C3N is a GovernmentBody, and PART_OF joins them. Use the
+      most specific unit named -- "3rd Brigade" rather than "the Army" when the
+      article names the brigade.
+    examples: [United States Army, CENTCOM, 82nd Airborne Division, NORAD]
+    org_types:
+      - service          # Army, Navy, Air Force, Marine Corps, Space Force
+      - combatant_command
+      - formation        # corps, division, brigade, wing, squadron
+      - task_force
+    # `U.S. Army Cyber Center of Excellence` arrived as both a GovernmentBody
+    # and a MilitaryUnit. A schoolhouse is both, depending on the sentence.
+    confusable_with: [GovernmentBody, ResearchOrg]
+
+  ResearchOrg:
+    color_slot: 4
+    prefix: research
+    description: >-
+      A body that studies rather than sells or buys: an FFRDC, a national lab, a
+      university, or a think tank.
+    guidance: >-
+      Non-commercial by construction. If it competes for contracts on the same
+      footing as industry it is a Company; MITRE and the RAND Corporation are
+      ResearchOrgs even when they hold contracts, because the FFRDC relationship
+      is not a sale.
+    examples: [MITRE, RAND Corporation, Johns Hopkins APL, CSIS]
+    org_types:
+      - ffrdc
+      - national_lab
+      - academic
+      - think_tank
+    confusable_with: [GovernmentBody, MilitaryUnit, Company]
+
+# NOT an entity, in any of the four -- each reached ACTIVE on the first run as
+# an `Organization`. A PUBLISHER is `documents.source_id`, and becomes an entity
+# only when an article is ABOUT it. An EVENT has no stable canonical surface. A
+# PLACE is not the thing hosted there; countries are the only geography here.
+
+  Program:
+    color_slot: 5
+    prefix: prog
+    description: A named acquisition or modernization effort with a sponsor and a budget line.
+    guidance: >-
+      A Program is the EFFORT, not the thing it buys. NGC2 is a Program; Lattice
+      is a Platform that might be fielded under it.
+    examples: [Next Generation Command and Control, TITAN, Replicator, IVAS]
+    # Empty is a statement: this boundary is real. `Precision Strike Missile`
+    # as both a Program and a Platform is the ontology working, not failing.
+    confusable_with: []
+
+  Technology:
+    color_slot: 6
+    prefix: tech
+    description: A capability or technical approach, independent of who sells it.
+    guidance: >-
+      Use for capabilities and methods, not products. "edge inference" is a
+      Technology; "Lattice" is a Platform that implements it.
+    examples: [edge inference, sensor fusion, mesh networking, electronic warfare]
+    # `GE F414` arrived as a Platform in one article and a Technology in
+    # another: one engine, read twice. A named product line sits on this
+    # boundary and the sentence rarely settles it.
+    confusable_with: [Platform]
+
+  Platform:
+    color_slot: 7
+    prefix: plat
+    description: A specific product, system or vehicle that someone builds.
+    guidance: >-
+      Concrete and buildable. If it has a model number or a product page it is
+      probably a Platform.
+    examples: [Lattice, Ghost-X, Maven Smart System]
+    platform_types: [software, uas, usv, ugv, sensor, radio, hmd, vehicle, satellite]
+    # Deliberately NOT confusable with Program. A program and the thing it
+    # delivers are two entities on purpose -- that distinction is why
+    # `prog:` and `plat:` are separate types -- so a shared name across it
+    # is a question for a person, not a typing slip to clean up.
+    confusable_with: [Technology]
+
+  Person:
+    color_slot: 8
+    prefix: person
+    description: A named individual in a professional capacity.
+    guidance: >-
+      Only extract people whose ROLE matters to the relationship being asserted
+      -- a program lead or an executive, not a quoted bystander.
+    examples: [Alex Miller]
+    confusable_with: []
+    # A person's initials are not an abbreviation anyone writes. Generating them
+    # produced `ABC` for `Adm. Brad Cooper` and `BAH` for `Bassam al-Hassan`,
+    # which then underlined "ABC news" and collided with Booz Allen Hamilton.
+    generate_acronyms: false
+
+  Country:
+    color_slot: 9
+    prefix: country
+    description: >-
+      A sovereign state or self-governing territory. The top-level actor an
+      organisation belongs to.
+    guidance: >-
+      States and self-governing territories only, and only when the article
+      names one as an actor or as an organisation's home. NOT alliances or
+      blocs: NATO and the EU are GovernmentBodies -- named bodies with staff
+      and budgets -- and AUKUS is an arrangement, so its named efforts are
+      Programs. NOT regions, theatres or combatant commands: "the Indo-Pacific"
+      has no stable canonical name and INDOPACOM is a MilitaryUnit. NOT cities,
+      states or bases. A ministry of defence is a GovernmentBody BASED_IN its
+      country, never the country itself.
+    examples: [United States, China, Ukraine, Taiwan, United Kingdom, France]
+    confusable_with: []
+
+# `Contract` and `Event` are deliberately absent: neither has a stable canonical
+# surface, so "$99M OTA" and "the $99 million agreement" would mint two
+# entities. `Country` is a closed set with ISO-3166 backing, which is the test
+# they fail and why it was admitted in v2. See docs/adr/.
+
+predicates:
+  PART_OF:
+    domain: [Company, GovernmentBody, MilitaryUnit, ResearchOrg, Program]
+    range: [Company, GovernmentBody, MilitaryUnit, ResearchOrg, Program]
+    description: The subject is a constituent part of the object.
+    guidance: >-
+      Child --PART_OF--> parent, ALWAYS. This single recursive relationship
+      carries the whole org chart, which is how "how does NGC2 relate to
+      divisions within the Army" is answered. A national military is NOT part of
+      its country -- "Australian Defence Force PART_OF Australia" is the common
+      miss, and the answer is BASED_IN, whose range is Country and whose
+      guidance covers government bodies explicitly. Countries are never a
+      PART_OF object. This crosses the organisation types freely and must: a
+      MilitaryUnit is PART_OF a GovernmentBody (US Army -> Department of War),
+      a GovernmentBody is PART_OF a MilitaryUnit (PEO C3N -> US Army), and a
+      Company is PART_OF a Company. A PLATFORM is never PART_OF anything, and
+      this is the commonest rejection there is -- "the Rogue 1 is part of the
+      LASSO program" is ordinary English and the wrong edge. Say it the other
+      way round with FIELDS, whose subject is the program: LASSO --FIELDS-->
+      Rogue 1. Nothing is lost by the inversion, and the reason it matters is
+      that PART_OF is the recursive org chart every path and neighbourhood
+      query walks -- a platform inside it makes "what is X part of" return two
+      incompatible kinds of answer.
+    example: PEO C3N --PART_OF--> United States Army
+    kinds: [org_hierarchy, corporate, joint]
+
+  MANAGES:
+    domain: [GovernmentBody, MilitaryUnit]
+    range: [Program]
+    description: The organization holds acquisition authority for the program.
+    example: PEO C3N --MANAGES--> Next Generation Command and Control
+
+  COMPETES_FOR:
+    domain: [Company, ResearchOrg]
+    range: [Program]
+    description: The organization is bidding on, or has been awarded work under, the program.
+    guidance: Use for both bidders and awardees; the distinction lives in the evidence quote.
+    example: Anduril Industries --COMPETES_FOR--> Next Generation Command and Control
+
+  USES_TECH:
+    domain: [Program, Platform]
+    range: [Technology]
+    description: The program or platform depends on the technology.
+    example: Next Generation Command and Control --USES_TECH--> edge inference
+
+  OFFERS:
+    domain: [Company, ResearchOrg]
+    range: [Technology]
+    description: The organization sells or markets a capability in this area.
+    example: Anduril Industries --OFFERS--> sensor fusion
+
+  PRODUCES:
+    domain: [Company, ResearchOrg]
+    range: [Platform]
+    description: The organization builds the platform.
+    guidance: >-
+      ResearchOrg is in the domain because FFRDCs and national labs demonstrably
+      build platforms -- Lincoln Laboratory built QZS-7 -- and ResearchOrg
+      already sits in OFFERS and COMPETES_FOR, so this is consistency, not a
+      widening.
+    example: Anduril Industries --PRODUCES--> Lattice
+
+  IMPLEMENTS:
+    domain: [Platform]
+    range: [Technology]
+    description: The platform is a concrete implementation of the technology.
+    example: Lattice --IMPLEMENTS--> edge inference
+
+  COMPONENT_OF:
+    domain: [Platform]
+    range: [Platform]
+    description: The subject is a physical or software component of the object platform.
+    guidance: >-
+      Child --COMPONENT_OF--> parent, matching PART_OF's convention. Talon IQ is
+      the autonomy stack ON the Model 437, so Talon IQ --COMPONENT_OF--> Model
+      437. Deliberately a separate predicate from PART_OF, which is the org
+      chart: hardware must never appear in "what is X part of". Declares no
+      `kinds`, by design -- the model is never asked for one, so a vocabulary
+      here would be 100% defaulted (see the v2 changelog on BASED_IN).
+    example: Talon IQ --COMPONENT_OF--> Model 437
+
+  VARIANT_OF:
+    domain: [Platform]
+    range: [Platform]
+    description: The subject is a version of the object design -- a block, mark, increment or numbered model of it.
+    guidance: >-
+      Child --VARIANT_OF--> base design. F-16 Block 70 is a revision of the
+      F-16, so F-16 Block 70 --VARIANT_OF--> F-16; Switchblade 600
+      --VARIANT_OF--> Switchblade. Not COMPONENT_OF, which is a separate thing
+      fitted on or inside the platform (an engine, a radar, an autonomy
+      stack), and not the same thing written twice: two variants are two
+      things a buyer chooses between.
+    example: F-16 Block 70 --VARIANT_OF--> F-16
+
+  FIELDS:
+    domain: [Program]
+    range: [Platform]
+    description: The program is deploying the platform to units.
+    guidance: >-
+      PROGRAM --FIELDS--> platform. The direction is the whole difficulty: the
+      natural sentence is "the Rogue 1 is part of the LASSO program", which puts
+      the platform first, and PART_OF does not accept a Platform in either
+      position. Turn it round rather than dropping it -- LASSO --FIELDS-->
+      Rogue 1, Miecznik --FIELDS--> ORP Wicher, Precision Strike Missile
+      --FIELDS--> its seeker package. Use this whenever a program selects,
+      buys, tests, or deploys a named platform, not only at the moment of
+      issue. A COMPONENT of a platform is a different thing and has no
+      predicate: the XM913 Bushmaster is the gun on the XM30, not a platform
+      the XM30 programme fields, so leave it rather than forcing it here.
+    example: Next Generation Command and Control --FIELDS--> Lattice
+
+  PARTNERS_WITH:
+    domain: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    range: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    symmetric: true
+    description: Teaming, reselling, or an integration agreement.
+    guidance: >-
+      Symmetric: stored once with endpoints in lexicographic id order. Do not
+      also assert the reverse.
+    example: Anduril Industries --PARTNERS_WITH--> Palantir Technologies
+
+  COMPETES_WITH:
+    domain: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    range: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    symmetric: true
+    description: The two organizations compete in the same market.
+    example: Anduril Industries --COMPETES_WITH--> Palantir Technologies
+
+  ACQUIRED:
+    domain: [Company]
+    range: [Company]
+    description: The subject acquired the object.
+    guidance: Acquirer --ACQUIRED--> acquired. Getting this backwards inverts the org chart.
+    example: Anduril Industries --ACQUIRED--> Dive Technologies
+
+  BASED_IN:
+    domain: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    range: [Country]
+    # Kept out of `allShortestPaths`. Splitting this out of PART_OF was supposed
+    # to stop a country sitting in the middle of every route, but the split only
+    # made it FILTERABLE and the path query filtered nothing -- so once most
+    # organisations carry a home country, the shortest path between any two of
+    # them is "both are based in the same place". True, two hops, and it buries
+    # the org-chart route under the result limit. The graph view's chips can
+    # still turn it on; a path is the one place it is never the answer.
+    excluded_from_paths: true
+    description: The organization's home country.
+    guidance: >-
+      Where it is headquartered or incorporated, or -- for a government body --
+      the state whose organ it is. ONE per organisation: assert the home
+      country, not every country it sells into, has an office in, or was
+      mentioned near. If the article names a local subsidiary ("Thales
+      Australia", "BAE Systems Australia"), assert BASED_IN about the
+      SUBSIDIARY and let PART_OF carry it to the parent -- do not re-home the
+      parent.
+    example: Thales --BASED_IN--> France
+
+  WORKS_FOR:
+    domain: [Person]
+    range: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+    description: Employment or service affiliation.
+    example: Alex Miller --WORKS_FOR--> United States Army
+
+  LEADS:
+    domain: [Person]
+    range: [Company, GovernmentBody, MilitaryUnit, ResearchOrg, Program]
+    description: The person has named leadership responsibility.
+    example: Alex Miller --LEADS--> Next Generation Command and Control
+
+# ── rewrites ─────────────────────────────────────────────────────────
+#
+# Ill-typed shapes the model keeps reaching for that have exactly ONE safe
+# legal rendering. `analyze` applies these before the domain/range check, so
+# the fact is recorded correctly instead of dropped; the assertion is stamped
+# `method='extraction_rewritten'` and counted under `rewrite_<PREDICATE>`.
+#
+# The rule every row must satisfy: a rewrite may WEAKEN a claim or INVERT it,
+# never strengthen it. `OFFERS -> PRODUCES` was considered and rejected on
+# exactly that rule -- it would turn "sells or markets" into "builds", and
+# Company.org_types includes integrator, supplier and investor.
+#
+# The loader enforces both halves: every `when` shape must be ill-typed today
+# (a legal triple must never be rewritten) and every `then` result must be
+# well-typed. Together those also make the table acyclic -- an output can
+# never match another row's input.
+
+rewrites:
+  - when: { predicate: PART_OF, subject: [Platform], object: [Program] }
+    then: { predicate: FIELDS, swap: true }
+    note: >-
+      "The Rogue 1 is part of the LASSO program" is ordinary English and the
+      wrong edge; the program FIELDS the platform is the same fact inverted.
+      Residual risk, accepted: a component of a platform ("the gun on the
+      XM30") arriving with the parent typed Program is indistinguishable by
+      types alone and will mint a false FIELDS -- spot-check rewrite_PART_OF
+      edges, and cut this row if they appear.
+  - when:
+      predicate: PART_OF
+      subject: [Company, GovernmentBody, MilitaryUnit, ResearchOrg]
+      object: [Country]
+    then: { predicate: BASED_IN }
+    note: >-
+      PART_OF.guidance names this the common miss: a national organisation is
+      BASED_IN its country, never PART_OF it.
+  - when:
+      predicate: LEADS
+      subject: [Company, GovernmentBody, MilitaryUnit, ResearchOrg, Program]
+      object: [Person]
+    then: { predicate: LEADS, swap: true }
+    note: >-
+      Pure inversion -- LEADS' subject is always the Person. The subject list
+      is LEADS.range spelled out, so every rewritten triple is legal by
+      construction; "anything non-Person" would include Platform and Country
+      and fail the loader.
+  - when: { predicate: PRODUCES, subject: [Company], object: [Technology] }
+    then: { predicate: OFFERS }
+    note: >-
+      Strictly weaker: "builds" becomes "sells or markets a capability in this
+      area", which a company producing a technology necessarily does.
+  - when: { predicate: PRODUCES, subject: [Company], object: [Program] }
+    then: { predicate: COMPETES_FOR }
+    note: >-
+      The one judgement call in this table: a company building a program's
+      hardware is doing work under that program, and COMPETES_FOR's guidance
+      covers awardees as well as bidders. The weakest legal claim for the pair.
+  - when: { predicate: [PART_OF, IMPLEMENTS], subject: [Platform], object: [Platform] }
+    then: { predicate: COMPONENT_OF }
+    note: >-
+      A platform inside a platform is composition. Talon IQ is the autonomy
+      stack ON the Model 437, not an implementation of it.
+
+# Infrastructure edges. Written by the projector, never asserted by the model,
+# so they are not in the whitelist graph/writer.py enforces. Only what the
+# projector actually writes belongs here: a declaration nothing emits reads as
+# part of the graph's shape and is not, which is the same fiction the :Source
+# and :Brief constraints were.
+internal_predicates:
+  MENTIONS:  { from: Article, to: Entity }
+
+changelog:
+  - version: 1
+    date: "2026-08-04"
+    change: >-
+      Initial ontology. Five entity types; Contract and Event deferred pending a
+      PIID-based identity rule. Thirteen asserted predicates with domain/range.
+  - version: 2
+    date: "2026-08-06"
+    change: >-
+      Added the Country entity type and BASED_IN.
+
+      Countries were ALREADY in the graph, typed as Organizations -- org:china
+      and org:taiwan active, org:united-states, org:ukraine, org:united-kingdom,
+      org:poland and org:iran provisional. That left domain/range checking off
+      for what is now the highest-degree node class: `China COMPETES_WITH
+      Anduril` and `Anduril ACQUIRED China` were both well-typed and
+      unrejectable. Country has the stable canonical surface Contract and Event
+      lack, so the v1 deferral reasoning argues FOR it, not against.
+
+      BASED_IN is its own predicate rather than an extension of PART_OF's range.
+      PART_OF is the recursive org chart that the path and neighbourhood queries
+      walk; a country inside it turns every route between two US organisations
+      into a two-hop trip through a supernode, and "how does NGC2 relate to
+      divisions within the Army" starts returning every organisation on earth.
+      As a separate predicate it is filterable -- the graph view builds its
+      predicate chips from /api/meta/ontology -- so the org chart can be read
+      with country edges switched off.
+
+      BASED_IN deliberately declares no `kinds`. `analyze.py::_kind_for`
+      defaults to kinds[0] because the model is never asked for one, so a
+      declared vocabulary would be 100% defaulted and would repeat the
+      PART_OF.kind mistake recorded in docs/adr/.
+
+      No existing predicate was narrowed, so this is additive for every v1
+      assertion except those about the retyped countries: expect a handful to
+      stop type-checking and appear in the projector's `rejected` count. Some
+      are PART_OF claims that are really BASED_IN; at least two are
+      inverted-direction curation errors the ontology could not see while
+      countries were Organizations.
+
+      MEMBER_OF (Country -> Organization, for NATO/AUKUS/EU membership) is
+      deliberately absent, and this is a decision rather than a gap now. It was
+      deferred because "its one live instance has two provisional endpoints";
+      there is no live instance at all. `SELECT COUNT(*) FROM assertions WHERE
+      predicate='MEMBER_OF'` returns 0 against 1,816 entities including 29
+      countries, so promoting it would add a whitelist entry, an ontology edit
+      and a projection path in exchange for zero edges. See ROADMAP's
+      "Not doing". A first sighting with resolved endpoints reopens it.
+  - version: 3
+    date: "2026-08-16"
+    change: >-
+      Split Organization into Company, GovernmentBody, MilitaryUnit and
+      ResearchOrg, and removed Organization.
+
+      One type held 346 entities on the first full run: SpaceX and Bain Capital
+      beside the 82nd Airborne Division, PEO USC, the Department of Education,
+      GUR, Colorado School of Mines, `org:war-on-the-rocks` (a publisher we
+      read, not an actor) and `org:anniston` (a place). Its own description said
+      so -- "any named body that can act" -- and its four examples deliberately
+      mixed a service, a program office, a company and an agency, which is what
+      the analyze prompt taught the model.
+
+      The cost was expressiveness, not tidiness. With buyer and seller in one
+      type, COMPETES_FOR had to accept any organisation, so "which companies are
+      competing for the programs my customer runs" -- the question the relevance
+      profile is built around -- could not be asked of the graph. It is now
+      Company|ResearchOrg --COMPETES_FOR--> Program, MANAGES is
+      GovernmentBody|MilitaryUnit only, PRODUCES and ACQUIRED are Company only,
+      and PART_OF spans all four because the org chart genuinely crosses them
+      (US Army PART_OF Department of War; PEO C3N PART_OF US Army).
+
+      Organization was REMOVED rather than kept as a residual, because all data
+      was deleted in the same change. A residual type is the right answer when
+      there are minted ids to strand; with none, keeping it would only give the
+      model somewhere to retreat to, and the guidance fields are where the four
+      are actually taught apart. The trade is that an uncertain extraction now
+      picks one of four instead of a catch-all: a wrong type is visible in the
+      curation queue, where the old bucket hid it.
+
+      Three category errors are named as non-entities in the entity_types
+      comment -- publisher, event, place -- because each reached ACTIVE on the
+      first run and none is a body that can act.
+
+      org_type is now emittable. It was declared here, rendered into the analyze
+      prompt by `ontology.extraction_guide`, stored in `entities.org_type`,
+      projected to Neo4j and typed in schema.d.ts -- while `analyze_schema()`
+      omitted it and set `additionalProperties: false`. The model was told a
+      vocabulary it was structurally forbidden from using, and all 346 rows had
+      org_type IS NULL. The per-type vocabularies are narrower now that the type
+      carries most of the distinction.
+  - version: 4
+    date: "2026-08-18"
+    change: >-
+      Added the `rewrites:` table, COMPONENT_OF (Platform -> Platform), and
+      ResearchOrg to PRODUCES.domain.
+
+      Run 06a83e69 was the measurement the 2026-08-16 decision record (docs/adr/) asked
+      for, and the answer was no: all five PART_OF rejections were shapes the
+      prompt explicitly warns about (three Platform->Program, two
+      org->Country), and FIELDS was used correctly three times against three
+      misses. More prose is the approach that failed its own measurement, so
+      the recurring ill-typed shapes with exactly one safe legal rendering are
+      now rewritten deterministically in `analyze` instead of dropped. The
+      table lives here rather than in Python for the same reason domain and
+      range do: the loader validates that every `when` is ill-typed and every
+      `then` is well-typed, which also makes it acyclic.
+
+      OFFERS(Company, Platform) -> PRODUCES was considered and REJECTED: it
+      strengthens "markets" into "builds", and integrators, suppliers and
+      investors offer platforms they do not build. USES_TECH(MilitaryUnit,
+      Program) -> MANAGES was rejected for asserting acquisition authority the
+      evidence does not support, and LEADS(MilitaryUnit, MilitaryUnit) ->
+      swapped PART_OF because the right reading is not derivable from types.
+
+      PRODUCES gains ResearchOrg because Lincoln Laboratory built QZS-7 and
+      the type already sits in OFFERS and COMPETES_FOR.
+
+      COMPONENT_OF is added on thin evidence, recorded as such: the decision record (docs/adr/)
+      2026-08-16 deferred it pending component relationships "appearing often"
+      in the rejection log, and only ONE Platform->Platform instance exists
+      (Talon IQ --IMPLEMENTS--> Model 437; the XM913/XM30 case is
+      Platform->Program and falls under the FIELDS rewrite). Added anyway
+      because it is additive and reversible, and without it that rejection has
+      no home. It is a separate predicate from PART_OF so hardware never
+      enters the org chart that `anchors.py::infer_transitive` walks and the
+      graph view's predicate chips can switch it off. If the shape does not
+      recur, retiring it is one line and the assertions stay on disk.
+  - version: 5
+    date: "2026-08-28"
+    change: >-
+      Each entity type declares `confusable_with`: the types it is routinely
+      READ AS, which is not the same as the types it relates to. Two entities
+      sharing a name across a confusable boundary are one thing typed twice and
+      the curator picks the type; across a real boundary they are two things and
+      the answer is keep apart. Nothing in the names separates those, and only
+      the domain knows which of its own boundaries blur. Program/Platform is
+      deliberately empty: that distinction is why the two types exist.
+      Program/Technology is also left out, because it holds both a real
+      collision (an EU loan instrument and an edge safety framework both called
+      SAFE) and a typing slip (DODIN), and the safe direction is to ask.
+  - version: 6
+    date: "2026-10-25"
+    change: >-
+      Added VARIANT_OF (Platform -> Platform). A block, mark or numbered model
+      of a design had no predicate, so a curator could only keep it apart, and
+      the adjudicator's nearest legal answer was COMPONENT_OF: the run wrote
+      `F-16 Block 70 COMPONENT_OF F-16`, `SM-3 Block IIA COMPONENT_OF SM-3` and
+      about twenty more like them, while 39 of one day's 145 keep-aparts were
+      the same shape. COMPONENT_OF keeps its meaning, a part fitted to the
+      platform.

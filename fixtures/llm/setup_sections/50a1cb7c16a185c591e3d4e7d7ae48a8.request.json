@@ -1,0 +1,12 @@
+{
+  "effort": "high",
+  "model": "sonnet",
+  "schema_keys": [
+    "document"
+  ],
+  "system_prompt_sha": "fb6d14efdd809f5f3de0c895fe92a40be278b47af238af065608462f557d7c91",
+  "task": "setup_sections",
+  "tools": [],
+  "user_content_preview": "The domain: Artificial intelligence. AI-industry intelligence: research, score, graph, brief.",
+  "user_content_sha": "0dcc45145013033f3fba4eaf16af957e21c8753d202cb9379ed713e02725a322"
+}

@@ -1,0 +1,16 @@
+{
+  "effort": "high",
+  "model": "sonnet",
+  "schema_keys": [
+    "candidates",
+    "theme"
+  ],
+  "system_prompt_sha": "0785045727ae6dd6eb01d1b5e1fd6e6369517ccac5e3a7ab2f486755fd084dad",
+  "task": "discovery",
+  "tools": [
+    "WebSearch",
+    "WebFetch"
+  ],
+  "user_content_preview": "Today is 2026-08-16. Include the date in your searches so results are current. ONLY return pages published in the last 48 hours -- anything older is discarded before it is read, so it is a wasted slot. Returning three recent items beats returning eight where five are older than that. If a theme has nothing that recent, return nothing for it; a quiet sweep is a real answer.",
+  "user_content_sha": "03e1ebf504a0d53a8a8aaaee583b0bae56dddc960cd0279f09a96fe57bad9630"
+}

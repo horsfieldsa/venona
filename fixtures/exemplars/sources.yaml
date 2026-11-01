@@ -1,0 +1,166 @@
+# Source declarations (contract C9). USER-EDITABLE.
+#
+# Adding a source is a change to THIS FILE plus a recorded fixture -- no Python.
+# A pydantic model validates at startup, so a bad `kind` fails on boot. Every
+# URL here was probed live; `removed:` at the bottom records what did not work.
+
+defaults:
+  max_items: 40
+  fetch_body: true
+
+sources:
+  # ── trade press ────────────────────────────────────────────────────
+  - id: breaking_defense
+    name: Breaking Defense
+    kind: rss
+    url: https://breakingdefense.com/feed/
+    publisher: Breaking Defense
+    tags: [trade_press]
+
+  - id: defensescoop
+    name: DefenseScoop
+    kind: rss
+    url: https://defensescoop.com/feed/
+    publisher: DefenseScoop
+    tags: [trade_press, c2, software]
+
+  - id: c4isrnet
+    name: C4ISRNET
+    kind: rss
+    url: https://www.c4isrnet.com/arc/outboundfeeds/rss/
+    publisher: C4ISRNET
+    tags: [trade_press, c4isr]
+
+  - id: defense_news
+    name: Defense News
+    kind: rss
+    url: https://www.defensenews.com/arc/outboundfeeds/rss/
+    publisher: Defense News
+    tags: [trade_press]
+
+  - id: defense_one
+    name: Defense One
+    kind: rss
+    url: https://www.defenseone.com/rss/all/
+    publisher: Defense One
+    tags: [trade_press, policy]
+
+  - id: war_on_the_rocks
+    name: War on the Rocks
+    kind: rss
+    url: https://warontherocks.com/feed/
+    publisher: War on the Rocks
+    tags: [analysis]
+
+  - id: federal_news_network
+    name: Federal News Network — Defense
+    kind: rss
+    url: https://federalnewsnetwork.com/category/defense-main/feed/
+    publisher: Federal News Network
+    tags: [acquisition]
+
+  # ── government / research ──────────────────────────────────────────
+  - id: darpa
+    name: DARPA News
+    kind: rss
+    url: https://www.darpa.mil/rss.xml
+    publisher: DARPA
+    tags: [rnd, government]
+
+  - id: gao_reports
+    name: GAO Reports
+    kind: rss
+    url: https://www.gao.gov/rss/reports.xml
+    publisher: GAO
+    tags: [oversight, government]
+
+  # ── discovery sweeps ───────────────────────────────────────────────
+  # These search rather than fetching an endpoint, so they carry no `url`, and
+  # return candidate URLs the ordinary fetch path then fetches and dedups.
+  #
+  # One source per area, so each gets its own health, strikes, `enabled` switch
+  # and model for free. `tags` are the search targets; the wording lives in
+  # `profile/research_prompt.md` under the matching heading. `model` overrides
+  # `llm.discover_model` -- the two areas closest to the thesis get opus.
+  - id: sweep_edge_ai
+    name: "Sweep: edge AI & autonomy"
+    kind: discovery
+    model: opus
+    max_items: 10
+    tags: [edge_inference, on_device_ml, sensor_fusion, ddil, autonomy_stacks, counter_signals]
+
+  - id: sweep_c2
+    name: "Sweep: command & control"
+    kind: discovery
+    model: opus
+    max_items: 10
+    tags: [ngc2, jadc2, cjadc2, abms, project_convergence, ibcs, titan, maven_smart_system]
+
+  - id: sweep_uas
+    name: "Sweep: UAS, drone & counter-UAS"
+    kind: discovery
+    max_items: 8
+    tags: [skyfoundry, lasso, group_1_3_uas, counter_uas, fs_lids, m_lids, coyote, ngcm, replicator]
+
+  - id: sweep_undersea
+    name: "Sweep: undersea & maritime autonomy"
+    kind: discovery
+    max_items: 8
+    tags: [xluuv, orca, lusv, musv, ghost_shark, dive_xl, mine_countermeasures, aukus_pillar_2]
+
+  - id: sweep_space
+    name: "Sweep: space & satellite"
+    kind: discovery
+    max_items: 8
+    tags: [sda_tranches, golden_dome, sb_amti, gmti, proliferated_leo, on_orbit_processing]
+
+  - id: sweep_programs
+    name: "Sweep: service technology programs"
+    kind: discovery
+    max_items: 8
+    tags: [army, navy, air_force, marine_corps, space_force, socom, diu, cdao, acquisition_reform]
+
+  - id: sweep_competitors
+    name: "Sweep: competitors & market"
+    kind: discovery
+    max_items: 8
+    tags: [anduril, palantir, shield_ai, scale_ai, applied_intuition, govini, saronic, skydio]
+
+  - id: sweep_allied
+    name: "Sweep: international & allied"
+    kind: discovery
+    max_items: 6
+    tags: [nato, aukus, five_eyes, uk, australia, japan, ukraine_lessons]
+
+# Probed and rejected. Kept so nobody spends an afternoon rediscovering why.
+removed:
+  - url: https://www.army.mil/rss/static/1.xml
+    reason: HTTP 403 to any non-browser client.
+
+  - url: https://www.peoc3n.army.mil/News
+    reason: >-
+      TLS certificate does not validate against the public trust store (DoD PKI).
+      Would need the DoD root CA bundle installed to fetch at all.
+
+  - url: https://www.defense.gov/News/Contracts/
+    reason: >-
+      The RSS index works, but every article body returns 403 to both an honest
+      UA and a Chrome UA, and the feed <description> is a 61-character stub. No
+      content path. This is genuinely high-signal -- revisit with a different
+      access route rather than pretending the scraper works.
+
+  - url: https://www.anduril.com/news/
+    reason: >-
+      Shader-driven SPA. The served HTML contains zero content links, only
+      app.js and shader files. Needs a JSON-payload adapter, not CSS selectors.
+
+  - url: https://investors.palantir.com/rss/pressrelease.aspx
+    reason: >-
+      302-redirects to palantir.com/404. Probed OK during design and was dead
+      days later -- which is precisely why source_health exists. Vendor IR feeds
+      move often; prefer trade press coverage of vendors over vendor feeds.
+
+  - url: https://www.diu.mil/latest
+    reason: >-
+      Next.js. Content lives in the __NEXT_DATA__ JSON blob, not the DOM. Same
+      adapter gap as Anduril.

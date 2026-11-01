@@ -1,0 +1,19 @@
+-- Which entities an ambiguous surface could mean.
+--
+-- `ambiguous_surfaces` said a surface has more than one plausible owner and
+-- stopped there, so the resolver's only move was to decline: the mention was
+-- dropped and BOTH readings lost it. Measured on the defense corpus, that is
+-- `the Army` in 78 documents, `the Navy` in 41, `the Air Force` in 33 and the
+-- bare ministries in 9 -- every one of them a mention of something the graph
+-- already holds, thrown away because nothing recorded WHICH things it might be.
+--
+-- Declining is still the default and still the right answer when the text does
+-- not say. What this column adds is the raw material for doing better when it
+-- does: with the candidate ids in hand, a resolver can look for the one the
+-- surrounding document actually names and fall back to declining otherwise.
+-- The same argument `alias_index.senses()` makes for acronyms, one layer up.
+--
+-- JSON rather than a join table: it is written only by the anchors loader, read
+-- whole, and never queried across. A list of ids in a column is the shape the
+-- reader has.
+ALTER TABLE ambiguous_surfaces ADD COLUMN IF NOT EXISTS readings TEXT;

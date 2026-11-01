@@ -1,0 +1,16 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "acronym",
+    "candidate_urls"
+  ],
+  "system_prompt_sha": "b985267c901141b0bcbb64ce383ce0a413e2e819150d223deed2ab3a3bd9d335",
+  "task": "acronym_search",
+  "tools": [
+    "WebSearch",
+    "WebFetch"
+  ],
+  "user_content_preview": "Find authoritative pages that define the acronym 'CXMT' in a US defense context.",
+  "user_content_sha": "569c253e74aa85e69a952ee872e6bd6d5ea799cf87d546546b0fece29cbfbdda"
+}

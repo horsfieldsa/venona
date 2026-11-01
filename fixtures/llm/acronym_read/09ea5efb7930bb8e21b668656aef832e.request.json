@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "expansion",
+    "found",
+    "quote"
+  ],
+  "system_prompt_sha": "8e8124f9e85251f56437847d219c8c09bea55519238e3ff29dfa03f4effa66a6",
+  "task": "acronym_read",
+  "tools": [],
+  "user_content_preview": "ACRONYM: RFI",
+  "user_content_sha": "ca3c6b484eb46bedaed803e642a0f7d9a0a4008dee13547c644ff90b96cc8aa6"
+}

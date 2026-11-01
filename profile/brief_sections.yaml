@@ -1,0 +1,38 @@
+# Brief sections. USER-EDITABLE.
+#
+# The standing desks of the brief. The list is compiled into the response schema
+# as an `enum`, so the model cannot invent a section. Order is editorial -- the
+# order to read them in, not a ranking.
+#
+# These mirror the discovery sweeps in `config/sources.yaml`; retarget a sweep
+# and retarget the matching section. `empty_ok: false` drops a section when
+# nothing lands in it, so a bare heading never reads as a gap in coverage.
+
+sections:
+  - name: COMMAND & CONTROL
+    covers: NGC2, JADC2, CJADC2, ABMS, Project Convergence, IBCS, TITAN, Maven
+
+  - name: EDGE AI & AUTONOMY
+    covers: >-
+      edge inference, on-device ML, sensor fusion, DDIL operation, autonomy
+      stacks, counter-signals
+
+  - name: UAS, DRONE & COUNTER-UAS
+    covers: Group 1-3 UAS, counter-UAS, FS-LIDS, M-LIDS, Coyote, NGCM, Replicator
+
+  - name: UNDERSEA & MARITIME AUTONOMY
+    covers: XLUUV, Orca, LUSV, MUSV, Ghost Shark, Dive-XL, mine countermeasures
+
+  - name: SPACE & SATELLITE
+    covers: SDA tranches, Golden Dome, SB-AMTI, GMTI, proliferated LEO, on-orbit processing
+
+  - name: COMPETITOR & MARKET WATCH
+    covers: >-
+      Anduril, Palantir, Shield AI, Scale AI, Applied Intuition, Govini,
+      Saronic, Skydio -- earnings, awards, positioning
+
+  - name: POLICY & ACQUISITION
+    covers: acquisition reform, DIU, CDAO, OTAs, budget marks, authorities
+
+  - name: INTERNATIONAL & ALLIED
+    covers: NATO, AUKUS, Five Eyes, UK, Australia, Japan, Ukraine lessons

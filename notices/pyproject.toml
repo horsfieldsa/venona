@@ -1,0 +1,22 @@
+[project]
+name = "venona-notices"
+version = "0.1.0"
+description = "The notice core: what a message is, how each channel renders it, and which addresses Venona will dial."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+# NOTHING BEYOND THE STANDARD LIBRARY, and that is the constraint that makes
+# this package shareable at all. The instance carries neo4j, trafilatura and
+# sqlalchemy; the hub deliberately carries none of them and must keep it that
+# way. A dependency added here is a dependency added to both images.
+#
+# The webhook channel takes its client as an argument rather than importing one,
+# so `httpx` is the caller's business: the instance hands it `HttpClient`, which
+# resolves and pins, and the hub hands it its own.
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["notices"]

@@ -1,0 +1,13 @@
+-- Which domain descriptor a run executed under.
+--
+-- `runs.profile_hash` answers "which profile scored this" and its recipe is
+-- pinned to the four profile files -- folding the descriptor in would silently
+-- re-explain every historical cache-miss, so the descriptor gets its own
+-- column instead (docs/adr/0138). Stamped centrally in
+-- `run_service.create_run` from `domain.domain_hash()`, truncated the way
+-- `profile_hash` is: enough to compare, short enough to read.
+--
+-- Nullable: every row written before this column existed, and nothing joins
+-- on it -- it is attribution, read by a human asking "did the wizard apply a
+-- new domain mid-week".
+ALTER TABLE runs ADD COLUMN domain_hash TEXT;

@@ -1,0 +1,14 @@
+/* The motion and the one colour the hub's living graph reads that the app's
+ * own tokens.css does not declare. `scripts/graph_field.py` resolves these
+ * when it emits the hub's copy of the field. */
+:root {
+  --cadence-graph-field-step: 700ms;
+  --cadence-graph-field: 5200ms;
+  --graph-field-pulse-low: 0.3;
+  --motion-reveal: 240ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --cadence-field-arrive: 400ms;
+  --graph-field-opacity: 0.42;
+  --graph-field-opacity-night: 0.55;
+  --accent-bright: light-dark(#1891ac, #17849c);
+}

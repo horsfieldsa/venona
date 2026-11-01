@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Defense execs feel good about Pentagon spending despite uncertainty on FY27 budget",
+  "user_content_sha": "4b94f3c5f5edef85a2f39801e18ff7b8aae24476088988c1404287df2226d090"
+}

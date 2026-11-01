@@ -1,0 +1,261 @@
+# Decision records
+
+One file per decision, numbered in the order they were made. Two kinds live
+here: decisions that **changed** during the build (migrated from the old
+`docs/DECISIONS.md`, entries 0001–0136, with enough of the reason that nobody
+re-litigates them), and forward-looking decisions recorded as they are made
+(0137 onward). Frontmatter carries `status` (`accepted | proposed | superseded`)
+and `date`; a superseding record names what it replaces.
+
+If something in an accepted record looks wrong, read the reason before changing
+it. Several of these were measured, not reasoned. Records are never edited to
+say something new — write a superseding record instead.
+
+Managed by the `/adr` skill.
+
+- [0001](0001-model-work-runs-on-the-claude-cli-not-the-api.md) · 2026-08-04 — Model work runs on the `claude` CLI, not the API
+- [0002](0002-permission-mode-dontask-silently-denies-tools.md) · 2026-08-04 — `--permission-mode dontAsk` silently denies tools
+- [0003](0003-acronym-tier-3-re-architected-the-model-never-quotes-itself.md) · 2026-08-04 — Acronym Tier 3 re-architected: the model never quotes itself
+- [0004](0004-assertions-are-append-only-merges-are-entity-mappings-rows.md) · 2026-08-04 — Assertions are append-only; merges are `entity_mappings` rows
+- [0005](0005-aliases-is-unique-on-entity-id-surface-not-entity-id.md) · 2026-08-04 — `aliases` is unique on `(entity_id, surface)`, not `(entity_id, normalized)`
+- [0006](0006-parenthetical-extraction-trims-to-the-verifying-window.md) · 2026-08-04 — Parenthetical extraction trims to the verifying window
+- [0007](0007-a-typed-ontology-not-a-predicate-enum.md) · 2026-08-04 — A typed ontology, not a predicate enum
+- [0008](0008-contract-and-event-entity-types-deferred.md) · 2026-08-04 — `Contract` and `Event` entity types deferred
+- [0009](0009-build-order-inverted-to-a-vertical-spine.md) · 2026-08-04 — Build order inverted to a vertical spine
+- [0010](0010-neo4j-heap-512mb-not-2gb.md) · 2026-08-04 — Neo4j heap 512MB, not 2GB
+- [0011](0011-dedup-layer-3-simhash-deferred.md) · 2026-08-04 — Dedup layer 3 (SimHash) deferred
+- [0012](0012-exclude-dynamic-system-prompt-sections-dropped.md) · 2026-08-04 — `--exclude-dynamic-system-prompt-sections` dropped
+- [0013](0013-prompt-cache-assertions-are-intra-run-only.md) · 2026-08-04 — Prompt cache assertions are intra-run only
+- [0014](0014-scoring-axes-live-in-the-rubric-file-not-in-code.md) · 2026-08-04 — Scoring axes live in the rubric file, not in code
+- [0015](0015-recording-shares-the-replay-code-path.md) · 2026-08-04 — Recording shares the replay code path
+- [0016](0016-determinism-ok-not-noqa-determinism.md) · 2026-08-04 — `# determinism: ok`, not `# noqa: determinism`
+- [0017](0017-vendor-ir-feeds-dropped-trade-press-covers-vendors-better.md) · 2026-08-04 — Vendor IR feeds dropped; trade press covers vendors better
+- [0018](0018-dedup-layer-2-makes-a-reprint-a-new-document-but-the-same.md) · 2026-08-04 — Dedup layer 2 makes a reprint a new DOCUMENT but the same CLUSTER
+- [0019](0019-the-plausible-year-guard-uses-a-fixed-range-not-datetime-now.md) · 2026-08-04 — The plausible-year guard uses a fixed range, not `datetime.now()`
+- [0020](0020-stub-feed-items-are-skipped-not-stored.md) · 2026-08-04 — Stub feed items are skipped, not stored
+- [0021](0021-model-confidence-alone-never-promotes-an-entity.md) · 2026-08-04 — Model confidence alone never promotes an entity
+- [0022](0022-entity-minting-happens-from-the-entity-list-never-from-a.md) · 2026-08-04 — Entity minting happens from the entity list, never from a relation alone
+- [0023](0023-a-quiet-day-is-a-real-outcome-and-the-brief-must-say-so.md) · 2026-08-05 — A quiet day is a real outcome, and the brief must say so
+- [0024](0024-clusters-with-no-readable-body-are-not-briefable.md) · 2026-08-05 — Clusters with no readable body are not briefable
+- [0025](0025-the-rubric-fingerprint-covers-descriptions-not-weights.md) · 2026-08-05 — The rubric fingerprint covers descriptions, not weights
+- [0026](0026-part-of-kind-was-silently-dropped-for-the-whole-build.md) · 2026-08-05 — `PART_OF.kind` was silently dropped for the whole build
+- [0027](0027-sqlite-connections-and-async-endpoints.md) · 2026-08-05 — SQLite connections and async endpoints
+- [0028](0028-the-vite-proxy-strips-last-event-id.md) · 2026-08-05 — The Vite proxy strips `Last-Event-ID`
+- [0029](0029-asyncio-lock-not-a-run-locks-table.md) · 2026-08-05 — `asyncio.Lock`, not a `run_locks` table
+- [0030](0030-interrupted-runs-are-reaped-on-startup.md) · 2026-08-05 — Interrupted runs are reaped on startup
+- [0031](0031-re-grounding-the-same-expansion-is-corroboration-not.md) · 2026-08-05 — Re-grounding the same expansion is corroboration, not ambiguity
+- [0032](0032-expansions-exclude-leading-determiners-and-trailing.md) · 2026-08-05 — Expansions exclude leading determiners and trailing possessives
+- [0033](0033-numbering-schemes-are-judged-by-the-expansion-not-the.md) · 2026-08-05 — Numbering schemes are judged by the expansion, not the acronym
+- [0034](0034-the-glossary-lists-grounded-entries-before-undefined-ones.md) · 2026-08-05 — The glossary lists grounded entries before undefined ones
+- [0035](0035-the-brief-has-a-recency-window-and-a-not-yet-briefed-filter.md) · 2026-08-05 — The brief has a recency window AND a not-yet-briefed filter
+- [0036](0036-venona-run-from-run-id-was-cut-not-deferred.md) · 2026-08-05 — `venona run --from RUN_ID` was cut, not deferred
+- [0037](0037-two-stage-lists-is-one-too-many.md) · 2026-08-05 — Two stage lists is one too many
+- [0038](0038-every-model-call-goes-through-call-and-record.md) · 2026-08-05 — Every model call goes through `call_and_record`
+- [0039](0039-discovery-returns-urls-never-content.md) · 2026-08-05 — Discovery returns URLs, never content
+- [0040](0040-the-scraper-source-kind-is-gone-not-deferred.md) · 2026-08-05 — The `scraper` source kind is gone, not deferred
+- [0041](0041-auto-disabled-was-a-one-way-door.md) · 2026-08-05 — `auto_disabled` was a one-way door
+- [0042](0042-verify-expansion-rejected-dod.md) · 2026-08-05 — `verify_expansion` rejected `DOD`
+- [0043](0043-a-rejected-lookup-has-to-say-why.md) · 2026-08-05 — A rejected lookup has to say WHY
+- [0044](0044-counts-are-evidence-not-bookkeeping.md) · 2026-08-05 — Counts are evidence, not bookkeeping
+- [0045](0045-post-glossary-surface-lookup-is-a-run-not-a-request.md) · 2026-08-05 — `POST /glossary/{surface}/lookup` is a run, not a request
+- [0046](0046-the-prompt-goes-on-stdin-because-argv-has-a-hard-ceiling.md) · 2026-08-05 — The prompt goes on stdin, because argv has a hard ceiling
+- [0047](0047-the-must-read-cut-was-unreachable-in-principle.md) · 2026-08-05 — The `must_read` cut was unreachable in principle
+- [0048](0048-one-button-one-chip-and-the-wrap-collision.md) · 2026-08-05 — One button, one chip, and the `.wrap` collision
+- [0049](0049-fuzzy-matching-had-silently-merged-four-organisations.md) · 2026-08-06 — Fuzzy matching had silently merged four organisations
+- [0050](0050-corroboration-counts-publishers-not-feeds.md) · 2026-08-06 — Corroboration counts publishers, not feeds
+- [0051](0051-merging-was-prohibited-with-no-alternative-the-read-side.md) · 2026-08-06 — Merging was prohibited-with-no-alternative; the read side had to land first
+- [0052](0052-curation-is-stage-five-not-a-second-scheduler.md) · 2026-08-06 — Curation is stage five, not a second scheduler
+- [0053](0053-the-ui-silently-drops-stages-it-does-not-know.md) · 2026-08-06 — The UI silently drops stages it does not know
+- [0054](0054-audit-after-s8-s10-what-was-measured-and-what-changed.md) · 2026-08-06 — Audit after S8–S10: what was measured, and what changed
+- [0055](0055-the-run-is-watchable-output-format-stream-json.md) · 2026-08-06 — The run is watchable: `--output-format stream-json`
+- [0056](0056-reap-interrupted-killed-a-live-run-in-another-process.md) · 2026-08-06 — `reap_interrupted` killed a live run in another process
+- [0057](0057-no-spend-cap-the-plan-is-flat-rate.md) · 2026-08-06 — No spend cap: the plan is flat-rate
+- [0058](0058-the-smoke-test-measured-its-lookback-from-wall-time.md) · 2026-08-06 — The smoke test measured its lookback from wall time
+- [0059](0059-the-transcript-did-not-auto-update-the-stream-never-tailed.md) · 2026-08-06 — The transcript did not auto-update: the stream never tailed
+- [0060](0060-the-brief-becomes-items-fact-and-judgement-are-separate.md) · 2026-08-06 — The brief becomes items: fact and judgement are separate fields
+- [0061](0061-web-search-requests-was-0-on-every-row-ever-written.md) · 2026-08-06 — `web_search_requests` was 0 on every row ever written
+- [0062](0062-correction-most-of-the-schema-retry-storm-is-a-tool-bug.md) · 2026-08-06 — Correction: most of the "schema retry storm" is a tool bug
+- [0063](0063-the-graph-view-could-not-show-the-graph.md) · 2026-08-06 — The graph view could not show the graph
+- [0064](0064-venona-research-corroboration-works-and-the-number-to-watch.md) · 2026-08-06 — `venona research`: corroboration works, and the number to watch
+- [0065](0065-curate-auto-merges-provable-identity-invariant-scoped.md) · 2026-08-06 — `curate` auto-merges provable identity (invariant scoped)
+- [0066](0066-curation-a-merge-queue-and-a-third-verdict.md) · 2026-08-06 — Curation: a merge queue, and a third verdict
+- [0067](0067-curation-ui-cleanup-and-the-rebuild-counter-told-a-half.md) · 2026-08-06 — Curation UI cleanup, and the rebuild counter told a half-truth
+- [0068](0068-the-graph-did-not-connect-at-the-top-and-only-one-third-of.md) · 2026-08-06 — The graph did not connect at the top, and only one third of that was schema
+- [0069](0069-run-history-is-hidden-never-deleted.md) · 2026-08-06 — Run history is hidden, never deleted
+- [0070](0070-the-global-keyboard-layer-emits-no-bare-letters.md) · 2026-08-06 — The global keyboard layer emits no bare letters
+- [0071](0071-one-app-bar-not-a-nav-rail-plus-a-command-bar.md) · 2026-08-06 — One app bar, not a nav rail plus a command bar
+- [0072](0072-the-brief-graph-round-trip-had-no-return-leg.md) · 2026-08-06 — The brief↔graph round trip had no return leg
+- [0073](0073-the-app-had-never-rendered-in-the-typefaces-it-was-designed.md) · 2026-08-06 — The app had never rendered in the typefaces it was designed for
+- [0074](0074-left-anchored-not-centred.md) · 2026-08-06 — Left-anchored, not centred
+- [0075](0075-a-border-means-floats-or-pressable-nothing-else-gets-one.md) · 2026-08-06 — A border means "floats or pressable"; nothing else gets one
+- [0076](0076-the-token-linter-checks-structure-not-values.md) · 2026-08-06 — The token linter checks structure, not values
+- [0077](0077-the-graph-opens-on-the-whole-graph.md) · 2026-08-06 — The graph opens on the whole graph
+- [0078](0078-screenshots-are-not-verification.md) · 2026-08-06 — Screenshots are not verification
+- [0079](0079-the-canvas-has-to-be-able-to-shrink.md) · 2026-08-06 — The canvas has to be able to shrink
+- [0080](0080-briefs-are-identified-by-generation-not-by-calendar-day.md) · 2026-08-06 — Briefs are identified by generation, not by calendar day
+- [0081](0081-settings-is-the-config-workspace-prompts-folded-into-it.md) · 2026-08-06 — Settings is the config workspace; Prompts folded into it
+- [0082](0082-tailwind-after-arguing-against-it.md) · 2026-08-06 — Tailwind, after arguing against it
+- [0083](0083-the-terminal-retheme-and-the-four-places-it-was-not-followed.md) · 2026-08-07 — The terminal retheme, and the four places it was not followed
+- [0084](0084-entities-get-grounded-definitions-and-the-card-gets-one.md) · 2026-08-07 — Entities get grounded definitions, and the card gets one shape
+- [0085](0085-a-merge-follows-the-chain-the-queue-resolves-on-read.md) · 2026-08-07 — A merge follows the chain; the queue resolves on read
+- [0086](0086-one-slot-was-the-wrong-granularity.md) · 2026-08-07 — One slot was the wrong granularity
+- [0087](0087-the-graph-reads-at-a-glance-and-the-route-survives-the-trip.md) · 2026-08-07 — The graph reads at a glance, and the route survives the trip
+- [0088](0088-the-brief-s-entity-set-is-resolved-server-side.md) · 2026-08-07 — The brief's entity set is resolved server-side
+- [0089](0089-part-of-is-an-action-not-a-predicate.md) · 2026-08-07 — "part of" is an action, not a predicate
+- [0090](0090-three-sources-went-dark-because-we-asked-for-brotli.md) · 2026-08-07 — Three sources went dark because we asked for Brotli
+- [0091](0091-no-command-names-in-the-interface.md) · 2026-08-07 — No command names in the interface
+- [0092](0092-confidence-is-accumulated-evidence-not-a-constant-per-tier.md) · 2026-08-08 — Confidence is accumulated evidence, not a constant per tier
+- [0093](0093-look-up-all-is-a-batch-not-the-whole-queue.md) · 2026-08-08 — "Look up all" is a batch, not the whole queue
+- [0094](0094-an-acronym-s-meaning-is-a-question-the-letters-cannot-answer.md) · 2026-08-08 — An acronym's meaning is a question the letters cannot answer
+- [0095](0095-some-surfaces-are-not-acronyms-and-the-queue-has-to-be-able.md) · 2026-08-08 — Some surfaces are not acronyms, and the queue has to be able to say so
+- [0096](0096-three-verdicts-about-an-ambiguous-surface-not-one.md) · 2026-08-08 — Three verdicts about an ambiguous surface, not one
+- [0097](0097-the-focus-ring-is-gone-and-it-is-not-coming-back-by-accident.md) · 2026-08-08 — The focus ring is gone, and it is not coming back by accident
+- [0098](0098-a-pid-is-not-an-identity-and-a-container-proves-it.md) · 2026-08-09 — A pid is not an identity, and a container proves it
+- [0099](0099-the-extension-did-not-need-cors-and-host-permissions-is-why.md) · 2026-08-10 — The extension did not need CORS, and `host_permissions` is why
+- [0100](0100-extension-colour-is-translated-onto-the-host-page-not.md) · 2026-08-15 — Extension colour is translated onto the host page, not resolved
+- [0101](0101-the-extension-points-at-the-vite-proxy-and-vite-is-pinned.md) · 2026-08-15 — The extension points at the Vite proxy, and Vite is pinned to IPv4
+- [0102](0102-a-library-s-injected-css-outranks-every-tailwind-utility.md) · 2026-08-15 — A library's injected CSS outranks every Tailwind utility
+- [0103](0103-the-structured-output-envelope-cannot-be-fixed-with-a-wider.md) · 2026-08-15 — The structured-output envelope cannot be fixed with a wider schema
+- [0104](0104-the-focus-ring-came-back-gated-on-modality.md) · 2026-08-15 — The focus ring came back, gated on modality
+- [0105](0105-the-window-analyze-spends-against-is-the-brief-s-own.md) · 2026-08-16 — The window analyze spends against is the brief's own
+- [0106](0106-analyze-was-serial-against-a-semaphore-of-two.md) · 2026-08-16 — Analyze was serial against a semaphore of two
+- [0107](0107-the-call-cap-was-not-checked-on-any-first-attempt.md) · 2026-08-16 — The call cap was not checked on any first attempt
+- [0108](0108-sweeps-are-bounded-by-time-not-narrowed-by-theme.md) · 2026-08-16 — Sweeps are bounded by time, not narrowed by theme
+- [0109](0109-the-brief-was-told-to-write-a-quiet-day-on-a-false-premise.md) · 2026-08-16 — The brief was told to write a quiet day, on a false premise
+- [0110](0110-organization-split-four-ways-on-an-empty-database.md) · 2026-08-16 — Organization split four ways, on an empty database
+- [0111](0111-the-seed-is-identity-never-definitions.md) · 2026-08-16 — The seed is identity, never definitions
+- [0112](0112-define-cap-per-run-was-the-binding-constraint-on-legibility.md) · 2026-08-16 — `define_cap_per_run` was the binding constraint on legibility
+- [0113](0113-a-platform-is-never-part-of-a-program-the-program-fields-it.md) · 2026-08-16 — A platform is never `PART_OF` a program; the program `FIELDS` it
+- [0114](0114-tuning-rationale-moved-out-of-config-settings-yaml.md) · 2026-08-17 — Tuning rationale moved out of `config/settings.yaml`
+- [0115](0115-node-positions-are-cached-per-scope-and-new-nodes-are.md) · 2026-08-16 — Node positions are cached per scope, and new nodes are placed, not simulated
+- [0116](0116-hide-isolated-became-a-server-filter-so-the-count-had-to.md) · 2026-08-16 — `hide_isolated` became a server filter, so the count had to follow it
+- [0117](0117-draft-layout-above-2-500-visible-nodes-is-a-deliberate-loss.md) · 2026-08-16 — `draft` layout above 2,500 visible nodes is a deliberate loss
+- [0118](0118-full-screen-hides-the-graph-s-rails.md) · 2026-08-16 — Full screen hides the graph's rails
+- [0119](0119-a-scrollbar-paints-inside-the-border-and-over-the-corners.md) · 2026-08-16 — A scrollbar paints inside the border, and over the corners
+- [0120](0120-the-top-block-has-a-floor-not-just-a-cap.md) · 2026-08-16 — The top block has a floor, not just a cap
+- [0121](0121-rewrite-could-never-have-worked-and-the-retrieval-rule-is.md) · 2026-08-17 — Rewrite could never have worked, and the retrieval rule is why
+- [0122](0122-in-flight-is-health-driven-and-nothing-re-probed-health.md) · 2026-08-17 — `In flight` is health-driven, and nothing re-probed health
+- [0123](0123-the-extension-s-allowlist-became-a-grant-not-a-list.md) · 2026-08-16 — The extension's allowlist became a grant, not a list
+- [0124](0124-two-stale-assertions-had-been-failing-quietly-since.md) · 2026-08-16 — Two stale assertions had been failing quietly since ontology v3
+- [0125](0125-the-extension-s-base-url-was-editable-its-permission-was-not.md) · 2026-08-16 — The extension's base URL was editable; its permission was not
+- [0126](0126-the-mcp-server-is-a-route-under-api-and-its-token-reaches.md) · 2026-08-17 — The MCP server is a route under `/api`, and its token reaches nothing else
+- [0127](0127-mcp-types-not-the-mcp-sdk-and-the-number-that-settled-it.md) · 2026-08-17 — `mcp-types`, not the `mcp` SDK, and the number that settled it
+- [0128](0128-an-agent-token-is-minted-from-a-terminal-never-from-a-page.md) · 2026-08-17 — An agent token is minted from a terminal, never from a page
+- [0129](0129-measured-claude-code-speaks-the-legacy-era-not-the-newest.md) · 2026-08-17 — Measured: Claude Code speaks the LEGACY era, not the newest spec
+- [0130](0130-run-ownership-is-a-postgres-advisory-lock-not-a-pid-and-proc.md) · 2026-08-17 — Run ownership is a Postgres advisory lock, not a pid and `/proc`
+- [0131](0131-freshness-domain-terms-stays-sql-text-and-core-would-make.md) · 2026-08-17 — `freshness.DOMAIN_TERMS` stays SQL text, and Core would make it worse
+- [0132](0132-authority-is-a-written-act-and-the-membership-gate-is-the.md) · 2026-08-17 — Authority is a written act, and the membership gate is the row
+- [0133](0133-light-mode-one-light-dark-block-and-the-three-things-that.md) · 2026-08-17 — Light mode: one `light-dark()` block, and the three things that were not in the tier-2 block
+- [0134](0134-settings-is-the-reader-s-account-the-instance-lives-under.md) · 2026-08-17 — Settings is the reader's account; the instance lives under /admin
+- [0135](0135-an-outage-is-reported-by-the-surface-it-breaks-the-footer.md) · 2026-08-18 — An outage is reported by the surface it breaks; the footer strip is gone
+- [0136](0136-the-schedule-is-visible-externally-triggerable-and-editable.md) · 2026-08-18 — The schedule is visible, externally triggerable, and editable without a restart
+- [0137](0137-per-domain-instances-not-a-workspace-column.md) · 2026-08-18 — Multi-domain is per-domain instances, not a workspace column
+- [0138](0138-the-domain-descriptor-is-config-domain-yaml.md) · 2026-08-18 — The domain descriptor is `config/domain.yaml`
+- [0139](0139-dynamic-entity-types-via-colour-slots.md) · 2026-08-18 — Entity types become per-domain, coloured by slots
+- [0140](0140-generated-config-lands-as-review-then-apply-drafts.md) · 2026-08-18 — Generated config lands as review-then-apply drafts
+- [0141](0141-the-hub-is-the-oidc-issuer-and-role-authority.md) · 2026-08-18 — The hub is the OIDC issuer, and its role claim is authoritative
+- [0142](0142-the-hub-pulls-through-a-vmgmt-scoped-surface.md) · 2026-08-18 — The hub pulls, through a `vmgmt_`-scoped surface
+- [0144](0144-the-domain-is-configuration-code-is-domain-blind.md) · 2026-08-18 — The domain is configuration; code is domain-blind
+- [0145](0145-the-shipped-design-is-canonical.md) · 2026-08-18 — The shipped design is canonical; the handoff kit is an ancestor
+- [0147](0147-wizard-exemplars-are-fixtures-not-code.md) · 2026-08-18 — The wizard's exemplars are fixtures, not code, and never live files
+- [0151](0151-rate-limit-keys-on-the-rightmost-forwarded-hop.md) · 2026-08-20 — The rate limiter keys on the rightmost X-Forwarded-For hop, not on scope["client"]
+- [0152](0152-responsive-is-simpler-not-parity.md) · 2026-08-20 — Responsive support targets 390px and is simpler than desktop; the graph degrades rather than reflows
+- [0153](0153-performance-rides-the-freshness-stamp.md) · 2026-08-20 — Performance rides the freshness stamp: cache by default, no new invalidation machinery, nothing user-facing waits on a probe
+- [0154](0154-lists-page-by-offset-with-an-items-total-envelope.md) · 2026-08-21 — Lists page by offset with an items + total envelope; the conflicts queue is bounded and reloads instead
+- [0155](0155-a-provider-outage-pauses-the-run-it-does-not-end-it.md) · 2026-08-21 — A provider outage pauses the run; it does not end it: the breaker classifies, the research lane waits, a refusal degrades like a failed call, migrate leaves logging alone
+- [0156](0156-one-generator-writes-every-surfaces-icons.md) · 2026-08-23 — One generator writes every surface's icons, and the hub serves its own
+- [0157](0157-learning-is-deliberate-practice.md) · 2026-08-23 — Learning is deliberate practice: derived cards, FSRS scheduling, review-gated generated questions, learner-only progress
+- [0158](0158-per-user-relevance-is-derived-never-re-scored.md) · 2026-08-25 — Per-user relevance is derived, never re-scored: emphasis and follows over shared axis scores, one budgeted personal-brief call per reader
+- [0159](0159-icons-come-from-lucide-one-import-at-a-time.md) · 2026-08-24 — Icons come from Lucide, one import at a time: a curated map in Icon.vue, hand-drawn glyphs stay, keyboard-first rows keep their Kbd cap
+- [0160](0160-the-personal-brief-is-items.md) · 2026-08-24 — The personal brief is items: one guide, one renderer, shared assemble_body, format version in the inputs hash, validate before delete
+- [0161](0161-the-extension-pairs-by-oauth-and-0128-still-holds.md) · 2026-08-24 — The extension pairs by OAuth, and 0128 still holds: launchWebAuthFlow through login?next=, scope=annotate, per-pairing registration, per-scope consent copy
+- [0162](0162-the-rate-limit-key-depends-on-which-edge-is-in-front.md) · 2026-08-25 — The rate-limit key depends on which edge is in front: CF-Connecting-IP behind Cloudflare, rightmost hop behind the reverse proxy (supersedes 0151)
+- [0163](0163-the-readers-brief-is-written-on-arrival.md) · 2026-08-26 — The reader's brief is written on arrival, and the warm pass gets a population: auto_due on the payload, last_seen_at stamped on use, warm window 3 days
+- [0164](0164-the-sign-in-round-trip-is-priced-apart-from-guessing.md) · 2026-08-26 — The sign-in round trip is priced apart from credential guessing, and its global ceiling sits far above one operator
+- [0165](0165-the-account-page-stops-naming-the-root-credential.md) · 2026-08-27 — The account page stops naming the root credential: break-glass is not a feature, and /settings is the reader's own
+- [0166](0166-corpus-text-is-enveloped-on-the-way-into-our-own-prompts.md) · 2026-08-27 — Corpus text is enveloped on the way INTO our own prompts, not only on the way out to an agent
+- [0167](0167-signing-in-is-how-an-agent-connects.md) · 2026-08-27 — Signing in is how an agent connects, and disconnecting moves onto the page (supersedes the revoke half of 0128)
+- [0168](0168-the-hub-may-not-mint-an-administrator.md) · 2026-08-27 — The hub may not mint an administrator; the ceiling moves into `change_authority` (supersedes the raise half of 0141)
+- [0169](0169-localhost-counts-as-loopback.md) · 2026-08-27 — `localhost` counts as loopback: refusing it failed dynamic client registration outright, and §8.3 binds the client, not the server
+- [0170](0170-everyones-connections-is-an-admin-page.md) · 2026-08-27 — Everyone's connections moves to /admin/agents; Settings is the reader's own and names no admin function
+- [0171](0171-scope-is-a-list.md) · 2026-08-27 — `scope` is a space-delimited list, unknown names are dropped rather than refused, and a token's reach is the union of what it holds
+- [0172](0172-the-consent-screen-owns-its-own-csp.md) · 2026-08-27 — The consent screen owns its own CSP: form-action is checked on every hop of a submission, so the 302 to the callback needs naming
+- [0173](0173-cacheable-results-carry-their-directives.md) · 2026-08-27 — A cacheable result carries ttlMs/cacheScope; the guard derives which results those are from mcp-types
+- [0174](0174-auto-merge-widens-past-provable-identity.md) · 2026-08-27 — Auto-merge widens to lexicon-bounded name variants, and to a model verdict a structural signal corroborates
+- [0175](0175-a-merge-consolidates-evidence.md) · 2026-08-27 — A merge consolidates evidence across the closure, the two source counts agree on publishers, and the footer only promises what a limit can reveal
+- [0176](0176-the-personal-brief-carries-the-shared-desks.md) · 2026-08-27 — The reader's brief carries the shared desks and the shared Sources footer (supersedes the no-sections half of 0160)
+- [0176](0176-the-ontology-says-which-of-its-boundaries-blur.md) · 2026-08-28 — Each entity type declares `confusable_with`; a confusable pair is a type conflict the curator settles by naming the kind, which mints and merges rather than retyping in place
+- [0177](0177-the-theme-choice-is-a-cookie-on-the-registrable-domain.md) · 2026-08-28 — The theme choice is a cookie on `example.com`, not per-origin localStorage; the hub and the consent screen read it server-side
+- [0178](0178-a-model-may-judge-how-letters-derive-from-words.md) · 2026-08-29 — A model may judge how letters derive from words, and nothing else: the initials check keeps its job and loses its finality
+- [0179](0179-a-fetch-reports-what-the-origin-said.md) · 2026-08-30 — A fetch reports what the origin said, and a retry never changes address family (retires the "production cannot reach .gov/.mil" finding)
+- [0180](0180-the-runs-page-reports-the-window-not-the-dollars.md) · 2026-08-30 — The Runs page reports the subscription window read off the CLI stream, not a dollar total; display only, no capacity abstraction (completes 0057)
+- [0181](0181-row-two-has-a-grammar.md) · 2026-08-31 — Row two has a grammar, the identity may name its parent, and one component is the filter
+- [0182](0182-the-unconnected-orbit-the-graph.md) · 2026-08-31 — The unconnected orbit the graph, they are not tiled beside it
+- [0183](0183-a-run-status-says-whether-it-ran-not-what-it-found.md) · 2026-08-31 — A run's status says whether it RAN; `runs.outcome` says what it FOUND. Splits a field that reported 44 of 68 clean lookups as degraded
+- [0184](0184-times-are-shown-in-the-readers-own-zone.md) · 2026-08-31 — Times on the reading surface are shown in the reader's own zone and name it; a date beside a time always comes from the same instant; the reader can see when the next brief lands
+- [0185](0185-the-readers-brief-follows-the-shared-edition.md) · 2026-09-01 — The reader's brief follows the shared EDITION, not the calendar day; the fan-out policy becomes a per-instance setting (amends 0163)
+- [0186](0186-config-is-migrated-forward-like-the-schema.md) · 2026-09-01 — The instance's own `settings.yaml` is the one the app reads, and it is migrated forward like the schema; the tuning groups stop layering with env (amends 0081)
+- [0187](0187-a-run-type-declares-what-its-page-says.md) · 2026-09-01 — A run type declares what its detail page SAYS, not just how it is laid out; the facts and the verdict sentence resolve server-side (extends 0183, C11)
+- [0188](0188-a-generated-acronym-annotates-only-in-context.md) · 2026-09-01 — A generated acronym annotates only where the entity is named in the same text; a surface two entities claim is annotated for neither (C3)
+- [0189](0189-ga-asi-is-a-subsidiary-not-another-name.md) · 2026-09-01 — General Atomics Aeronautical Systems is a subsidiary, not another name for its parent; a curator's verdict outranks a seed declaration and the declaration is withdrawn (reverses part of 0174)
+- [0190](0190-a-calls-timeout-ceiling-is-per-task.md) · 2026-09-01 — A call's timeout ceiling is per TASK; the global stays what it is, and the shipped defaults sit under the instance's file (epic C)
+- [0192](0192-a-destination-is-a-row-not-a-document.md) · 2026-09-01 — Where a notice goes is a database row and not editable config, because a webhook URL is a credential; a notice type declares its own words, two audiences share one mechanism, and delivery is durable without being a run (retires `VENONA_NOTIFY_URL`)
+- [0193](0193-a-reader-supplied-url-revokes-the-notify-ssrf-clearance.md) · 2026-09-01 — A reader-supplied webhook URL revokes REVIEW-2026-08's SSRF clearance for `notify.py`, so delivery goes through `HttpClient`'s resolve-and-pin; and untrusted text gets its own field because plain text made it safe by accident (extends 0192)
+- [0194](0194-a-run-message-carries-its-own-level.md) · 2026-09-01 — A run message carries its own level, so only a real degradation degrades the run; the quiet night stops reporting `degraded` against our own runbook, a brief that was owed and failed stops claiming `nothing_to_do`, and run copy gets its first lint (extends 0183)
+- [0195](0195-a-declared-edge-names-no-article.md) · 2026-09-02 — A declared edge names no article, so it is neither corroborated nor single-source
+- [0196](0196-a-generated-trunk-is-judged-on-whether-it-connects.md) · 2026-09-02 — A generated trunk is judged on whether it connects, and the exemplar has to be a document the wizard would accept
+- [0197](0197-an-ambiguous-surface-declares-what-it-could-mean.md) · 2026-09-02 — An ambiguous surface declares what it could mean, and the document gets a vote
+- [0198](0198-the-chrome-recedes-as-the-brief-is-read.md) · 2026-09-02 — The chrome recedes as the brief is read, and the bars collapse themselves
+- [0199](0199-the-chrome-is-a-length-the-reader-scrolls.md) · 2026-09-02 — The chrome is a length the reader scrolls, not a state that animates
+- [0200](0200-configuration-is-an-index-and-an-editor.md) · 2026-09-03 — Configuration is an index and an editor, the editor is CodeMirror, and saved versions are reachable (amends 0081, 0134, 0140)
+- [0202](0202-the-hub-looks-like-the-front-door-it-is.md) · 2026-09-03 — The hub looks like the front door it is: the field on every public page, and one 404 across both properties (amends 0191)
+- [0203](0203-the-hub-runs-one-script.md) · 2026-09-03 — The hub runs one script, and the field moves there too (reverses part of 0202)
+- [0204](0204-the-field-is-one-drawing-on-two-clocks.md) · 2026-09-04 — The field is one drawing on two clocks, and the canvas is cached by name (amends 0203)
+- [0205](0205-the-still-field-loses-the-race-on-purpose.md) · 2026-09-04 — The still field loses the race on purpose (amends 0204)
+- [0206](0206-the-field-has-one-coordinate-space.md) · 2026-09-04 — The field has one coordinate space, and the canvas is framed by the SVG's own rule (amends 0203)
+- [0207](0207-the-instance-s-working-surfaces-move-under-admin.md) · 2026-09-04 — The instance's working surfaces move under /admin, and leave the header nav (extends 0134)
+- [0208](0208-a-boundary-the-ontology-holds-is-still-a-question.md) · 2026-09-08 — A boundary the ontology holds is still a question worth asking: the adjudicator reads cross-type rows
+- [0209](0209-billing-lives-in-the-hub.md) · 2026-09-08 — Billing lives in the hub, and the instance receives an entitlement (extends 0141, 0142)
+- [0210](0210-a-hand-rolled-stripe-client.md) · 2026-09-08 — A hand-rolled Stripe client, not the SDK
+- [0211](0211-a-lapsed-reader-keeps-the-archive.md) · 2026-09-08 — A lapsed reader keeps the archive as of their lapse date
+- [0212](0212-the-trial-takes-a-card.md) · 2026-09-08 — The trial takes a card, so the trial is a Stripe object (amends 0209)
+- [0213](0213-comped-is-the-instances-own-word.md) · 2026-09-09 — `comped` is the instance's own word, and the projection cannot overwrite it (amends 0209)
+- [0214](0214-the-switches-are-thrown-from-the-hub.md) · 2026-09-09 — The launch switches are thrown from the hub, not from the environment (amends 0209, 0212)
+- [0215](0215-the-seat-is-created-by-the-payment.md) · 2026-09-09 — A gallery to choose from, and the seat is created by the payment (amends 0212)
+- [0216](0216-a-second-harness-and-the-seam-that-holds-it.md) · 2026-09-09 — A second model service, and the seam that holds it (supersedes the consequence half of 0001)
+- [0217](0217-a-credential-an-admin-can-set.md) · 2026-09-09 — A credential an administrator can set, and the variable that beats it
+- [0218](0218-the-spend-cap-returns-under-metered-billing.md) · 2026-09-09 — The spend cap returns, under metered billing only (supersedes 0057's scope)
+- [0219](0219-a-model-that-runs-code-gets-a-filesystem-of-its-own.md) · 2026-09-10 — A model that runs code gets a filesystem of its own
+- [0220](0220-a-usage-ceiling-is-a-condition-not-a-verdict.md) · 2026-09-10 — A usage ceiling is a condition, not a verdict
+- [0221](0221-a-copy-outlives-the-delete.md) · 2026-09-10 — A copy outlives the delete
+- [0222](0222-two-services-one-notice-core.md) · 2026-09-10 — Two services, one notice core
+- [0223](0223-the-hub-becomes-an-app-behind-its-own-front-door.md) · 2026-09-11 — The hub becomes an app behind its own front door (extends 0202, 0203)
+- [0224](0224-form-action-is-where-the-reader-goes-not-what-runs.md) · 2026-09-11 — `form-action` names Stripe, because it says where the reader goes rather than what may run (relaxes 0203)
+- [0226](0226-a-type-chip-spotlights-it-does-not-cut.md) · 2026-09-11 — A type chip spotlights; it does not cut
+- [0227](0227-a-switch-is-offered-before-absence-can-mean-no.md) · 2026-09-11 — A switch is offered before absence can mean no
+- [0228](0228-the-window-belongs-to-the-brief-not-to-the-reading.md) · 2026-09-11 — The window belongs to the brief, not to the reading (scopes 0014's retrieval bound; extends 0183)
+- [0229](0229-a-driver-written-from-documentation-says-so.md) · 2026-09-12 — A driver written from documentation says so (extends 0216; inherits 0219's confinement argument)
+- [0230](0230-keeping-two-things-apart-is-the-safe-direction.md) · 2026-09-12 — Keeping two things apart is the safe direction (extends 0174)
+- [0231](0231-a-cancel-that-does-not-stop-the-run-is-not-a-cancel.md) · 2026-09-13 — A cancel that does not stop the run is not a cancel (reverses the cooperative-only half of C11's cancellation)
+- [0232](0232-a-name-has-an-address.md) · 2026-09-13 — A name has an address (scopes C8 to the card; entitles the page as 0211 entitles the graph)
+- [0233](0233-one-lifecycle-however-many-stages.md) · 2026-09-13 — One lifecycle, however many stages (retires `self_terminating`; supersedes that half of C11)
+- [0234](0234-the-filesystem-is-a-rebuildable-projection.md) · 2026-09-14 — The filesystem is a rebuildable projection (amends 0148's disk consequence; extends 0217 to the credentials that cannot be pasted)
+- [0235](0235-a-lapsed-reader-keeps-their-account-not-only-their-archive.md) · 2026-09-14 — A lapsed reader keeps their account, not only their archive (extends 0211 to the account; C12 entitlement addendum)
+- [0236](0236-the-survivor-is-always-the-left-column.md) · 2026-09-14 — The survivor is always the left column (the layout half of 0085's default survivor)
+- [0237](0237-hide-runs-never-delete-them.md) · 2026-09-14 — Hide runs, never delete them (recovers the argument from the squashed `0013_run_hidden.sql`)
+- [0238](0238-sign-in-stays-out-of-band.md) · 2026-09-14 — Sign-in stays out of band: no harness drives a login flow (collapses four paraphrases in `llm/harness/`)
+- [0239](0239-entitlement-is-written-straight-to-the-repository.md) · 2026-09-14 — Entitlement is written straight to the repository, not through `user_service` (the asymmetry behind 0214's push)
+- [0240](0240-blocked-relations-are-counted-apart-from-pending-work.md) · 2026-09-14 — Blocked curated relations are counted apart from pending rebuild work
+- [0241](0241-optional-model-fields-are-nullable-and-required.md) · 2026-09-14 — Optional model fields are nullable and required, never absent (the 346-Organization null)
+- [0242](0242-the-daily-heartbeat-is-a-dead-mans-switch.md) · 2026-09-14 — The daily heartbeat is a dead-man's switch, so only the scheduled reading pings it
+- [0243](0243-a-full-screen-mode-leaves-a-visible-way-out.md) · 2026-09-14 — A full-screen mode leaves a visible way out (records a reversal of 0118's consequence that was already in the code)
+- [0244](0244-a-definition-comes-from-the-article-not-the-mention.md) · 2026-09-14 — A definition comes from the article, not from the mention (define may read `documents.text_nfc`; `analyze` marks the defining sentence and code verifies it)
+- [0245](0245-a-batch-is-a-default-a-reader-can-lift.md) · 2026-09-15 — A batch is a default a reader can lift, not a ceiling (extends 0114 with an in-modal override)
+- [0246](0246-a-verdict-does-not-change-what-the-corpus-says.md) · 2026-09-16 — A verdict does not change what the corpus says about a phrase (splits the audit memo; the definitions queue stopped re-reading the corpus per decision)
+- [0247](0247-the-graph-shows-what-it-has-not-confirmed-and-says-so.md) · 2026-09-17 — The graph shows what it has not confirmed, and says so in the fill
+- [0248](0248-a-release-is-a-number-plus-the-commit-it-shipped.md) · 2026-09-17 — A release is a number plus the commit it actually shipped (one VERSION file, RENDER_GIT_COMMIT beside it, started_at over an unavailable build time, and the site publishes a file the hub polls)
+- [0249](0249-the-canvas-is-never-allowed-to-frame-nothing.md) · 2026-09-17 — The canvas is never allowed to frame nothing (one settle for every path, a guard on every box change, and rail tracks that yield)
+- [0250](0250-a-question-nobody-needs-answered-is-not-filed.md) · 2026-10-02 — A question nobody needs answered is not filed (a corroboration bar before a duplicate is filed, and a drained entity leaves the queue)
+- [0251](0251-a-name-that-glosses-itself-is-provable-identity.md) · 2026-10-25 — A name that glosses itself is provable identity (a `gloss form` auto-merge class with a namesake guard, and a surface that is a name is a duplicate, not our bug)
+- [0252](0252-a-version-of-a-design-is-its-own-relationship.md) · 2026-10-25 — A version of a design is its own relationship (VARIANT_OF in ontology v6, and a `variant` verdict that stops the run writing versions as components)
+- [0253](0253-the-graph-opens-on-the-latest-brief.md) · 2026-10-25 — The graph opens on the latest brief (the whole projection is a chip away, a large cold layout is covered until it settles, and landmarks are capped)

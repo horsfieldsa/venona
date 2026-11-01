@@ -1,0 +1,246 @@
+/* The options page is extension chrome, not part of the app, and it renders on
+   a blank tab rather than inside a host page -- so it takes the generated
+   `:root` token block rather than the `:host` one the card uses.
+
+   Not seven hex literals of its own. Pulling the whole theme in for four
+   inputs looks like overkill, but a copied tier-1 value is invisible to
+   `lint_tokens.py`, which walks `web/src` only -- so restyling the app would
+   silently leave this page behind. The generated block is free at build
+   time. */
+
+@import '../../generated/root-tokens.css';
+
+/* No `color-scheme` here any more. It said `dark`, which pinned this page to one
+   palette while the tokens it consumes carry both -- so the page would have gone
+   on rendering dark chrome around light-mode token values. The generated
+   `:root` block above declares `light dark`, and `options.ts` writes
+   `data-venona-theme` for the two explicit choices. */
+:root {
+  --bg: var(--surface-base);
+  --raised: var(--surface-raised);
+  --line: var(--border-default);
+  --ink: var(--text-primary);
+  --quiet: var(--text-tertiary);
+  --accent: var(--accent-primary);
+  --bad: var(--signal-critical);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  /* The family comes from the token, like everywhere else. The `font:`
+     shorthand here named its own stack and got all three parts wrong: it was a
+     raw family outside the token layer, it put `ui-monospace` FIRST so the
+     platform's mono won even where the bundled face existed, and it asked for
+     'JetBrains Mono' -- which is not the family `@fontsource-variable` declares
+     ('JetBrains Mono Variable'). So this page has never rendered in the
+     project's typeface, in exactly the way `main.ts` describes `Inter var` and
+     `Charter` failing in the app. */
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+main {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+/* Three raw tracking values lived on this page -- 0.18em here and 0.1em on both
+   `label` and `h2` -- against a token layer that has exactly one value for an
+   uppercase label. The two 0.1em uses were also UNDER the 0.14em floor, which
+   is where uppercase mono stops reading as a label and starts reading as a
+   word that has been stretched slightly by accident. */
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.5rem;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: inherit;
+  font: inherit;
+}
+
+input:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* The one prose on this page. Every `.hint` is two or three sentences of
+   explanation -- what the field is for, what saving it will ask the browser
+   for -- which is the argument, not the instrument. */
+.hint {
+  margin: 0.4rem 0 1.4rem;
+  color: var(--quiet);
+  font-family: var(--font-prose);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-normal);
+  text-wrap: pretty;
+}
+
+/* Back to fixed pitch inside it. Four hints carry a `<code>` -- `/api`,
+   `example.com`, `uv run venona auth token`, `chrome://extensions` -- and a
+   command set in the reading face is the one thing on this page somebody
+   retypes by hand. */
+code {
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.status {
+  min-height: 1.5rem;
+  margin: 0.9rem 0 0;
+  font-size: var(--text-xs);
+}
+
+.status[data-tone='ok'] {
+  color: var(--accent);
+}
+.status[data-tone='bad'] {
+  color: var(--bad);
+}
+.status[data-tone='busy'] {
+  color: var(--quiet);
+}
+
+hr {
+  margin: 2rem 0 1.2rem;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+/* Directly under the field they fill in, and tighter than a `.row` of real
+   actions -- these set a value, they do not do anything. */
+.presets {
+  margin-top: 0.4rem;
+}
+
+.presets button {
+  padding: 0.15rem 0.5rem;
+  font-size: var(--text-2xs);
+  color: var(--quiet);
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button:disabled:hover {
+  border-color: var(--line);
+  color: inherit;
+}
+
+/* The auth-mode sentence sits directly under the buttons that change it, so it
+   gets the same left edge and no extra rule -- it is a caption, not a panel. */
+.mode:empty {
+  margin: 0;
+}
+
+.sites {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sites li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sites label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  /* The <label> element rule above is the uppercase field caption; a site row is
+     prose, so it opts back out rather than inheriting a style meant for "API". */
+  font-size: var(--text-sm);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.sites input[type='checkbox'] {
+  width: auto;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.sites .domain {
+  flex: none;
+}
+
+/* Truncates rather than wrapping: the checkbox and the pause control are what
+   the row is for, and a publisher name should never push them out of reach. */
+.sites .meta {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--quiet);
+  font-size: var(--text-2xs);
+}
+
+.sites .pause {
+  flex: none;
+  padding: 0.15rem 0.5rem;
+  font-size: var(--text-2xs);
+}

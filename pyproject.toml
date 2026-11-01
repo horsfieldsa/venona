@@ -1,0 +1,115 @@
+[project]
+name = "venona"
+version = "1.0.0"
+description = "Defense-industry intelligence system: research, score, graph, brief."
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "httpx[http2]>=0.28",
+    # Postgres is the system of record (invariant 1). psycopg3 rather than
+    # asyncpg deliberately: ~60 DB-touching routes are sync `def` so FastAPI runs
+    # them in the threadpool, and asyncpg would force all 314 execute sites to
+    # `await` and 43 modules to async -- discarding reasoning documented in five
+    # places. psycopg3's dual sync/async API keeps `cli.py` sync and `api/` as it
+    # is. `pool` is for the per-request connections `api/deps.py::get_db` opens.
+    "psycopg[binary,pool]>=3.2",
+    # SQLAlchemy is here for Core (never the ORM -- an identity map fights both
+    # the append-only `assertions` log and the "stages read database state"
+    # design) and because Alembic needs it. Alembic replaces 24 hand-written
+    # migration files with one baseline and real up/down.
+    "sqlalchemy>=2.0",
+    "alembic>=1.14",
+    "neo4j>=5.26,<6",
+    "pyyaml>=6.0",
+    "python-dateutil>=2.9",
+    "feedparser>=6.0",
+    "trafilatura>=2.0",
+    "selectolax>=0.3.25",
+    "markdown-it-py>=3.0",
+    "pyahocorasick>=2.1",
+    "rapidfuzz>=3.10",
+    "apscheduler>=3.11",
+    "sse-starlette>=2.1",
+    "uuid7>=0.1",
+    "mcp-types>=2.0.0",
+    # RFC 6749 §4.1.3 REQUIRES the token endpoint to accept
+    # `application/x-www-form-urlencoded`, and FastAPI's `Form()` needs this to
+    # parse it. Taken rather than hand-parsing the body so the OAuth routes stay
+    # sync `def` on the threadpool, like every other database route -- the
+    # alternative was `await request.form()`, which would have put their DB work
+    # on the event loop to avoid a 30kB dependency.
+    "python-multipart>=0.0.20",
+    # The notice core, shared with the hub: what a message is, how each channel
+    # renders it, and which addresses Venona will dial. A RUNTIME dependency,
+    # unlike `venona-hub` below -- both images carry it, so both image builds
+    # copy `notices/` and both deploy build filters have to name it.
+    "venona-notices",
+]
+
+[project.scripts]
+venona = "venona.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "anyio>=4.6",
+    "ruff>=0.8",
+    # The hub, importable next to `venona` so the cross-package contract test
+    # (tests/hub/test_id_token_contract.py) can drive both ends of the OIDC
+    # exchange in one interpreter.
+    "venona-hub",
+]
+
+[tool.uv.workspace]
+members = ["hub", "notices"]
+
+[tool.uv.sources]
+# DEV GROUP ONLY, and that placement is load-bearing: the API image copies
+# `pyproject.toml uv.lock` without `hub/` and every image sync passes
+# `--no-dev`, which is the only reason the build tolerates the member's
+# sources being absent. Promoting venona-hub to a runtime dependency breaks
+# the production instance image.
+venona-hub = { workspace = true }
+venona-notices = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/venona"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "live: hits the real claude CLI or network; excluded from `make test`",
+    "negative: adversarial cases that must be rejected",
+]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = [
+    # `timeout` is part of the frozen C2 executor signature (docs/CONTRACTS.md).
+    # It is honoured internally with asyncio.wait_for, which is what the rule
+    # actually wants; we just expose it as a parameter.
+    "ASYNC109",
+    # Depends() in argument defaults IS the FastAPI idiom; the rule predates it.
+    "B008",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The hub's pages hand-inline the brand lockup's ~4KB path data and a CSS
+# shell; SVG path strings do not wrap, and splitting them would break the
+# byte-identity `tests/test_brand_lockup.py` holds against the kit file.
+"hub/hub/pages.py" = ["E501"]

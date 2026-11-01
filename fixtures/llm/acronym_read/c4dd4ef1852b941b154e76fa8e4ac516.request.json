@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "expansion",
+    "found",
+    "quote"
+  ],
+  "system_prompt_sha": "8e8124f9e85251f56437847d219c8c09bea55519238e3ff29dfa03f4effa66a6",
+  "task": "acronym_read",
+  "tools": [],
+  "user_content_preview": "ACRONYM: CXMT",
+  "user_content_sha": "ab5db2411a1bc51c6552418b36bcd397c480638c9f447e8ce9adcb71d81ede60"
+}

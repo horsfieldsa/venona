@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: Firat Gezen",
+  "user_content_sha": "7e18b713df39005c30d600b578cf3fb47cac197b115b750de872cbdb05979ae8"
+}

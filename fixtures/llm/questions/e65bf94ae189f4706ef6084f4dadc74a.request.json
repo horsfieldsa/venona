@@ -1,0 +1,12 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "questions"
+  ],
+  "system_prompt_sha": "3e829e0dbd2103c4be4d375efdfa4394a882de43a0c1fcad617629600289a3f6",
+  "task": "questions",
+  "tools": [],
+  "user_content_preview": "[1] U.S. military to host directed energy ‘shoot-off’ amid governmentwide counter-drone push",
+  "user_content_sha": "7cd227b4bd86d769fa6a9f6c6a6963adc4e1b413b1cb9b165de0c2305bdf4dae"
+}

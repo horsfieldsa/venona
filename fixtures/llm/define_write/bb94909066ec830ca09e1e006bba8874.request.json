@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: Repkon",
+  "user_content_sha": "fe39550ef0e6cf60e388416ee17d2e14f8a7ab97bbf948bdd3b46ae103414e24"
+}

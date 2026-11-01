@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: Paligen Technologies",
+  "user_content_sha": "43556662ffd9f56194dc5120a2bff35d5251b42cc22289ec7f0c84cb89fe763a"
+}

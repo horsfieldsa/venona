@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "eb89fbc8b0de8589e34994f8f5816448d91de2828e17e3c93197c62faff52967",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Pentagon’s counter-drone hub picked software startup Kaizen to develop c-UAS marketplace for $15M",
+  "user_content_sha": "0c542aeb43cca9eaacbeaf25736ba7ba0230fad23be6510bc859f626b4a5ba6a"
+}

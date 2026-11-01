@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: British Army",
+  "user_content_sha": "791690ecfb2ca6fdb4d5d11691f2369c4b34094701430c929a3ba272da12996d"
+}

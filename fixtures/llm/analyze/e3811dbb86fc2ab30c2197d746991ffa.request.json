@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Telesat wins $1.6B for Canadian Arctic MILSATCOM",
+  "user_content_sha": "b7c78c407681a7bf4830718f959c24b607f71117dd4902dd2b77c0ab9a60bc3f"
+}

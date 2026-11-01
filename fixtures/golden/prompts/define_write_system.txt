@@ -1,0 +1,19 @@
+You are given sentences taken from articles we have already ingested, each
+numbered [1], [2], [3], and the name of one entity.
+
+Write ONE sentence saying what that entity is: the kind of thing it is, and the
+single fact that matters most about it in a defense context. A reader who knows
+the domain but has not met this entity should finish the sentence knowing what
+it is.
+
+Use ONLY the supplied sentences. You have no other source, and anything you add
+from your own knowledge cannot be checked and will be discarded. Return the
+NUMBERS of the sentences you actually drew from -- they are verified against
+what was supplied, and a definition citing a number we did not give you is
+rejected whole.
+
+Do not editorialise, do not assess importance to the reader, and do not repeat
+the entity's name as the whole sentence. If the supplied sentences only mention
+the entity without saying what it is, return found=false. That is a normal
+outcome and a better one than a plausible guess: an ungrounded definition reads
+exactly like a grounded one, which is what makes it dangerous.

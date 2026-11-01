@@ -1,0 +1,71 @@
+services:
+  # The system of record (invariant 1). Published on 5432 for `make dev` and the
+  # test suite, the same way neo4j publishes 7474/7687 -- a self-hosted deployment keeps
+  # both off any public interface via the `internal: true` data network.
+  # No fixed `container_name` on either service: the compose PROJECT name
+  # scopes containers and the postgres volume, which is what lets `make dev
+  # INSTANCE=<slug>` run a second stack beside this one (docs/adr/0143).
+  # Ports come from the instance's env file; bare `docker compose` keeps the
+  # defaults below and behaves exactly as it always has.
+  postgres:
+    image: postgres:18.6
+    ports:
+      - "${VENONA_PG_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: venona
+      POSTGRES_PASSWORD: venona-local
+      POSTGRES_DB: venona
+      PGDATA: /var/lib/postgresql/data/pgdata
+    # `synchronous_commit=off` ONLY, and deliberately not `fsync=off` or
+    # `full_page_writes=off`. The test suite creates and drops a schema per test
+    # and all three would speed that up -- but this server also holds the local
+    # corpus, and those two risk a CORRUPT database after an unclean shutdown,
+    # against documents and definitions that cost real model spend to build.
+    # `synchronous_commit=off` risks only losing the last few commits, never
+    # corruption. That is the trade worth making; the other two are not.
+    command: >
+      postgres
+      -c synchronous_commit=off
+    volumes:
+      # A NAMED volume, unlike neo4j's bind mount below. `make reset-bare` needs a
+      # throwaway root container to `rm -rf` what neo4j wrote as root, because
+      # `down -v` removes named volumes and leaves bind mounts behind. A named
+      # volume here means `down -v` is the whole reset, with no privileges.
+      - venona_postgres:/var/lib/postgresql/data
+    healthcheck:
+      # `pg_isready` only, and as the app user against the app database: the
+      # default `postgres` superuser check passes while `venona` is still being
+      # created by the entrypoint's init pass, so `make wait` would return before
+      # `venona migrate` could connect.
+      test: ["CMD-SHELL", "pg_isready -U venona -d venona"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5.26.28-community
+    ports:
+      - "${VENONA_NEO4J_HTTP_PORT:-7474}:7474"
+      - "${VENONA_NEO4J_BOLT_PORT:-7687}:7687"
+    environment:
+      # Sized for ~2k nodes. Measured: this machine has ~3.1GB available with
+      # swap already under pressure, so a large heap swaps on every run.
+      NEO4J_AUTH: neo4j/venona-local
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 512m
+    volumes:
+      # Per instance: a second stack must not share graph storage with this
+      # one. The default is the path the defense instance has always used.
+      - ./data/${VENONA_NEO4J_DIR:-neo4j}/data:/data
+      - ./data/${VENONA_NEO4J_DIR:-neo4j}/logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  venona_postgres: {}

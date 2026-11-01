@@ -1,0 +1,29 @@
+{
+  "name": "venona-extension",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "styles": "node scripts/emit-styles.mjs",
+    "build": "npm run styles && vite build -c vite.content.config.ts && vite build -c vite.theme.config.ts && vite build -c vite.main.config.ts && node scripts/finish.mjs",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/chrome": "^0.0.287",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.6.3",
+    "vite": "^6.0.5",
+    "vitest": "^3.2.7",
+    "vue-tsc": "^2.2.12"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "lucide-vue-next": "^1.0.0",
+    "vue": "^3.5.13"
+  }
+}

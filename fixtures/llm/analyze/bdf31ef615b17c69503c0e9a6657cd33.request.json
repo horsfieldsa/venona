@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Space Force awards $615M in deals for second batch of aircraft-tracking satellites",
+  "user_content_sha": "a42087efe8e591d74452e89b1087c9680fa0a45fd27abc3f0864d6b769d0eb27"
+}

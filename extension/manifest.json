@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "Venona",
+  "version": "1.0.0",
+  "description": "Underlines the names Venona knows on pages you read, with definitions and connections from its own reading.",
+  "minimum_chrome_version": "116",
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxCSNGFnSzwK+x7QiSKdY8x05/4qlYKAO2Zq9XnKnriH10J08mJm64F3LGGswKNIfHC+tR5Vg647WrIgVsWBV1m1xMD+XRAjSN1Hz/4ekiAPwP4p+a7zbiWg2lOv+GcKaxgtyC52e9so1FJsfQxMVSzbUQARQAgSX3aLSKNKK8T0g0pEleEQN8ph1KHhq1LzvCWYHrJrLHNfbUtpkE39+ggZLkiBvGBteSSfDURo0+tE0a4234oXatFoHl/UtHVbcfuUEL1ASllKEOfEHTTT2aopZzsQpNS8quGw0MAIv8TDke1jXcMmXmgUiGWlsKl/SA9DdZkvyl5rqvO3d+va3eQIDAQAB",
+
+  "icons": {
+    "16": "icons/venona-16.png",
+    "32": "icons/venona-32.png",
+    "48": "icons/venona-48.png",
+    "128": "icons/venona-128.png"
+  },
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "options_page": "options.html",
+
+  "action": {
+    "default_title": "Annotate this page with Venona",
+    "default_icon": {
+      "16": "icons/venona-16.png",
+      "32": "icons/venona-32.png",
+      "48": "icons/venona-48.png",
+      "128": "icons/venona-128.png"
+    }
+  },
+
+  "permissions": ["storage", "activeTab", "alarms", "scripting", "contextMenus", "identity"],
+
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1:5173/*"],
+      "js": ["theme.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "fonts/jetbrains-mono-latin-wght-normal.woff2",
+        "fonts/jetbrains-mono-latin-ext-wght-normal.woff2",
+        "fonts/inter-latin-wght-normal.woff2",
+        "fonts/inter-latin-ext-wght-normal.woff2"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "host_permissions": [
+    "http://127.0.0.1:5173/*"
+  ],
+
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://localhost:8180/*",
+    "http://127.0.0.1:8180/*",
+    "http://127.0.0.1:8000/*"
+  ]
+}

@@ -1,0 +1,13 @@
+-- How sure the adjudicator was.
+--
+-- The verdict alone was enough while every verdict was a proposal a human read.
+-- It is not enough now that a `merge` verdict can be applied without one: the
+-- gate needs a signal the model itself controls, so a pair it is guessing about
+-- stays in the queue rather than being merged on the strength of the same word
+-- it uses when it is sure.
+--
+-- Free TEXT, matching `kind` and `suggestion` beside it: the enum lives in the
+-- response schema (`llm/schemas.py::adjudicate_schema`), which is where it is
+-- actually enforced, and a CHECK here would have to be migrated every time that
+-- vocabulary moved.
+ALTER TABLE alias_conflicts ADD COLUMN IF NOT EXISTS suggestion_confidence TEXT;

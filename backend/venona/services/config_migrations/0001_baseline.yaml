@@ -1,0 +1,125 @@
+# Non-secret configuration. Secrets go in .env.
+# Env vars override these: VENONA_LLM__ANALYZE_MODEL=opus, etc.
+# The measurements behind these numbers are in docs/adr/.
+
+llm:
+  backend: claude_cli
+  pinned_version: "2.1.251"
+  concurrency: 2
+  # Reserved headroom for the `light` lane, so an on-demand lookup is never
+  # parked behind a research run. Total subprocesses = concurrency + this.
+  light_concurrency: 2
+  # Runaway guard across all stages, first-come-first-served. Sized for a FIRST
+  # run, whose 7-day window makes analyze ~90 calls rather than ~20.
+  max_calls_per_run: 250
+  # How long a research run waits for the provider to recover once calls start
+  # failing with 5xx/529/timeouts, before giving the rest of the run up as
+  # partial. Sized over the typical incident on the provider's status page.
+  outage_wait_seconds: 1800
+
+  # Opus for judgment-heavy, low-volume work; Sonnet for the per-document tier.
+  # `discover_model` is the fallback for sweeps that declare no `model:`.
+  discover_model: sonnet
+  discover_effort: high
+  analyze_model: sonnet
+  analyze_effort: medium
+  acronym_model: sonnet
+  acronym_effort: low
+  # Study-question generation: reads whole articles, writes proposals.
+  questions_model: sonnet
+  questions_effort: medium
+  # Targeted corroboration sweeps return URLs only; analyze does the judging.
+  research_model: sonnet
+  # Reads unsettled conflict pairs and proposes merge / part_of / distinct.
+  adjudicate_model: sonnet
+  brief_model: opus
+  brief_effort: high
+  # Domain setup (the generation run): sonnet/high across the board --
+  # document quality is the wizard's whole product, and the run is rare.
+  setup_model: sonnet
+  setup_effort: high
+  setup_max_calls: 60
+
+  # The reader's own brief. `personal_brief_fanout` says which shared briefs
+  # pull the readership's along with them: `every_brief` is any run that
+  # delivers one, `scheduled_only` is the daily alone, and `off` leaves every
+  # reader's to be written when they next open the app. The other two are the
+  # spend rails around that: generations one reader may start per UTC day, and
+  # how recently a reader must have USED Venona to be in the fan-out at all.
+  personal_brief_fanout: every_brief
+  personal_briefs_per_day: 3
+  personal_brief_warm_days: 3
+
+  max_doc_chars: 12000
+  gazetteer_size: 400
+
+schedule:
+  cron: "0 6 * * *"
+  timezone: America/Los_Angeles
+  enabled: true
+  # Consecutive nights with nothing new to write about before the daily report
+  # raises it. A quiet Tuesday is normal; three in a row is a corpus going
+  # quiet while every run still reports clean. 0 turns it off.
+  quiet_nights_alert: 3
+
+pipeline:
+  # The recency bound for BOTH analyze and the brief, resolved by one helper
+  # (`pipeline.types.retrieval_window`) because the two disagreeing costs money.
+  lookback_hours: 36
+  # What a FIRST brief uses instead, when `briefs` is empty. Keyed on `briefs`,
+  # not `runs`: a run that fetched but skipped the brief has spent no budget.
+  first_run_lookback_hours: 168
+  # How old a DISCOVERY page may be, measured after extraction. Undated results
+  # go too -- the brief counts undated as always in-window.
+  discovery_max_age_hours: 48
+  # Documents taken per source. `null` is every item the feed returns, and a CLI
+  # `--limit` still wins.
+  fetch_limit_per_source: null
+  # Pending clusters analyzed per run. `null` is all of them. This is the knob
+  # that costs money: analyze calls the model once per cluster.
+  analyze_limit: null
+  brief_top_clusters: 12
+  brief_max_entities: 120
+  acronym_min_sightings: 3
+  # How many DOCUMENTS must use a token as an ordinary word before its shouted
+  # form stops being an acronym. At 1, `Prophane Victor` hid the Army's VICTOR.
+  acronym_ordinary_min_docs: 2
+  # Articles a term must appear in to be worth looking up. Spend is already
+  # bounded by `acronym_min_sightings` and by the cap below.
+  acronym_min_articles: 1
+  acronym_lookup_cap_per_run: 8
+  # One batch of "Look up all", most-seen first. A surface stays eligible until
+  # it has been tried, so stopping between batches skips nothing.
+  acronym_lookup_all_cap: 100
+  # Entities a run may pay to have a definition WRITTEN for (tier 2). Tier 1
+  # quotes a sentence we already hold, so it is free and uncapped.
+  define_cap_per_run: 100
+  # Below this salience an entity was a passing mention, and a definition
+  # written from a passing mention is a definition of the article.
+  define_min_salience: 0.3
+  provisional_promote_sightings: 2
+  provisional_promote_sources: 2
+  # Days without new evidence before an uncorroborated entity goes `dormant`.
+  # Nothing is deleted and one sighting brings it back; 0 disables.
+  provisional_dormant_days: 30
+  # Merge duplicates that are the same by CONSTRUCTION, never by similarity.
+  # Reversible via `venona entity unmerge`.
+  auto_merge_identical: true
+
+  # Ask the model what the unsettled pairs are. It never writes an edge, and a
+  # `part_of` or `distinct` verdict is always a suggestion the curator confirms.
+  adjudicate_conflicts: true
+  # Apply a `merge` verdict without a curator -- but only when the model says it
+  # is certain AND the two names corroborate it structurally, so a merge of two
+  # unrelated names is impossible however the model answers. Every one is tagged
+  # `auto: model` and reverses with `venona entity unmerge`.
+  auto_merge_model_verdicts: true
+  adjudicate_limit_per_run: 60
+  adjudicate_batch: 20
+
+  # `venona research`. The cap is on SWEEPS, not entities: one sweep covering
+  # ten names costs the same as one covering a single name.
+  research_entities_per_sweep: 10
+  research_max_sweeps: 3
+  fuzzy_accept_score: 92
+  fuzzy_runnerup_margin: 4

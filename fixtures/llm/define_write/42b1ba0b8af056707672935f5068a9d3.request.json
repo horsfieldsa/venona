@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: Congress",
+  "user_content_sha": "412a4f42559a4fd4c9d375acabdf9f0754a3a980504e9ed56b8aac34d0d13c8d"
+}

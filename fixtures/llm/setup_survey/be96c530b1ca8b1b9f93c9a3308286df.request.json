@@ -1,0 +1,16 @@
+{
+  "effort": "high",
+  "model": "sonnet",
+  "schema_keys": [
+    "items",
+    "summary"
+  ],
+  "system_prompt_sha": "0b7576070030cf1e684fdce5519c74d3d0253cb6eb8ac0c5a301d0820500f434",
+  "task": "setup_survey",
+  "tools": [
+    "WebSearch",
+    "WebFetch"
+  ],
+  "user_content_preview": "Domain description, from the operator:",
+  "user_content_sha": "bb3db77690d9b3751491b3998d3561c69c96838b30b3281bd3362c34ea7939cb"
+}

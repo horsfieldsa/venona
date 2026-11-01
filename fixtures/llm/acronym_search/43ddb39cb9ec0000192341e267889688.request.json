@@ -1,0 +1,16 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "acronym",
+    "candidate_urls"
+  ],
+  "system_prompt_sha": "b985267c901141b0bcbb64ce383ce0a413e2e819150d223deed2ab3a3bd9d335",
+  "task": "acronym_search",
+  "tools": [
+    "WebSearch",
+    "WebFetch"
+  ],
+  "user_content_preview": "Find authoritative pages that define the acronym 'RFI' in a US defense context.",
+  "user_content_sha": "69e80b4acc835c9674062dac36e7fe73c40b2b6b3fce21dde3ac9dbd4379253b"
+}

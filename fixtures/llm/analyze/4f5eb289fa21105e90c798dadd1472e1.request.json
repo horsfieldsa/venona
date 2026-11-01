@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "eb89fbc8b0de8589e34994f8f5816448d91de2828e17e3c93197c62faff52967",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: FEMA Workforce: Staff Reductions and Lack of Planning May Impact Mission Readiness",
+  "user_content_sha": "3cd4e378d1a9dcb66948c256297068d55bfa6785215214abb0bc9729aacea05d"
+}

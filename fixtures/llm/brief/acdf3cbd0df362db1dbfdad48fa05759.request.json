@@ -1,0 +1,15 @@
+{
+  "effort": "high",
+  "model": "opus",
+  "schema_keys": [
+    "headline",
+    "items",
+    "mentioned_entity_ids",
+    "unresolved_mentions"
+  ],
+  "system_prompt_sha": "dac201f2e2a11ad04e97853e0f22a3bcec4babf8ac40afa1e76d60ffe2b61d2a",
+  "task": "brief",
+  "tools": [],
+  "user_content_preview": "DATE: 2026-08-16",
+  "user_content_sha": "4d7f2008bb232dd535cd4b1e960f7595d2dc7776fe1e7c56eb416ddfe1643205"
+}

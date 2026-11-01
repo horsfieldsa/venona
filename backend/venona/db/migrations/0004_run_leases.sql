@@ -1,0 +1,37 @@
+-- Run liveness moves from `/proc` to a Postgres advisory lock. Contract C11.
+--
+-- WHAT WAS HERE. Migration 0008 added `runs.owner_pid` so the API could tell a
+-- crashed run from one executing in another process -- `venona run` is a
+-- separate pid and "the server started" is not evidence that a run died.
+-- Migration 0020 added `owner_start_ticks`, field 22 of `/proc/<pid>/stat`,
+-- because a pid alone is not an identity: in a container the API is pid 1 (or
+-- ~7 under an init shim), the previous container's `owner_pid` values land on
+-- the new container's own processes, the cmdline check passes because it really
+-- is uvicorn, and the research lane wedges forever.
+--
+-- WHY IT GOES. The pair was correct on ONE host and could not be made correct
+-- across two: `/proc/<pid>` is a statement about this kernel, and a pid read
+-- from a row written by another machine is meaningless. It also required the
+-- reader to be on the same box as the writer, which is the assumption the whole
+-- deployment is trying to stop making.
+--
+-- WHAT REPLACES IT. A session-level advisory lock, keyed on the run id, claimed
+-- by `create_run` on the connection the run will use and held until that
+-- connection ends. Postgres releases it on ANY ending -- a clean close, a
+-- SIGKILL, a container going away, a machine going away -- so there is nothing
+-- to time out and nothing to heartbeat. That matters in both directions: no
+-- window in which a dead run still looks alive, and no risk of declaring a live
+-- run dead because a heartbeat was late. See `db/repositories/run.py`.
+--
+-- ONE RULE INVERTED, deliberately. Unknown ownership used to count as LIVE,
+-- because a NULL `owner_pid` could mean "an old row" as easily as "nothing is
+-- running", and wrongly deciding a live run is dead is the expensive direction.
+-- A lease removes the ambiguity instead of resolving it: "no lock" is positive
+-- evidence that no session is executing the row. Keeping the old asymmetry would
+-- now mean a lane wedged permanently by every crash.
+--
+-- `owner_pid` STAYS, demoted to diagnostics. "Which process is running this" is
+-- the first thing an operator asks and a lock id cannot answer it. Nothing
+-- decides anything from it.
+
+ALTER TABLE runs DROP COLUMN IF EXISTS owner_start_ticks;

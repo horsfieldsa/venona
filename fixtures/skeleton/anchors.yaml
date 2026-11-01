@@ -1,0 +1,5 @@
+# Skeleton — replaced by the setup wizard's draft. Empty on purpose: anchors
+# reach the database only through the Anchors document's Apply button, and an
+# unconfigured instance has nothing to load.
+entities: []
+edges: []

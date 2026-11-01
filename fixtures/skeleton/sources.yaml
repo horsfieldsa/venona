@@ -1,0 +1,8 @@
+# Skeleton — replaced by the setup wizard's draft. Empty by design: a fresh
+# domain has no feeds until the wizard verifies some, and the sources loader
+# refusing an empty list is what keeps a run from silently fetching nothing.
+defaults:
+  max_items: 40
+  fetch_body: true
+
+sources: []

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture article — venona extension smoke</title>
+    <style>
+      /* A hostile-ish host page: the kind of blanket rule that is exactly why
+         `mentions.css` carries `!important` on every declaration. */
+      span {
+        border-bottom: none;
+        color: inherit;
+      }
+      body {
+        font-family: Georgia, serif;
+        max-width: 40rem;
+        margin: 2rem auto;
+      }
+    </style>
+  </head>
+  <body>
+    <nav><a href="/x">Navigation should not be annotated: MOSA</a></nav>
+
+    <article>
+      <h1>Fixture article</h1>
+
+      <!-- The case the whitespace map exists for. In the DOM this text node
+           contains a newline and eight spaces between the two words, which is
+           what the HTML source produces and what every real article looks
+           like. Without the collapse it matches `Lockheed` alone, or nothing. -->
+      <p id="wrapped">
+        Officials said Lockheed
+        Martin would lead the effort, with support from Booz
+        Allen Hamilton across the programme.
+      </p>
+
+      <!-- Astral-plane characters before a mention. Python offsets are code
+           points and JavaScript's are UTF-16 units; if anything indexed by a
+           server offset, every highlight after the satellite would shift. -->
+      <p id="astral">🛰️🛰️ Analysts said 🛰️ DARPA would fund the work on MOSA this year.</p>
+
+      <!-- A mention inside a link must be skipped: two competing click targets
+           in one word is worse than no annotation. -->
+      <p id="linked">Read more about <a href="https://example.com/darpa">DARPA and its DDIL work</a> elsewhere.</p>
+
+      <!-- Inline markup splitting a multi-word entity. Each text node gets its
+           own span carrying the same ref, drawn as one continuous underline. -->
+      <p id="split">The <b>Defense</b> Advanced Research Projects Agency confirmed it.</p>
+
+      <!-- Ordinary English that collides with entity aliases. With
+           `strict_case` off these produce confident underlines at 0.9. -->
+      <p id="commonnouns">
+        The team built a lattice of sensors near the horizon, then walked the foundry floor
+        past a neutron detector.
+      </p>
+
+      <!-- Code must be left alone, mirroring `annotate_blocks`. -->
+      <pre id="code"><code>curl /api/annotate  # MOSA DARPA</code></pre>
+
+      <p id="plain">The Army selected MOSA for CJADC2 integration, officials said.</p>
+
+      <!-- AN UNLINKED GLOSSARY TERM, and this paragraph exists only to provide
+           one. Two checks below assert that a `gloss:` mention is dimmed relative
+           to its host paragraph rather than repainted, and neither could run: a
+           glossary mention needs an `acronym_definitions` row that is `active`
+           with `entity_id IS NULL`, and every acronym this article already
+           contains has been GROUNDED into a real entity -- MOSA into
+           `tech:modular-open-systems-approach`, DDIL into `tech:ddil-operations`,
+           DARPA into a `govt:` body. That is the pipeline working as designed, so
+           the checks were failing on the corpus rather than on the CSS, and their
+           own failure message said to check the corpus.
+
+           TWO surfaces on purpose, because the two corpora this smoke runs
+           against diverge: `TRL` is `active` with no entity in
+           `fixtures/seed/glossary.yaml`, so it carries the check on a seeded
+           corpus; a live research corpus prunes and grounds the seed set over
+           time (TRL fell out of the defense corpus entirely), so `DIB` --
+           budget-story jargon any defense corpus keeps unlinked -- carries it
+           there. The checks need ONE `gloss:` mention, whichever surface the
+           corpus supplies. If both go quiet, pick replacements from
+           `acronym_definitions` rows that are `active` with
+           `entity_id IS NULL`, rather than deleting the checks. -->
+      <p id="glossary">
+        Engineers said the prototype had reached TRL 6 before the review, drawing
+        interest from across the DIB.
+      </p>
+    </article>
+
+    <footer><p>Footer text mentioning DARPA, outside the article element.</p></footer>
+  </body>
+</html>

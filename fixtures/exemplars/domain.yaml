@@ -1,0 +1,125 @@
+# The domain descriptor -- who this deployment reads for.
+#
+# Every string that names the subject domain lives HERE; code owns the
+# invariant sentences and splices these in (docs/adr/0138). The prompt
+# fragments are verbatim paragraphs inside the grounding prompts -- edit them
+# the way you would edit a prompt, and keep them at whole-line granularity:
+# no leading or trailing blank lines (the templates own those).
+#
+# `slug` is this deployment's identity and freezes after the first write,
+# like an ontology prefix. The defense values here reproduce the strings the
+# code shipped with, byte for byte -- tests/test_domain_prompts.py holds that.
+
+slug: defense
+display_name: Defense industry
+tagline: 'Defense-industry intelligence: research, score, graph, brief.'
+login_blurb: venona runs a research pipeline over the defense trade press and keeps what it learns.
+
+# Phrases spliced mid-sentence into prompts and copy. Keep each under 120
+# characters; the sentence around it is the template's.
+press_descriptor: defense-industry press
+news_descriptor: defense-industry news
+graph_descriptor: a defence-industry graph
+define_context: in a defense context
+search_context: in a US defense context
+user_agent_note: personal defense-industry research reader
+mcp_title: defence-industry intelligence
+corpus_descriptor: defence trade press
+
+# The role choices on the public request-access form, in display order.
+access_roles:
+- analyst
+- government
+- military
+- industry
+- technologist
+- investor
+- press
+- academic
+- other
+
+# Common English words that are also real entity names in this domain.
+# The alias index never matches these globally; they need tier-A gating
+# (the model must have named the entity explicitly).
+common_name_words:
+- army
+- navy
+- space
+- shield
+- sentinel
+- vision
+- anchor
+- atlas
+- falcon
+- titan
+- sky
+- guardian
+- liberty
+- victory
+- spirit
+- eagle
+- phantom
+- ghost
+- reaper
+- sentry
+
+# Whole-paragraph slots in the prompt templates. The key set is closed --
+# an unknown key is refused rather than silently never read.
+prompt_fragments:
+  analyst_surface_rule: |-
+    3. Return surfaces exactly as written in the article -- "the Army", "Anduril",
+       "NGC2". Do not normalise, expand, or canonicalise them, and never invent an
+       identifier. Something else maps surfaces to identity.
+
+  acronym_search_examples: |-
+    Do not anchor on the surrounding usage. An acronym cited as part of a reference
+    -- "10 USC 4025", "DoDI 5000.02" -- names the WORK being cited, not the
+    section: the page to find defines the United States Code itself, not Title 10.
+
+    Prefer official program pages, government sites and standards bodies. Avoid
+    news aggregators and acronym-farm sites that list dozens of unsourced
+    expansions; an encyclopedia entry or an official glossary is not one of those
+    and is often the only page that states the expansion in a sentence.
+
+  acronym_read_examples: |-
+    The sentence must contain BOTH the acronym and the expansion. A heading that is
+    merely the expanded name is not a definition: "United States Code" on its own
+    does not say that USC means it, and is rejected. Look for the sentence that
+    connects the two -- "..., commonly called IDIQ contracts, ...", "(USC)",
+    "abbreviated USC".
+
+  adjudicate_verdicts: |2-
+      merge      One organisation or programme under two names. Includes a short
+                 form and its full legal name -- "Anduril" / "Anduril Industries",
+                 "Northrop" / "Northrop Grumman", "Army" / "U.S. Army".
+      part_of    The first names a division, subsidiary, command or unit OF the
+                 second -- "General Dynamics Information Technology" is part of
+                 "General Dynamics", "Thales Australia" is part of "Thales".
+                 Say which side is the CHILD.
+      distinct   Neither. Two separate bodies that happen to share words --
+                 "Royal Canadian Air Force" and "Air Force" are different services;
+                 "Moonshot" and "Moonshot AI" are different companies.
+
+  anchor_relations: |2-
+      PART_OF    a division, command, agency, unit or subsidiary OF the anchor.
+                 "4th Infantry Division" is PART_OF "U.S. Army".
+                 "Raytheon" is PART_OF "RTX".
+      BASED_IN   an organisation and its HOME country -- where it is headquartered
+                 or incorporated, or the state whose organ it is.
+                 "Anthropic" is BASED_IN "United States".
+      WORKS_FOR  a person and the organisation they serve.
+
+  anchor_directness: |-
+    Attach to the MOST DIRECT anchor available, never the most impressive one. A
+    US Army division is PART_OF the Army, not of the Defense Department and not of
+    the United States -- the chain reaches the top on its own, and a shortcut past
+    the middle is a wrong edge that hides the real one.
+
+  anchor_knowledge_note: |-
+    UNLIKE the other tasks in this system, you SHOULD use what you know about these
+    organisations. Nothing in the corpus states that Nvidia is an American company
+    or that CISA sits under Homeland Security -- that is background knowledge, and
+    it is exactly what is being asked for here. It is safe because nothing you
+    return is written to the graph: a curator reviews every line and one keystroke
+    discards it. Be accurate, not bold; "none" costs nothing and a wrong parent
+    costs a correction.

@@ -1,0 +1,62 @@
+# Seed relationships. Each carries an evidence article id so the provenance
+# panel has real content to show from S1 -- an intelligence graph whose edges
+# cannot be audited is a rumour mill.
+#
+# Direction and meaning for every predicate: docs/graph-schema.md.
+
+edges:
+  # ── org hierarchy: the "divisions within the Army" question ────────
+  - { src: unit:u-s-army,            predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: unit:u-s-navy,            predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: unit:u-s-air-force,       predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: unit:marine-corps,               predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: unit:u-s-space-force,        predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: govt:peo-c3n,            predicate: PART_OF, dst: unit:u-s-army,   kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: govt:peo-iews,           predicate: PART_OF, dst: unit:u-s-army,   kind: org_hierarchy, evidence: doc:seed-titan-award }
+  - { src: govt:pm-tactical-network, predicate: PART_OF, dst: govt:peo-c3n,  kind: org_hierarchy, evidence: doc:seed-ngc2-overview }
+  - { src: govt:defense-advanced-research-projects-agency,              predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-edge-ai }
+  - { src: govt:defense-innovation-unit,                predicate: PART_OF, dst: govt:defense-department,       kind: org_hierarchy, evidence: doc:seed-edge-ai }
+  - { src: govt:space-development-agency,                predicate: PART_OF, dst: unit:u-s-space-force, kind: org_hierarchy, evidence: doc:seed-edge-ai }
+
+  # ── program management ─────────────────────────────────────────────
+  - { src: govt:peo-c3n,  predicate: MANAGES, dst: prog:next-generation-command-and-control, evidence: doc:seed-ngc2-overview, confidence: 0.95 }
+  - { src: govt:peo-iews, predicate: MANAGES, dst: prog:titan,      evidence: doc:seed-titan-award, confidence: 0.9 }
+  - { src: govt:defense-department,      predicate: MANAGES, dst: prog:joint-all-domain-command-and-control,      evidence: doc:seed-ngc2-overview, confidence: 0.8 }
+  - { src: govt:defense-department,      predicate: MANAGES, dst: prog:replicator, evidence: doc:seed-edge-ai, confidence: 0.8 }
+  - { src: unit:u-s-army,  predicate: MANAGES, dst: prog:integrated-visual-augmentation-system,       evidence: doc:seed-ngc2-overview, confidence: 0.7 }
+
+  # ── competition ────────────────────────────────────────────────────
+  - { src: company:anduril-industries,     predicate: COMPETES_FOR, dst: prog:next-generation-command-and-control, evidence: doc:seed-ngc2-competition, confidence: 0.9 }
+  - { src: company:palantir-technologies,  predicate: COMPETES_FOR, dst: prog:next-generation-command-and-control, evidence: doc:seed-ngc2-competition, confidence: 0.9 }
+  - { src: company:lockheed-martin,        predicate: COMPETES_FOR, dst: prog:next-generation-command-and-control, evidence: doc:seed-ngc2-competition, confidence: 0.7 }
+  - { src: company:palantir-technologies,  predicate: COMPETES_FOR, dst: prog:titan, evidence: doc:seed-titan-award, confidence: 0.95 }
+  - { src: company:anduril-industries,     predicate: COMPETES_WITH, dst: company:palantir-technologies, evidence: doc:seed-ngc2-competition, confidence: 0.8 }
+
+  # ── technology ─────────────────────────────────────────────────────
+  - { src: prog:next-generation-command-and-control, predicate: USES_TECH, dst: tech:edge-inference,   evidence: doc:seed-edge-ai, confidence: 0.85 }
+  - { src: prog:next-generation-command-and-control, predicate: USES_TECH, dst: tech:ddil-operations,   evidence: doc:seed-edge-ai, confidence: 0.9 }
+  - { src: prog:next-generation-command-and-control, predicate: USES_TECH, dst: tech:modular-open-systems-approach,             evidence: doc:seed-ngc2-overview, confidence: 0.9 }
+  - { src: prog:next-generation-command-and-control, predicate: USES_TECH, dst: tech:mesh-networking,  evidence: doc:seed-ngc2-overview, confidence: 0.7 }
+  - { src: prog:titan,      predicate: USES_TECH, dst: tech:sensor-fusion,   evidence: doc:seed-titan-award, confidence: 0.9 }
+  - { src: prog:titan,      predicate: USES_TECH, dst: tech:computer-vision, evidence: doc:seed-titan-award, confidence: 0.8 }
+  - { src: prog:joint-all-domain-command-and-control,      predicate: USES_TECH, dst: tech:sensor-fusion,   evidence: doc:seed-ngc2-overview, confidence: 0.7 }
+  - { src: prog:replicator, predicate: USES_TECH, dst: tech:edge-inference,  evidence: doc:seed-edge-ai, confidence: 0.8 }
+
+  - { src: company:anduril-industries,    predicate: OFFERS, dst: tech:edge-inference,  evidence: doc:seed-edge-ai, confidence: 0.85 }
+  - { src: company:anduril-industries,    predicate: OFFERS, dst: tech:sensor-fusion,   evidence: doc:seed-edge-ai, confidence: 0.8 }
+  - { src: company:palantir-technologies, predicate: OFFERS, dst: tech:sensor-fusion,   evidence: doc:seed-titan-award, confidence: 0.85 }
+  - { src: company:shield-ai,             predicate: OFFERS, dst: tech:edge-inference,  evidence: doc:seed-edge-ai, confidence: 0.8 }
+  - { src: company:scale-ai,              predicate: OFFERS, dst: tech:computer-vision, evidence: doc:seed-edge-ai, confidence: 0.75 }
+
+  # ── platforms ──────────────────────────────────────────────────────
+  - { src: company:anduril-industries,    predicate: PRODUCES, dst: plat:lattice,            evidence: doc:seed-ngc2-competition, confidence: 0.95 }
+  - { src: company:anduril-industries,    predicate: PRODUCES, dst: plat:ghost-x,            evidence: doc:seed-edge-ai, confidence: 0.9 }
+  - { src: company:palantir-technologies, predicate: PRODUCES, dst: plat:maven-smart-system-platform, evidence: doc:seed-titan-award, confidence: 0.95 }
+  - { src: plat:lattice,              predicate: IMPLEMENTS, dst: tech:edge-inference,   evidence: doc:seed-edge-ai, confidence: 0.85 }
+  - { src: plat:lattice,              predicate: IMPLEMENTS, dst: tech:ddil-operations,   evidence: doc:seed-edge-ai, confidence: 0.8 }
+  - { src: plat:ghost-x,              predicate: IMPLEMENTS, dst: tech:computer-vision,  evidence: doc:seed-edge-ai, confidence: 0.75 }
+  - { src: prog:next-generation-command-and-control, predicate: FIELDS, dst: plat:lattice, evidence: doc:seed-ngc2-competition, confidence: 0.6 }
+
+  # ── people ─────────────────────────────────────────────────────────
+  - { src: person:alex-miller, predicate: WORKS_FOR, dst: unit:u-s-army, evidence: doc:seed-ngc2-overview, confidence: 0.9 }
+  - { src: person:alex-miller, predicate: LEADS,     dst: prog:next-generation-command-and-control, evidence: doc:seed-ngc2-overview, confidence: 0.6 }

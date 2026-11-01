@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "eb89fbc8b0de8589e34994f8f5816448d91de2828e17e3c93197c62faff52967",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: TITAN ground stations reach first unit equipped",
+  "user_content_sha": "3b08dd61214daf0370a532c650c1ccab747768d0b110f137bd9914ca7196808f"
+}

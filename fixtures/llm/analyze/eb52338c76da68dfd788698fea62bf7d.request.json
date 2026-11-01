@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Chinese telecoms kept footholds in US despite crackdowns, probe finds",
+  "user_content_sha": "41168a07cfcda9ad0969484857ca83ca0dd32d99e5bdaa1c0e1b13029bb305a6"
+}

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Venona · settings</title>
+    <link rel="stylesheet" href="./src/options/options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Venona</h1>
+
+      <h2>Connection</h2>
+
+      <label for="instancePicker">Domain</label>
+      <div class="row">
+        <select id="instancePicker"></select>
+      </div>
+      <p class="hint">
+        Which Venona domain this extension reads from. Each one keeps its
+        own access on this machine.
+      </p>
+
+      <label for="instanceLabel">Label</label>
+      <input id="instanceLabel" type="text" spellcheck="false" placeholder="defense" />
+
+      <label for="baseUrl">API</label>
+      <input id="baseUrl" type="url" spellcheck="false" placeholder="https://venona.example.com/api" />
+      <div class="row presets">
+        <button id="useLocal" type="button">Local dev</button>
+      </div>
+      <p class="hint">
+        The server address. Ends in <code>/api</code>. Any other host works
+        too; saving it asks the browser for permission to reach it, which
+        localhost already has.
+      </p>
+
+      <label for="token">Token</label>
+      <input id="token" type="password" spellcheck="false" placeholder="(none)" />
+      <p class="hint">
+        Filled in by Connect with Google, or pasted from
+        <code>uv run venona mcp token new --label "extension" --scope annotate</code>.
+        Stored on this machine only, never synced. Either way it can show
+        Venona's reading and list the covered sites, and nothing more: it
+        cannot start anything, change anything, or spend anything.
+      </p>
+
+      <div class="row">
+        <button id="save" type="button">Save</button>
+        <button id="test" type="button">Test connection</button>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+      <!-- What the SERVER says about itself, rather than what this page assumes.
+           An empty token box on a server with auth off reads as broken; on a
+           server with Google sign-in it reads as the wrong question. -->
+      <p id="authMode" class="hint mode"></p>
+
+      <!-- Rendered only when the server offers Google. A Google session cannot
+           ride a cross-origin request, so connecting exchanges the sign-in for
+           a scoped credential of the extension's own; see shared/pairing.ts. -->
+      <div class="row" id="pairingRow" hidden>
+        <button id="pair" type="button">Connect with Google</button>
+        <span class="hint" id="pairHint"></span>
+      </div>
+
+      <hr />
+
+      <!-- Collapsed by default: the shipped posture is one configured domain,
+           and a second one is an unusual day. Everything inside still works
+           exactly as it did when it sat at the top level. -->
+      <details>
+        <summary>Connect another domain</summary>
+
+        <div class="row">
+          <button id="addInstance" type="button">Add</button>
+          <button id="removeInstance" type="button">Remove</button>
+        </div>
+        <p class="hint">
+          Add a domain by hand and point it at its address above, or browse
+          the directory. Each one connects separately.
+        </p>
+
+        <label for="hubUrl">Directory</label>
+        <input id="hubUrl" type="url" spellcheck="false" placeholder="http://localhost:8180" />
+        <div class="row">
+          <button id="browseDirectory" type="button">Browse the directory</button>
+        </div>
+        <p class="hint">
+          The directory lists every domain its publisher runs. Browsing asks the
+          browser for permission to reach it; adding one asks for that server's
+          host. Each added one still connects separately above.
+        </p>
+
+        <p id="directoryStatus" class="status" role="status" aria-live="polite"></p>
+        <ul id="directory" class="sites"></ul>
+      </details>
+
+      <hr />
+
+      <h2>Sites</h2>
+      <p class="hint">
+        The sites Venona has actually pulled articles from, reported by your own
+        API rather than baked into this extension. Ticking one asks the browser
+        for permission to read that site; you can withdraw it here or from
+        <code>chrome://extensions</code> at any time. Nothing is granted until
+        you tick it.
+      </p>
+
+      <div class="row">
+        <button id="refresh" type="button">Refresh</button>
+        <button id="enableAll" type="button">Enable all</button>
+      </div>
+
+      <p id="sitesStatus" class="status" role="status" aria-live="polite"></p>
+      <ul id="sites" class="sites"></ul>
+
+      <hr />
+
+      <p class="hint">
+        This extension is <code><span id="origin"></span></code>. Pointing it at
+        an API on another host needs that host's permission granted; the browser
+        will ask. It does not need a <code>VENONA_CORS_ORIGINS</code> entry;
+        <code>host_permissions</code> is what grants the access.
+      </p>
+    </main>
+    <script type="module" src="./src/options/options.ts"></script>
+  </body>
+</html>

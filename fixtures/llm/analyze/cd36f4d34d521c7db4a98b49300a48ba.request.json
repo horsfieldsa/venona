@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Farnborough last looks, plus how the Iran war is affecting arms sales",
+  "user_content_sha": "2263a28258a4097e0bb7645e1791e65ae1c6b859ef042110ab6ad43dc6ee424a"
+}

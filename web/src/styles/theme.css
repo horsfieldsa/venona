@@ -1,0 +1,370 @@
+/* Contract C5, part two -- the utility layer.
+ *
+ * `tokens.css` stays the system of record. This file does not declare a single
+ * value of its own; it tells Tailwind which of those tokens exist and what to
+ * name the utility that reaches each one. Nothing here is a design decision.
+ *
+ * WHY A CLOSED THEME.
+ *
+ * The reason to adopt Tailwind in this project was never speed -- it was
+ * enforcement. `lint_tokens.py` has always checked colour and has never checked
+ * a dimension, so `padding: 2px 4px`, `max-height: 460px` and `font-size: 10px`
+ * all passed clean, and the app drifted to nine distinct `padding-top` values,
+ * eight gaps and four different gaps inside the ONE 44px header bar.
+ *
+ * Every default scale below is therefore cleared with `initial` before anything
+ * is declared. Tailwind's stock spacing scale is a linear multiple of 0.25rem,
+ * which would put every multiple of 4px back within reach -- `p-7`, `p-9`,
+ * `p-11` -- and hand back exactly the freedom that caused the drift. With the
+ * namespace cleared and only the eight rungs declared, `p-9` is not a mistake
+ * that renders slightly wrong: it does not exist, and the build says so.
+ *
+ * The default palette goes for the same reason. `bg-red-500` cannot be written,
+ * so `lint_tokens.py`'s raw-colour rule gains a partner instead of a loophole.
+ *
+ * NOTE THE VALUES ARE NOT TAILWIND'S. `p-5` is 24px here, not 20px; `p-6` is
+ * 32px, not 24px. The class names survived the migration because this file
+ * re-pointed them at `--space-*`, not because they happened to agree.
+ *
+ * `inline` is load-bearing: it makes a utility emit `var(--surface-base)`
+ * rather than a copy of its value, so the light-mode block commented at the
+ * foot of `tokens.css` remains a re-map of that one file and nothing else.
+ */
+
+@import 'tailwindcss';
+
+/* No `@source` here on purpose. Explicit globs relative to this file resolved
+   differently in `vite dev` than in `vite build` -- the production stylesheet
+   carried `px-page`, `py-1` and `text-text-tertiary` while the dev server did
+   not generate them at all, so the header lost its gutter and its nav colour in
+   the app but not in the build. Tailwind's automatic detection walks the
+   project root and honours .gitignore, which already covers `web/src`, and it
+   behaves the same in both modes. */
+
+@theme inline {
+  /* ── every default scale, cleared ──────────────────────────────── */
+  --spacing: initial;
+  --color-*: initial;
+  --text-*: initial;
+  --font-*: initial;
+  --font-weight-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+  --radius-*: initial;
+  --breakpoint-*: initial;
+  --container-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+  --perspective-*: initial;
+  --aspect-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
+
+  /* ── space: the eight rungs, and nothing between them ──────────── */
+  /* Zero is not a rung, it is the absence of one, and it has to be declared
+     explicitly: clearing `--spacing` removes the whole generated scale, and
+     `p-0`, `m-0`, `inset-0` and -- the one that bites -- `min-w-0` / `min-h-0`
+     are generated from it like every other step. Without this, `min-w-0`
+     silently does not exist, and a flex child that must be allowed to shrink
+     below its content keeps `min-width: auto` and overflows its row. That is
+     the whole reason `.grow` carried `min-width: 0`. */
+  --spacing-0: 0px;
+  --spacing-1: var(--space-1); /*  4px */
+  --spacing-2: var(--space-2); /*  8px */
+  --spacing-3: var(--space-3); /* 12px */
+  --spacing-4: var(--space-4); /* 18px */
+  --spacing-5: var(--space-5); /* 26px */
+  --spacing-6: var(--space-6); /* 36px */
+  --spacing-7: var(--space-7); /* 48px */
+  --spacing-8: var(--space-8); /* 64px */
+  /* The sub-menu row owns its height as a token, and the ContextBar reaches it
+     as `min-h-subnav-height` -- a min, never a fixed height, because the
+     controls zone wraps and the row has to grow with it. */
+  --spacing-subnav-height: var(--subnav-height);
+
+  /* ── colour: the 28 tier-2 semantic names, doubled prefixes and all ──
+   *
+   * `text-text-primary` and `border-border-subtle` read awkwardly and are kept
+   * anyway. C5's guarantee is that a consumer can DERIVE the token from the
+   * role with no lookup table -- the entity hues depend on it
+   * (`var(--entity-${id.split(':')[0]})`) -- and renaming half the families to
+   * read better is how that guarantee turns into a table nobody maintains.
+   *
+   * Tier 1 primitives (--grey-*, --aqua-*, --amber-*, …) appear NOWHERE in
+   * this block. That is the two-tier contract: if a primitive had a utility,
+   * `bg-grey-850` would be writable and light mode would be a rewrite. */
+  --color-surface-base: var(--surface-base);
+  --color-surface-inset: var(--surface-inset);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-selected: var(--surface-selected);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-tick: var(--border-tick);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-quiet: var(--text-quiet);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-body: var(--text-body);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-deep: var(--accent-deep);
+  /* The two washes are colours a utility can reach (`bg-accent-wash`) because
+     the bracket label grounds and the classification bars are the only places
+     a translucent fill is legal, and both are backgrounds. */
+  --color-accent-wash: var(--accent-wash);
+  --color-accent-wash-strong: var(--accent-wash-strong);
+  --color-signal-high: var(--signal-high);
+  --color-signal-critical: var(--signal-critical);
+  --color-signal-ok: var(--signal-ok);
+  --color-signal-info: var(--signal-info);
+
+  --color-edge-confirmed: var(--edge-confirmed);
+
+  --color-entity-company: var(--entity-company);
+  --color-entity-govt: var(--entity-govt);
+  --color-entity-unit: var(--entity-unit);
+  --color-entity-research: var(--entity-research);
+  --color-entity-prog: var(--entity-prog);
+  --color-entity-tech: var(--entity-tech);
+  --color-entity-plat: var(--entity-plat);
+  --color-entity-person: var(--entity-person);
+  --color-entity-country: var(--entity-country);
+  --color-entity-glossary: var(--entity-glossary);
+  --color-entity-undefined: var(--entity-undefined);
+
+  --color-scrim: var(--scrim);
+
+  /* The lockup. `text-brand-wordmark` is the same class name the type-set
+     wordmark used before the drawn lockup replaced it -- it sets `color` on the
+     inlined `<svg>`, which the wordmark group picks up through `currentColor`.
+     The other two are `fill-*` utilities on their groups and do not vary by
+     theme; see the note in tokens.css. */
+  --color-brand-plate: var(--brand-plate);
+  --color-brand-monogram: var(--brand-monogram);
+  --color-brand-wordmark: var(--brand-wordmark);
+
+  /* ── type: nine rungs, three families, four trackings, four leadings ──
+   * The 10/11/12/13 cluster is three genuine density contexts and is NOT
+   * interchangeable -- see docs/DESIGN.md. */
+  --text-2xs: var(--text-2xs); /* 11px */
+  --text-xs: var(--text-xs); /* 12px */
+  --text-sm: var(--text-sm); /* 13px */
+  --text-base: var(--text-base); /* 14px */
+  --text-md: var(--text-md); /* 16px */
+  --text-lg: var(--text-lg); /* 18px */
+  --text-xl: var(--text-xl); /* 24px */
+  --text-2xl: var(--text-2xl); /* 32px */
+  /* Display only -- the empty corpus, the login lockup, request access. */
+  --text-3xl: var(--text-3xl); /* 44px */
+
+  --font-ui: var(--font-ui);
+  --font-prose: var(--font-prose);
+  --font-mono: var(--font-mono);
+
+  /* Four weights, because the variable fonts now actually carry four. Before
+     they were self-hosted, Liberation Sans shipped 400/700 only and every 500
+     and 600 in the codebase snapped -- ADR 0073. They point at the
+     tokens rather than repeating the numbers, so the scale has one home. */
+  --font-weight-normal: var(--weight-normal);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+  --font-weight-bold: var(--weight-bold);
+
+  --tracking-label: var(--tracking-label);
+  /* Prose only. It is negative, and it is the reason `.prose code` has to
+     reset it -- see prose.css. */
+  --tracking-tight: var(--tracking-tight);
+  /* Display only, and it pairs with --text-3xl. Negative and much tighter than
+     --tracking-tight; on anything at reading size it closes the copy up. */
+  --tracking-display: var(--tracking-display);
+
+  --leading-tight: var(--leading-tight);
+  --leading-snug: var(--leading-snug);
+  --leading-normal: var(--leading-normal);
+  --leading-prose: var(--leading-prose);
+
+  /* ── shape and motion ──────────────────────────────────────────── */
+  --radius-hair: var(--radius-hair); /* 0px */
+  --radius-sm: var(--radius-sm); /* 3px -- every control */
+  --radius-md: var(--radius-md); /* 4px -- every container */
+  /* `rounded-lg`. Four call sites and no more: Panel, Dialog, the entity hover
+     card and the ⌘K palette. Without this line the token is declared and
+     `rounded-lg` still generates nothing -- `--radius-*: initial` above cleared
+     Tailwind's own scale, so a rung not named here does not exist. */
+  --radius-lg: var(--radius-lg); /* 6px */
+  --radius-pill: var(--radius-pill); /* 999px -- `rounded-pill`, for round things */
+  --ease-standard: var(--motion-ease);
+  /* The only animation in the app. 700ms, not Tailwind's 1s `animate-spin`:
+     a spinner that turns at reading speed reads as stuck. */
+  --animate-spin-slow: spin-slow 700ms linear infinite;
+  /* The running stage of a pipeline, in the nav spine and on the Runs page --
+     one object, one animation. 1.4s, slower than the cursor, and it never
+     reaches 0: a segment that blinks out reads as broken rather than as busy.
+     The keyframes live in base.css beside the reduced-motion block. */
+  --animate-pulse-stage: pulse-stage 1.4s var(--motion-ease) infinite;
+
+  /* ── layout ────────────────────────────────────────────────────────
+   * Breakpoints are declared at the three values the app already uses so the
+   * media queries in the scoped blocks can move across without changing what
+   * they mean. Tailwind's are min-width; the existing four are all max-width,
+   * so they convert as `max-lg:` / `max-md:` / `max-sm:`. Consolidating the
+   * set is a deliberate later step, not a side effect of the move. */
+  /* The phone tier (ADR 0152). Everything below 720px got base styles until
+   * it existed; `xs:`/`max-xs:` are where phone layout decisions live. (The
+   * `--edge` collapse in tokens.css sits at ViewShell's 1180 prose-collapse,
+   * not here: the margin rail exists on no route below that line.) */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 720px;
+  /* Where the header's nav ROW fits. Derived from the row's own content, not
+   * a device class: seven destinations plus the right-side controls need
+   * ~790px, so between 720 and 800 the desktop row overflowed the viewport
+   * and dragged the whole document 20px wide — measured 2026-08-21 on an iPad mini
+   * (768px). The drawer holds until the row genuinely fits. */
+  --breakpoint-nav: 800px;
+  --breakpoint-md: 860px;
+  --breakpoint-lg: 1180px;
+
+  --container-shell: 68rem; /* ViewShell's `wide` column cap */
+  --container-measure: var(--measure); /* 40rem, the reading measure */
+  --container-hint: 60ch; /* secondary explanatory copy under a title */
+  --container-toast: 44ch; /* a toast is one sentence, never a paragraph */
+  /* The graph's coverage note, which sits over the canvas rather than in a
+     column. Narrower than `hint` on purpose: it overlays the drawing it is
+     describing, so it has to stay out of the way of it. */
+  --container-coverage: 46ch;
+}
+
+/* ══ Named utilities for the tokens Tailwind has no namespace for ═════
+ *
+ * Chrome heights, rail widths, page geometry and stacking are all real tokens
+ * in `tokens.css`, but Tailwind v4 has no `--height-*`, `--width-*` or
+ * `--z-index-*` theme namespace to hang them on. The alternative is the
+ * `h-(--control-h)` var shorthand at every call site, which works and reads
+ * like plumbing. These name the intent once instead.
+ *
+ * Every one of them resolves through `var()`, so they remap with the token. */
+
+@utility h-control {
+  height: var(--control-h);
+}
+@utility h-nav {
+  height: var(--nav-height);
+}
+/* The sub-menu row. `min-height`, not `height`: the controls zone wraps, and a
+   fixed height would clip the second line rather than growing the bar. */
+@utility min-h-subnav {
+  min-height: var(--subnav-height);
+}
+@utility w-control {
+  width: var(--control-h);
+}
+
+@utility w-overlay-sm {
+  width: var(--overlay-sm);
+}
+@utility w-overlay-md {
+  width: var(--overlay-md);
+}
+@utility w-overlay-lg {
+  width: var(--overlay-lg);
+}
+@utility min-h-control {
+  min-height: var(--control-h);
+}
+
+/* The app frame's four rows: header, sub-menu, body, footer.
+
+   EVERY chrome track is `auto`, so each bar decides its own height and the row
+   follows. That is what lets a collapse ANIMATE: a fixed `--nav-height` track
+   holds its 48px however short the header inside it gets, so the bar would
+   shrink invisibly and the page would snap when the track finally changed.
+
+   The bars COLLAPSE, they are never removed -- the `<Teleport>` targets inside
+   them have to keep resolving while the chrome is away, and a teleport whose
+   target is missing throws. */
+@utility shell-rows {
+  /* Header, context bar, the billing banner, the routed view. Four fixed
+     tracks: the first three are `auto` and collapse to nothing when they have
+     nothing to show, which is why none of them may be `v-if`'d away -- removing
+     one shifts every later child up a track and drops the view out of its
+     `1fr`. */
+  grid-template-rows: auto auto auto 1fr;
+}
+
+/* Horizontal page geometry. `--edge` is where content starts on every route;
+   `--page-pad` is the outer gutter, and the margin rail lives between them. */
+@utility px-page {
+  padding-inline: var(--page-pad);
+}
+/* The ContextBar pads to `--edge` on the left and `--page-pad` on the right, so
+   it hangs off the content's vertical line while ending flush with the header
+   above it. */
+@utility pr-page {
+  padding-right: var(--page-pad);
+}
+/* The toast stack sits on the same right-hand gutter as every row of chrome. */
+@utility right-page {
+  right: var(--page-pad);
+}
+@utility pl-edge {
+  padding-left: var(--edge);
+}
+@utility w-rail-margin {
+  width: var(--rail-margin);
+}
+@utility w-rail-side {
+  width: var(--rail-side);
+}
+
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+@utility z-overlay {
+  z-index: var(--z-overlay);
+}
+@utility z-popover {
+  z-index: var(--z-popover);
+}
+@utility z-dialog {
+  z-index: var(--z-dialog);
+}
+@utility z-toast {
+  z-index: var(--z-toast);
+}
+
+/* Motion. `--motion-base` is the 120ms ceiling docs/DESIGN.md sets; nothing
+   animates decoratively, so there are exactly two durations. */
+@utility duration-fast {
+  transition-duration: var(--motion-fast);
+}
+@utility duration-base {
+  transition-duration: var(--motion-base);
+}
+
+/* The focus ring, as a utility rather than a `shadow-` one: `--shadow-*` is
+   cleared at the top of this file along with every other default scale, so
+   Tailwind has no shadow namespace to hang `--ring-focus` on. The single
+   consumer is the `:focus-visible` rule in base.css; this exists so a component
+   that needs to draw the same affordance explicitly has one name for it rather
+   than reaching for `shadow-[...]`, which the closed theme would refuse. */
+@utility ring-focus {
+  box-shadow: var(--ring-focus);
+}
+
+/* Declared at top level rather than inside `@theme`: the keyframes have to
+   exist whether or not the tree-shaker decides `--animate-spin-slow` was
+   used, and `Spinner` is the only consumer. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}

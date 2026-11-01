@@ -1,0 +1,738 @@
+/* Contract C5 -- the design token layer.
+ *
+ * TWO TIERS, and the separation is load-bearing:
+ *
+ *   Tier 1 (primitives)  raw values. Referenced ONLY by tier 2, never by a
+ *                        component. They carry no meaning -- --grey-850 does
+ *                        not know it is a panel background.
+ *   Tier 2 (semantic)    the ONLY names a component may reference.
+ *
+ * `make lint-tokens` enforces that: raw colours outside this file, tier-1
+ * references inside components, and tier-2 names not on the frozen list are all
+ * build failures.
+ *
+ * Entity colour tokens are named by the C4 id prefix (org, prog, tech, plat,
+ * person, gloss) so every consumer can do var(--entity-${id.split(':')[0]})
+ * with no lookup table anywhere.
+ */
+
+/* ══ Tier 1: primitives ══════════════════════════════════════════════ */
+:root {
+  /* Cool near-blacks. The ladder is wider than a normal UI scale because with
+     no shadows and no fills, surface separation is the only depth there is. */
+  --grey-995: #05070a;
+  --grey-990: #070a0d;
+  --grey-950: #0a0d11;
+  --grey-900: #0f1319;
+  --grey-850: #141920;
+  --grey-800: #1a2029;
+  --grey-750: #212934;
+  --grey-700: #2a3441;
+  --grey-600: #3b4756;
+  /* Between 600 and 500. `--text-tertiary` needs a rung that clears AA on
+     PAPER: --grey-500 is 4.53:1 on the light page, which is `--text-quiet`'s
+     value and would collapse the two rungs into one. 550 is 5.18:1 there. */
+  --grey-550: #4e5a68;
+  --grey-500: #5c6a7a;
+  /* Between 500 and 400. `--entity-undefined` has to stay READABLE and
+     --grey-500 measures 2.96:1 on `--surface-overlay`; --grey-450 is 3.89:1.
+     The dashed underline in prose.css is what marks a term undefined, not the
+     dimness. Caught by `test_every_entity_hue_is_legible_on_every_surface`. */
+  --grey-450: #6f7d8d;
+  /* The rung every micro-label sits on, so its contrast is checked rather than
+     eyeballed: as `--text-tertiary` it measures 5.30:1 on `--surface-overlay`,
+     the worst of the four surfaces. `tests/test_contracts.py` holds it. */
+  --grey-400: #8794a3;
+  --grey-300: #a7b2be;
+  --grey-200: #c8d0d9;
+  /* THE LIGHT LADDER'S FOUR RUNGS, packed because L* is compressed near white.
+     Base, a recess below it, a raised rung and white have to fit about 12 L*
+     while `--text-quiet` still clears 4.5:1 on base -- a window roughly 2.6 L*
+     wide. Moving one moves all four; see ADR 0133 first. */
+  --grey-150: #d7dee4;
+  --grey-100: #e0e6eb;
+  --grey-075: #e4e9ee;
+  --grey-050: #eef2f5;
+  --grey-025: #f7f9fb;
+  /* Pure white. Not a rung of the interface ladder -- nothing in the dark theme
+     sits on it -- but the lockup's wordmark is white rather than the ramp's
+     lightest grey. The light theme takes it as `--surface-overlay`. */
+  --grey-000: #ffffff;
+
+  /* Aqua, taken from the logo rather than invented: #1891ac is the mark's plate
+     and #d2ecf9 the wordmark's value. Seven rungs, so --accent-muted and
+     --accent-deep have somewhere to point rather than sharing one value with
+     --accent-primary; only 600 and 200 come from the file itself. */
+  --aqua-950: #071a20;
+  /* The eighth rung, for light mode. `--accent-primary` has to be a MARK on
+     paper -- a link, an active label -- so it inverts to nearly the darkest
+     rung. It is one more step of the existing ramp, not the hue pulled darker,
+     which is why sliding down it reproduces the dark theme's three role
+     contrasts almost exactly (8.12/4.70/3.02 against 8.02/4.82/3.09). */
+  --aqua-800: #184953;
+  --aqua-700: #14707f;
+  --aqua-600: #1891ac;
+  --aqua-500: #2aa6c2;
+  --aqua-400: #3fbdd6;
+  --aqua-300: #8fdcec;
+  --aqua-200: #d2ecf9;
+
+  /* Signal hues. Desaturated so a screen full of them stays readable. */
+  --amber-700: #846325;
+  --amber-500: #d4a03c;
+  --rust-700: #a84d41;
+  --rust-500: #c1584a;
+  --sage-700: #4f7060;
+  --sage-500: #6f9f88;
+  --cyan-700: #426e88;
+  --cyan-500: #5f9ec4;
+  --violet-700: #6d638a;
+  --violet-500: #8b7fb0;
+  --clay-700: #826246;
+  --clay-500: #b0855f;
+  /* Country. Every other signal hue was spoken for by an entity type or a
+     status, and double-booking one would make two meanings the same colour.
+     Muted bronze reads as background structure, which a national anchor is. */
+  --bronze-800: #755c37;
+  --bronze-700: #80643c;
+  --bronze-500: #a8834f;
+  /* Two more, for the entity types that had to move off the accent. The accent
+     sits at 192 degrees, so at 202 and 181 a tech node and a SELECTED node were
+     nearly the same colour and the accent's meaning -- "you can act on this" --
+     was ambiguous. Indigo at 232 and orchid at 315 are the two wide gaps left
+     once org (152), plat (27), person (262) and country (35) are placed. */
+  --indigo-800: #555c8f;
+  --indigo-700: #5d659c;
+  --indigo-500: #7f8ad4;
+  --orchid-700: #8c587f;
+  --orchid-500: #c47cb3;
+  /* Three more, for the organisation split (ontology v3). --sage-500 stays with
+     Company: the largest group, so the fewest nodes change colour. Moss at 72,
+     plum at 288 and rose at 340 take the widest gaps left, at the signal hues'
+     saturation and lightness -- a screen of nine entity colours only stays
+     readable if none of them shouts.
+
+     Plum and orchid are 27 degrees apart, which looks tight until you note clay
+     (27) and bronze (35) already ship 8 apart. The separation that has to be
+     obvious is Company from GovernmentBody -- seller from buyer -- and that one
+     is 80 degrees. */
+  --moss-800: #5f6338;
+  --moss-700: #676c3d;
+  --moss-500: #98a05a;
+  --plum-700: #805b8c;
+  --plum-500: #a878b8;
+  --rose-700: #865d6b;
+  --rose-500: #c2879b;
+
+  /* Translucent shade for the one overlay backdrop (Dialog, palette), and the
+     three washes the bracket frames and classification bars sit on. The alpha
+     belongs in tier 1 with the other raw values -- `rgba()` in a component is
+     both a CLAUDE.md prohibition and a `lint_tokens.py` failure, and this file
+     is the only place excluded from that scan.
+
+     Black and aqua, unconditional -- NEVER a copy of a surface token. A scrim
+     that duplicated `--surface-base` would composite to exactly the page
+     colour, leaving modals with no backdrop at all.
+
+     The three washes are decimal copies of `--accent-primary` and NOTHING links
+     them to it, so an accent swap can silently half-land: re-derive all three by
+     hand whenever the accent moves. 63 189 214 is #3fbdd6 is --aqua-400. */
+  /* The brand kit's neutral black, and the ONLY value here not on a ramp above.
+     The lockup's monogram is #111111 -- a true neutral, not the cool near-black
+     the interface is built from -- and moving it onto `--grey-950` would be
+     re-drawing artwork to fit a palette. One rung, one consumer. */
+  --ink-900: #111111;
+
+  --shade-heavy: rgb(0 0 0 / 68%);
+  /* The scrim on paper. Black at 68% over a light page composites to #494b4c,
+     darker than the DARK theme's own panels -- a light dialog cut into a night
+     scene rather than a page pushed back. 45% darkens the page 38.7 L* and
+     leaves the white dialog at 3.97:1 against its own backdrop. Still black and
+     still unconditional. If it reads weak, 55% is the next stop and the last. */
+  --shade-medium: rgb(0 0 0 / 45%);
+  --wash-accent: rgb(63 189 214 / 8%);
+  --wash-accent-strong: rgb(63 189 214 / 16%);
+  /* The focus glow, at the one alpha where it reads as a halo rather than as a
+     second border on a dark field. */
+  --wash-focus: rgb(63 189 214 / 28%);
+  /* The same three alphas over the LIGHT accent, and that the alphas do not
+     change is the finding rather than an economy: 8/16/28% of --aqua-800 on
+     paper moves the ground 4.8/9.7/16.9 L*, against 6.6/12.9/21.8 for --aqua-400
+     on the dark page -- same order, slightly gentler, which is right because a
+     wash reads more strongly per L* on paper. 24 73 83 is #184953 is --aqua-800;
+     re-derive all three by hand whenever the light accent moves. */
+  --wash-accent-paper: rgb(24 73 83 / 8%);
+  --wash-accent-strong-paper: rgb(24 73 83 / 16%);
+  --wash-focus-paper: rgb(24 73 83 / 28%);
+}
+
+/* ══ Tier 2: semantic ════════════════════════════════════════════════ */
+/*
+ * ONE BLOCK, TWO PALETTES, AND LIGHT IS THE FIRST ARGUMENT.
+ *
+ * That ordering is inverted against every other file in this project, and it is
+ * not a choice: `light-dark()` takes the light value first. It is called out
+ * because the failure is silent -- swap the two arguments on one token and it
+ * renders correctly on whichever theme you are looking at.
+ *
+ * One block rather than `:root` plus `:root[data-theme='light']`: two copies of
+ * a palette drift, and a token retuned in one and not the other is invisible
+ * until somebody switches themes. `test_no_colour_token_is_declared_twice`
+ * holds this file to one block.
+ *
+ * `color-scheme: light dark` is SYSTEM, and it is the default because it is the
+ * only value that is not a guess about the reader.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* surfaces -- a monotonic ladder, base darkest, held there by
+   * `test_the_surface_ladder_is_monotonic`. Base-to-raised is 6.2 L*; below the
+   * just-noticeable difference for two large adjacent fields, every region needs
+   * a border to be legible at all and the app reads as boxes-in-boxes.
+   *
+   * Base stays `--grey-950`. Dropping it to `--grey-990` is a ~1 L* no-op that
+   * would composite `--scrim` to nearly nothing, leaving modals with no
+   * backdrop. The lever is raising `raised`, not lowering base.
+   *
+   * THE LADDER INVERTS AT `inset`, and that is the whole of "paper on grey". At
+   * night the page is the darkest thing and a recess goes LIGHTER; on paper the
+   * page is a grey, the panels are white, and a recess goes DARKER. From base in
+   * L*: dark +3.21 / +6.25 / +9.74, light -4.00 / +5.72 / +7.89. The test
+   * derives the direction from the page's own lightness rather than hard-coding
+   * it per theme.
+   *
+   * The light rungs have almost no room: `--text-quiet` must clear 4.5:1 on
+   * base, which caps base from below; the >=5 L* base-to-raised floor caps it
+   * from above; and `overlay` is white. The window is about 2.6 L* wide, and
+   * `raised -> overlay` is the thin one at 2.17 L*. */
+  --surface-base: light-dark(var(--grey-075), var(--grey-950));
+  --surface-inset: light-dark(var(--grey-150), var(--grey-900));
+  --surface-raised: light-dark(var(--grey-025), var(--grey-850));
+  --surface-overlay: light-dark(var(--grey-000), var(--grey-800));
+  /* Selection is accent-tinted, not grey: "this one" is an interaction state,
+     and the accent is what interaction means here. Capped so the darkest entity
+     hue still clears 3:1 on it -- `--entity-person` measures 4.89:1 against
+     --aqua-950 and the worst of the eight 4.24:1. Swept by
+     `test_every_entity_hue_is_legible_on_every_surface`. */
+  --surface-selected: light-dark(var(--aqua-200), var(--aqua-950));
+
+  /* borders -- hairlines, never shadows */
+  /* The light rungs are one step STRONGER in ratio than the dark ones
+     (1.28/1.76/2.53 on base against 1.19/1.54/2.06): a hairline on paper has
+     less of the surrounding field to separate itself from. */
+  --border-subtle: light-dark(var(--grey-200), var(--grey-800));
+  --border-default: light-dark(var(--grey-300), var(--grey-700));
+  --border-strong: light-dark(var(--grey-400), var(--grey-600));
+  /* The corner ticks and frame rules that mark a region without boxing it. A
+     `Panel` border says "this floats, or you can press it"; a bracket arm says
+     neither. */
+  --border-tick: light-dark(var(--grey-400), var(--grey-600));
+
+  /* text */
+  --text-primary: light-dark(var(--grey-950), var(--grey-050));
+  --text-secondary: light-dark(var(--grey-600), var(--grey-300));
+  /* --grey-550 on paper, not --grey-500: at --grey-500 this measures 4.53:1 on
+     the light page, which is `--text-quiet`'s own value -- the two rungs would
+     collapse into one on one theme only. */
+  --text-tertiary: light-dark(var(--grey-550), var(--grey-400));
+  /* Below tertiary. For text that must be present but must not compete -- the
+     ContextBar's route identity, and nothing else so far.
+
+     --grey-450, not the --grey-500 the design bundle specifies: at --grey-500
+     this measures 3.52:1 on `--surface-base` and 2.96:1 on `--surface-overlay`,
+     failing AA and the bundle's own 3:1 floor.
+     `test_text_quiet_is_legible_where_it_is_used` holds both bounds.
+
+     ON PAPER IT IS THE BINDING CONSTRAINT FOR THE WHOLE LIGHT LADDER. --grey-500
+     measures 4.53:1 on `--surface-base` against a 4.5 floor and is the last rung
+     of the ramp that clears it, so this token fixes how light the light page may
+     be, not the other way round. Retuning `--surface-base` means re-deriving
+     this first. */
+  --text-quiet: light-dark(var(--grey-500), var(--grey-450));
+  /* The one token whose ROLE inverts rather than its value. This is text on a
+     FILLED ACCENT, and the fill goes from a bright aqua to a deep teal, so the
+     text goes from near-black to white. `Button` is the only consumer: 9.09:1
+     dark, 9.92:1 light. */
+  --text-inverse: light-dark(var(--grey-000), var(--grey-995));
+  /* The reading surface, and only the reading surface. On a reading tool the
+   * sustained prose has to be the brightest thing on the page. A separate rung
+   * rather than a brightening of `--text-secondary`, which would cut the
+   * primary/secondary separation and flatten every heading to fix one
+   * paragraph. */
+  --text-body: light-dark(var(--grey-750), var(--grey-200));
+
+  /* one interaction accent; everything else is neutral */
+  --accent-primary: light-dark(var(--aqua-800), var(--aqua-400));
+  --accent-muted: light-dark(var(--aqua-700), var(--aqua-600));
+  /* The prose blockquote rule. Deep enough to read as a rule rather than as an
+     active element -- the accent means "you can act on this", and a blockquote
+     is not actionable.
+
+     NOTE IT MOVES THE OPPOSITE WAY FROM ITS OWN NAME. The other two accent rungs
+     go DOWN the ramp on paper and this one goes UP. The name describes a
+     dark-mode value; the ROLE is "quiet enough to read as a rule", and on a
+     light page quiet means lighter. 3.02:1 light against 3.09:1 dark. */
+  --accent-deep: light-dark(var(--aqua-600), var(--aqua-700));
+  --accent-wash: light-dark(var(--wash-accent-paper), var(--wash-accent));
+  --accent-wash-strong: light-dark(var(--wash-accent-strong-paper), var(--wash-accent-strong));
+
+  /* The lockup, in three parts, because `Wordmark.vue` INLINES the drawn
+   * artwork rather than pointing an `<img>` at it.
+   *
+   * The word has to be white here and near-black on paper, and the brand kit
+   * ships no lockup pairing the aqua plate with a white wordmark -- every
+   * aqua-plate variant sets the word in `--aqua-200`, and the two that set it
+   * white whiten the plate too. So: one attribute driven from here, rather than
+   * an eleventh file maintained by hand alongside ten kit files.
+   *
+   * The plate and the monogram are INVARIANT. They are artwork -- the same on
+   * paper as at night -- and anything that makes them vary is re-drawing the
+   * logo. ADR 0133. */
+  --brand-plate: var(--aqua-600);
+  --brand-monogram: var(--ink-900);
+  --brand-wordmark: light-dark(var(--grey-950), var(--grey-000));
+
+  /* Google's sign-in button, per their brand guidelines: the LIGHT button,
+   * used on both themes -- their spec's colours, so these are another
+   * party's artwork constants, like the plate above, and must not theme.
+   * Referenced only by the sign-in surface; the hub hand-inlines the same
+   * three values (hub/hub/pages.py). */
+  --google-button-surface: #ffffff;
+  --google-button-ink: #1f1f1f;
+  --google-button-stroke: #747775;
+
+  /* The one focus affordance, consumed by a single `:focus-visible` rule in
+   * base.css and by nothing else.
+   *
+   * It composites OUTSIDE the box, so focus never reflows a row. A deliberate,
+   * scoped amendment to the no-shadows rule in docs/DESIGN.md: a glow at
+   * `:focus-visible` is the one exception, and elevation, gradients and
+   * decorative shadow all stay banned. */
+  /* `light-dark()` takes COLOURS, not shadow values, so the pair cannot live on
+     `--ring-focus`: the colour is lifted into its own tier-2 token and the
+     shadow references it. */
+  --focus-wash: light-dark(var(--wash-focus-paper), var(--wash-focus));
+  --ring-focus: 0 0 0 3px var(--focus-wash);
+
+  /* signal / status */
+  --signal-high: light-dark(var(--amber-700), var(--amber-500));
+  --signal-critical: light-dark(var(--rust-700), var(--rust-500));
+  --signal-ok: light-dark(var(--sage-700), var(--sage-500));
+  --signal-info: light-dark(var(--cyan-700), var(--cyan-500));
+
+  /* syntax colouring, for the configuration editor and nothing else.
+   *
+   * FOUR TOKENS, not a syntax theme. Everything structural the editor needs --
+   * its caret, selection, gutter, panels and fold placeholder -- already has a
+   * meaning in this palette (`--text-primary`, `--surface-selected`,
+   * `--surface-base`, `--border-subtle`), and the editor reads those. What has
+   * no equivalent is the meaning of a token IN a document, so only that is
+   * declared here. A comment is `--text-tertiary` and punctuation is
+   * `--text-secondary` for the same reason.
+   *
+   * The three hues are the entity families one rung darker on paper (`X-800`,
+   * not the `X-700` the slots use) and the same `X-500` on the night palette.
+   * The slots only owe 3:1; this is text you read a file through, so it owes
+   * 4.5:1 on `--surface-inset` -- the darkest light surface -- where `X-700`
+   * lands at 4.06:1.
+   * `test_every_code_token_is_legible_on_the_editor_ground` holds them at 4.5:1
+   * on `--surface-inset`, which is the editor's own ground. */
+  --code-key: light-dark(var(--indigo-800), var(--indigo-500));
+  --code-string: light-dark(var(--moss-800), var(--moss-500));
+  --code-number: light-dark(var(--bronze-800), var(--bronze-500));
+  /* A GROUND, not text, so it is a wash: the matched text keeps its own colour
+     and stays legible on either palette rather than being repainted. */
+  --code-search-match: light-dark(var(--wash-accent-strong-paper), var(--wash-accent-strong));
+
+  /* graph edges: epistemic strength, visible without clicking.
+   *
+   * There is no `--edge-single-source`. `useCytoscape.ts` distinguishes a
+   * single-source edge by DASHING it, which docs/DESIGN.md requires anyway:
+   * epistemic weakness has to survive greyscale, and a colour step does not. */
+  /* The one colour token with no `light-dark()` pair, and it is earned rather
+     than skipped: a mid-grey is the single value that reads on both grounds --
+     3.52:1 on the dark page, 4.53:1 on the light one. */
+  --edge-confirmed: var(--grey-500);
+
+  /* entity colour SLOTS -- the palette a domain's ontology assigns from.
+     Each type declares `color_slot: N` in its ontology.yaml, and the app
+     injects `--entity-<prefix>: var(--entity-slot-N)` at boot from
+     /api/meta/ontology (`lib/entityTokens.ts`), so a generated domain's
+     types colour correctly with no build. The slot count is the cap on a
+     domain's type count; every slot has passed the 3:1 contrast sweep on
+     every surface in both themes (test_contracts.py). */
+  --entity-slot-1: light-dark(var(--sage-700), var(--sage-500));
+  --entity-slot-2: light-dark(var(--moss-700), var(--moss-500));
+  --entity-slot-3: light-dark(var(--plum-700), var(--plum-500));
+  --entity-slot-4: light-dark(var(--rose-700), var(--rose-500));
+  --entity-slot-5: light-dark(var(--indigo-700), var(--indigo-500));
+  --entity-slot-6: light-dark(var(--orchid-700), var(--orchid-500));
+  --entity-slot-7: light-dark(var(--clay-700), var(--clay-500));
+  --entity-slot-8: light-dark(var(--violet-700), var(--violet-500));
+  --entity-slot-9: light-dark(var(--bronze-700), var(--bronze-500));
+
+  /* The defense instance's prefixes, aliased to their slots -- names match
+     C4 id prefixes. Static so first paint needs no injection here and so
+     the extension's generated stylesheets keep resolving; the injector
+     writes the identical mapping over these at boot. */
+  --entity-company: var(--entity-slot-1);
+  --entity-govt: var(--entity-slot-2);
+  --entity-unit: var(--entity-slot-3);
+  --entity-research: var(--entity-slot-4);
+  --entity-prog: var(--entity-slot-5);
+  --entity-tech: var(--entity-slot-6);
+  --entity-plat: var(--entity-slot-7);
+  --entity-person: var(--entity-slot-8);
+  --entity-country: var(--entity-slot-9);
+  --entity-glossary: light-dark(var(--grey-550), var(--grey-400));
+  /* --grey-500 on paper: the DIMMEST entity value that still clears AA. What
+     marks a term undefined is the dashed underline in prose.css, never the
+     dimness -- an undefined acronym is exactly the one a reader most needs to
+     be able to read. */
+  --entity-undefined: light-dark(var(--grey-500), var(--grey-450));
+
+  /* space -- 4px base, eight rungs and nothing between them. One rung looser
+     than a conventional dense UI: a fixed-pitch interface needs the air to stay
+     scannable. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 18px;
+  --space-5: 26px;
+  --space-6: 36px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* The sub-rung. 2px, and ONLY 2px: controls that must not change the height
+     of the row they annotate -- key caps, chips, dense table rows. One value
+     below the 4px floor is a rung; two is the drift the floor prevents. */
+  --space-half: 2px;
+
+  /* Every control in the header shares --control-h, so the bar cannot mix four
+     optical lines.
+
+     --control-h-sm is the one control smaller than that: a rail's collapse
+     affordance and a table row's action, where a full-size target would dominate
+     the row. Named so there are two control sizes rather than an 18 somewhere. */
+  --control-h: 28px;
+  --control-h-sm: 20px;
+  /* The phone rung: 44px is the platform minimum tap target. Controls rise to
+     it under the phone breakpoint instead of shipping 28px targets to thumbs. */
+  --control-h-touch: 44px;
+
+  /* The switch track, sized around the existing dot rather than invented: the
+     thumb IS --dot-md, inset by --space-half all round. The track stays outlined
+     and the THUMB carries the state -- a track filled with the accent would read
+     as a primary action, and `ui_smoke` fails any accent-filled control in the
+     `controls` zone.
+
+     `box-sizing: border-box` is global, so the 1px border comes OUT of these:
+     the height is 1 + 2 + 7 + 2 + 1 and the width 1 + 2 + 7 + 9 + 2 + 1. Forget
+     the borders and the thumb sits low and runs off the right-hand end. */
+  --switch-w: 22px;
+  --switch-h: 13px;
+  /* Width, less both borders, both paddings and the thumb. Declared rather than
+     computed in the template so the two ends of the travel cannot drift. */
+  --switch-travel: 9px;
+
+  /* Beside the type scale, not below it: SVG/canvas labels in the graph, drawn
+     at a size no DOM text is allowed to use. Separate because a canvas label is
+     not on the type scale's rhythm, NOT because it may go smaller -- 11px is the
+     floor the rest of the system holds to. */
+  --label-micro: 11px;
+
+  /* Fixed marks that are not spacing: status dots, the run spine, and the
+     corner-bracket arm. */
+  --dot-sm: 5px;
+  --dot-md: 7px;
+  --spine-h: 4px;
+  --tick: 7px; /* corner-bracket arm length */
+  --tick-w: 1px; /* corner-bracket stroke */
+
+  /* Field widths in dense rails and label columns. */
+  --field-xs: 4rem;
+  --field-sm: 5.5rem;
+  --field-md: 7rem;
+  --field-lg: 16rem;
+
+  /* Scroll clamps for embedded scroll regions. */
+  --scroll-sm: 180px;
+  --scroll-md: 260px;
+  --scroll-lg: 340px;
+  --scroll-xl: 480px;
+
+  /* radii -- drawn on a character grid, not with a ruler.
+   *
+   * A REMAP, not a sweep: every control in the app writes `rounded-sm` (28
+   * sites) and every container `rounded-md` (13), so moving these two values
+   * moves all of them with no component source touched.
+   *
+   * --radius-hair stays 0: the spine, the freshness meter and the corner ticks
+   * are hard-edged, and a radius on a 4px bar rounds it into a lozenge. */
+  --radius-hair: 0px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  /* One rung above --radius-md, for the four things that read as glass rather
+     than as a box: Panel, Dialog, the entity hover card and the palette. */
+  --radius-lg: 6px;
+  /* The exception, and the only one: things that are round because they are
+     round -- the spinner, the switch track and its thumb. `theme.css` clears
+     Tailwind's radius scale with `--radius-*: initial`, so `rounded-full`
+     generates NOTHING, and on a non-square box `50%` is an ellipse. */
+  --radius-pill: 999px;
+
+  /* chrome -- ONE header, ONE sub-menu row, ONE footer, owning their heights
+     here because full screen and the hover-card clamp both compute against them.
+     The sub-menu is shorter on purpose: it is subordinate, and equal heights
+     read as two navs. See docs/DESIGN.md. */
+  --nav-height: 48px;
+  --subnav-height: 38px;
+
+  /* How much of that chrome is currently AWAY, and how far each bar has been
+     lifted to make it so. Zero here and rewritten on `<html>` by the ui store,
+     because these are the chrome dimensions that are state rather than design:
+     the brief's bars recede at the rate the reader scrolls.
+
+     The lift is SPLIT because a grid track cannot go negative -- one margin on
+     the header slides both bars until its own row reaches zero and then stops
+     dead, at 48px of the 86 needed. A sticky element inside a view needs
+     `--chrome-gone` for a different reason: it is pinned to the top of a
+     scroller that is itself moving, and cannot work out how far. ADR 0199. */
+  --chrome-gone: 0px;
+  --chrome-lift-nav: 0px;
+  --chrome-lift-context: 0px;
+
+  /* The reading measure -- in rem, not `ch`. A track sized in `ch` resolves
+   * against the grid container's font, so the only way to make `72ch` mean 72
+   * prose characters would be to set the whole container in the reading face and
+   * undo it on every child. 40rem is ~72 characters of Inter at 16px. */
+  --measure: 40rem;
+  /* The measure for the band where the side rail has collapsed (tablets --
+   * ViewShell's prose grid below 1180px). With no rail beside it, a 40rem
+   * column left-pinned on a 768-1024px screen is a strip of text against a
+   * dead right gutter; ~86 characters is the ceiling of the comfortable
+   * range, and the difference is what the gutter gives back to the reader. */
+  --measure-wide: 48rem;
+  /* The working-view column (ViewShell `width="wide"`): tables, queues, admin.
+   * Sized for the widest row the app actually renders -- a run's outcome id
+   * (`brief:<date>:<uuid7>`, ~53 mono characters) beside seven other columns
+   * on /runs. At 68rem that id wrapped to three lines against an empty right
+   * gutter. */
+  --measure-page: 80rem;
+
+  /* Page composition. Every route hangs off the same two vertical lines:
+   * `--edge` is where content starts, and the margin rail to its left carries
+   * marginalia -- item ordinals, ages, state -- rather than being empty black. */
+  /* The widest thing the margin has to hold is the item state, and `FOLLOW-UP`
+     at `--text-2xs` with label tracking needs the room in mono. A margin rail
+     whose contents wrap is worse than no margin rail. */
+  --rail-margin: 6.5rem;
+  --rail-side: 16rem;
+  --page-pad: var(--space-6);
+  --edge: calc(var(--page-pad) + var(--rail-margin));
+
+  /* Overlay widths. Three named rungs, because a confirm dialog, the command
+     palette and the keyboard map are three genuinely different amounts of
+     content. */
+  /* The entity card, in both the app and the extension -- one measurement that
+     would otherwise be maintained twice, in `EntityHoverCard.vue` and the
+     extension's `HoverCard.vue`, as a number no linter can see. 340 could not
+     hold "US Department of Defense" on one line beside a type badge. */
+  --card-w: 400px;
+
+  --overlay-sm: min(540px, 100%);
+  --overlay-md: min(600px, 100%);
+  --overlay-lg: min(760px, 100%);
+
+  /* graph rails */
+  --rail-width: 272px;
+  --rail-width-wide: 336px;
+  --rail-collapsed: 32px;
+  /* Full screen, where a rail is GONE rather than collapsed. Collapsed keeps a
+     32px stub with a chevron, which is right when the reader can still choose;
+     full screen is the reader saying they want the canvas and nothing else. A
+     token so all four rail widths stay one scale in one file. */
+  --rail-hidden: 0px;
+  /* The width the canvas keeps whatever the rails want. Two open rails are
+     608px of the five hundred a split window has, and a grid that hands them
+     their preferred widths first leaves the canvas a track of ZERO -- where
+     Cytoscape renders correct elements into no pixels, and a renderer told it
+     is zero wide cannot be resized back. So the canvas track carries this
+     floor and the rail tracks yield into it. 240px is a graph you can read a
+     cluster in; below that the phone breakpoint has already hidden both
+     rails. */
+  --rail-canvas-min: 240px;
+
+  /* the one overlay backdrop */
+  --scrim: light-dark(var(--shade-medium), var(--shade-heavy));
+
+  /* stacking. Declared one-per-line: `lint_tokens.py` anchors its declaration
+     regex with `^` under MULTILINE, so several on one line register as one token
+     and the rest fail as undeclared. Resolve these with a STATIC map in
+     components, never a dynamic `var()` -- a dynamic family has to be registered
+     in the linter, which is on C5's touch list. */
+  --z-sticky: 10;
+  --z-overlay: 100;
+  --z-popover: 200;
+  --z-dialog: 300;
+  --z-toast: 400;
+
+  /* type -- SELF-HOSTED, see main.ts.
+   *
+   * Two families, not three, and the split is the voice of the interface. A
+   * terminal reads as a terminal because the CHROME is fixed pitch, so
+   * `--font-ui` and `--font-mono` are the same family; sustained reading in mono
+   * is a pose, so the one surface read for minutes at a time gets a proportional
+   * face built for it.
+   *
+   * These name the families the `@fontsource-variable` packages actually
+   * declare, which is why they carry the ` Variable` suffix the design bundle's
+   * Google-Fonts delivery does not. DO NOT NAME A FAMILY THAT IS NOT IN
+   * package.json: an unbundled name resolves to whatever the machine happens to
+   * have, and the type system ends up designed against faces that never
+   * rendered. */
+  --font-ui: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-prose: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Nine rungs, opened up a step because fixed pitch needs more room to stay
+   * legible. 11/12/13/14 are four genuine density contexts and are NOT
+   * interchangeable; 16/18/24/32 are where ranking happens. See
+   * docs/DESIGN.md. */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  /* The ninth rung, above the eight that make the interface: the empty-corpus
+     state, the login lockup and the request-access heading, the three places the
+     app speaks at display scale. Nothing in a populated view uses it. */
+  --text-3xl: 44px;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Three tracking values. --tracking-label is less than a proportional face
+     would need, because mono already carries the width; --tracking-tight is
+     prose only, which Inter sets slightly loose at reading size. */
+  --tracking-label: 0.14em;
+  --tracking-tight: -0.01em;
+  /* --text-3xl's partner: at 44px mono needs -0.035em. Display only --
+     applying it below --text-2xl closes prose up rather than tightening a
+     heading. */
+  --tracking-display: -0.035em;
+
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-normal: 1.55;
+  --leading-prose: 1.7;
+
+  /* motion -- brisk, never decorative */
+  --motion-fast: 90ms;
+  --motion-base: 120ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0.2, 1);
+  /* The cursor. 1.1s is a VT100's rate; anything faster reads as an error state
+     rather than as a waiting prompt. */
+  --motion-blink: 1.1s;
+
+  /* The graph field: the drawing behind a whole-page failure (the 404, the
+     login refusal, an offline app). Slower than every motion rung above it.
+     Those move a control a reader is waiting on; this one is ambient, behind
+     a notice someone is reading, and has to be ignorable.
+
+     The opacity is a NUMBER, so it cannot go through `light-dark()`; the two
+     media blocks at the foot of this file re-point it, and the base value here
+     is the PAPER one. Paper sits lower than night: dark strokes on a bright
+     ground read heavier and would compete with the notice on top of them. The
+     same values are spelled in `hub/canvas/tokens.css` and emitted into
+     `hub/hub/field.py`, which has no token pipeline at all
+     (scripts/graph_field.py). */
+  --graph-field-opacity: 0.42;
+  --graph-field-opacity-night: 0.55;
+  --graph-field-pulse-low: 0.3;
+  --cadence-graph-field: 5200ms;
+  /* The gap between one hub's breath and the next. Seven hubs in step read as
+     one blinking object rather than as a graph with things happening in it. */
+  --cadence-graph-field-step: 700ms;
+}
+
+/* The two explicit choices. Everything above answers to `color-scheme`, so
+ * these two rules are the entire theme switch -- no palette is repeated, and
+ * `stores/theme.ts` writes nothing but this one attribute.
+ *
+ * They declare `color-scheme` and NOTHING ELSE, which is the whole design: a
+ * colour in either block would be a second palette, and the two would drift.
+ * `test_no_colour_token_is_declared_twice` fails if one appears.
+ *
+ * System is the absence of the attribute rather than a third value, so the
+ * pre-boot document -- before `theme-boot.js` has run, before any stylesheet has
+ * loaded -- already agrees with the operating system. That is why `index.html`
+ * carries no `data-theme`: with one, the first paint is pinned for everybody.
+ *
+ * TWO CONSUMERS CANNOT SEE ANY OF THIS. `useCytoscape.ts` reads tokens through
+ * `getComputedStyle` for a CANVAS, which cannot resolve `var()` at all, and the
+ * extension's shadow root resets `color-scheme` with `all: initial`. Both need
+ * handling of their own; see ADR 0133. */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* The phone tier (ADR 0152). `--edge` is a 140px left gutter -- 36% of a 390px
+ * screen -- and every route hangs off it, so collapsing it HERE re-anchors all
+ * of them at once; nothing else may re-derive it. The margin rail it reserved
+ * is already gone at this width (BriefItem folds marginalia inline below the
+ * 1180px collapse). 1180 is ViewShell's prose-collapse line: below it the
+ * Brief centres and the margin rail exists on no route, so a wide page
+ * paying 104px of empty gutter on an iPad was alignment with a line that
+ * was not there. A media query cannot read a token, so the value appears
+ * literally, here and in ViewShell. */
+@media (max-width: 1180px) {
+  :root {
+    --edge: var(--page-pad);
+  }
+}
+
+/* The phone tier's outer gutter. 36px a side spent 18% of a 390px screen on
+ * padding; 18px is the app's own `--space-4` rung and what a phone reader's
+ * thumb expects. `--edge` already equals `--page-pad` here, so content and
+ * chrome move in together. 480 is `--breakpoint-xs`, literal for the same
+ * reason as above. */
+@media (max-width: 480px) {
+  :root {
+    --page-pad: var(--space-4);
+  }
+}
+
+/* The field's night opacity. A number cannot be a `light-dark()` pair, so this
+ * is the one token in the file that needs a rule per theme rather than a pair.
+ *
+ * BOTH re-points sit inside an `@media` block, and that is the contract, not a
+ * coincidence: `test_no_colour_token_is_declared_twice` allows a media block to
+ * re-point a dimension and refuses a second bare `:root` declaration, because a
+ * second bare block is the two-palette shape this file exists to avoid. Writing
+ * `:root[data-theme='dark']` at the top level here would have been exactly that.
+ *
+ * Four cases, and the base value above covers two of them:
+ *   light system, no choice      -> base (paper)
+ *   light system, chose dark     -> first block
+ *   dark system, no choice       -> second block
+ *   dark system, chose light     -> base (paper), excluded by the `:not()` */
+@media (prefers-color-scheme: light) {
+  :root[data-theme='dark'] {
+    --graph-field-opacity: var(--graph-field-opacity-night);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --graph-field-opacity: var(--graph-field-opacity-night);
+  }
+}

@@ -1,0 +1,27 @@
+# Skeleton — replaced by the setup wizard's draft.
+expansions: {}
+
+# One entry, because `add_to_stoplist` (the glossary's stoplist button)
+# appends to an existing block and refuses to invent one.
+stoplist:
+  - faq
+
+short_whitelist: []
+non_distinguishing: []
+
+# The two merge lexicons, read by the curation classifier. Present and empty
+# for the reason `stoplist` carries one entry: a block that does not exist is a
+# block the Admin rail cannot append to, and the wizard's draft may not reach
+# this file at all.
+#
+# Empty is the SAFE state. A token missing from these misses a merge, which
+# lands in the review queue; a token wrongly in them merges two entities that
+# are not one, which nobody sees. Fill them from what the queue keeps asking.
+#
+# corporate_form: words naming a company's legal or corporate FORM rather than
+#   a different company, so `Acme` and `Acme <word>` are one firm. Judge per
+#   domain: the same word can be substantive in another one.
+# generic_tails: head nouns a writer appends without naming a different thing.
+#   Counted only where they TRAIL the longer name.
+corporate_form: []
+generic_tails: []

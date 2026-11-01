@@ -1,0 +1,14 @@
+# Skeleton — replaced by the setup wizard's draft. One axis, weight 1.0,
+# because the loader's contract (weights sum to 1.0, at least one axis) holds
+# for a blank instance too. `description` is the model's scoring contract;
+# `label` and `plain` are the reader-facing name and one-liner the tailor
+# screens render.
+scale:
+  min: 0
+  max: 5
+axes:
+  - id: relevance
+    label: Relevance
+    plain: Placeholder until this domain is set up.
+    weight: 1.0
+    description: Placeholder until the wizard drafts this domain's axes.

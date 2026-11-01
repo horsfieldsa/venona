@@ -1,0 +1,433 @@
+# Seed entities. Loaded as assertions with method='seed', then projected.
+#
+# ~50 hand-declared entities with known aliases buy more resolution accuracy
+# than any amount of fuzzy matching. `strictness` overrides the write-time
+# default where the shape rule gets it wrong; see docs/DATA-MODEL.md.
+
+entities:
+  # ── Department / services ──────────────────────────────────────────
+  - id: govt:defense-department
+    type: GovernmentBody
+    name: Department of War
+    org_type: department
+    summary: The U.S. defense establishment, renamed Department of War in 2025.
+    relevance: 0.5
+    aliases:
+      # The rebrand is live in these feeds today; both names must resolve here
+      # or the same organisation splits into two nodes.
+      - { surface: DoD, strictness: 2 }
+      - { surface: DOD, strictness: 2 }
+      - { surface: Department of War, strictness: 3 }
+      - { surface: DoW, strictness: 2 }
+      - { surface: Pentagon, strictness: 3 }
+
+  - id: unit:u-s-army
+    type: MilitaryUnit
+    name: United States Army
+    org_type: service
+    summary: Land warfare service; primary customer for NGC2 and TITAN.
+    relevance: 0.9
+    part_of: govt:defense-department
+    aliases:
+      - { surface: U.S. Army, strictness: 3 }
+      - { surface: US Army, strictness: 3 }
+      - { surface: the Army, strictness: 1 }
+      # "Army" alone is stoplisted (strictness 0): it is ordinary English and
+      # would light up every paragraph.
+      - { surface: Army, strictness: 0 }
+
+  - id: unit:u-s-navy
+    type: MilitaryUnit
+    name: United States Navy
+    org_type: service
+    relevance: 0.6
+    part_of: govt:defense-department
+    aliases:
+      - { surface: U.S. Navy, strictness: 3 }
+      - { surface: USN, strictness: 2 }
+
+  - id: unit:u-s-air-force
+    type: MilitaryUnit
+    name: United States Air Force
+    org_type: service
+    relevance: 0.6
+    part_of: govt:defense-department
+    aliases:
+      - { surface: U.S. Air Force, strictness: 3 }
+      - { surface: USAF, strictness: 2 }
+
+  - id: unit:marine-corps
+    type: MilitaryUnit
+    name: United States Marine Corps
+    org_type: service
+    relevance: 0.5
+    part_of: govt:defense-department
+    aliases:
+      - { surface: Marine Corps, strictness: 3 }
+      - { surface: USMC, strictness: 2 }
+
+  - id: unit:u-s-space-force
+    type: MilitaryUnit
+    name: United States Space Force
+    org_type: service
+    relevance: 0.5
+    part_of: govt:defense-department
+    aliases:
+      - { surface: Space Force, strictness: 3 }
+      - { surface: USSF, strictness: 2 }
+
+  # ── Program offices ────────────────────────────────────────────────
+  - id: govt:peo-c3n
+    type: GovernmentBody
+    name: PEO Command, Control, Communications and Network
+    org_type: program_office
+    summary: Army PEO responsible for tactical network and command-and-control programs, including NGC2.
+    relevance: 0.95
+    part_of: unit:u-s-army
+    aliases:
+      - { surface: PEO C3N, strictness: 2 }
+      - { surface: PEO C3T, strictness: 2 }
+
+  - id: govt:pm-tactical-network
+    type: GovernmentBody
+    name: PM Tactical Network
+    org_type: program_office
+    relevance: 0.7
+    part_of: govt:peo-c3n
+    aliases:
+      - { surface: PM Tactical Network, strictness: 3 }
+      - { surface: PM TN, strictness: 2 }
+
+  - id: govt:peo-iews
+    type: GovernmentBody
+    name: PEO Intelligence, Electronic Warfare and Sensors
+    org_type: program_office
+    relevance: 0.8
+    part_of: unit:u-s-army
+    aliases:
+      - { surface: PEO IEW&S, strictness: 2 }
+      - { surface: PEO IEWS, strictness: 2 }
+
+  - id: govt:defense-advanced-research-projects-agency
+    type: GovernmentBody
+    name: Defense Advanced Research Projects Agency
+    org_type: agency
+    relevance: 0.6
+    part_of: govt:defense-department
+    aliases:
+      - { surface: DARPA, strictness: 2 }
+
+  - id: govt:defense-innovation-unit
+    type: GovernmentBody
+    name: Defense Innovation Unit
+    org_type: agency
+    summary: Fast-tracks commercial technology into DoD; a common first contract vehicle for startups.
+    relevance: 0.8
+    part_of: govt:defense-department
+    aliases:
+      - { surface: DIU, strictness: 2 }
+
+  - id: govt:space-development-agency
+    type: GovernmentBody
+    name: Space Development Agency
+    org_type: agency
+    relevance: 0.5
+    part_of: unit:u-s-space-force
+    aliases:
+      # SDA is genuinely ambiguous (also "software-defined anything"), so it is
+      # added to ambiguous_surfaces by the seed loader rather than matched.
+      - { surface: SDA, strictness: 0 }
+
+  # ── Programs ───────────────────────────────────────────────────────
+  - id: prog:next-generation-command-and-control
+    type: Program
+    name: Next Generation Command and Control
+    expansion: NGC2
+    summary: >-
+      The Army's flagship command-and-control modernization effort, replacing a
+      stack of legacy mission-command systems with a data-centric architecture
+      intended to run at the tactical edge.
+    relevance: 1.0
+    managed_by: govt:peo-c3n
+    aliases:
+      - { surface: NGC2, strictness: 2, is_acronym: true }
+      - { surface: Next-Gen C2, strictness: 3 }
+      - { surface: next-generation command and control, strictness: 3 }
+
+  - id: prog:titan
+    type: Program
+    name: Tactical Intelligence Targeting Access Node
+    expansion: TITAN
+    summary: Army ground station converting multi-sensor data into targeting solutions.
+    relevance: 0.85
+    managed_by: govt:peo-iews
+    aliases:
+      # TITAN collides with commercial product names; ambiguous, never auto-matched.
+      - { surface: TITAN, strictness: 0, is_acronym: true }
+
+  - id: prog:joint-all-domain-command-and-control
+    type: Program
+    name: Joint All-Domain Command and Control
+    expansion: JADC2
+    summary: DoD-wide concept for connecting sensors and shooters across services.
+    relevance: 0.8
+    managed_by: govt:defense-department
+    aliases:
+      - { surface: JADC2, strictness: 2, is_acronym: true }
+
+  - id: prog:integrated-visual-augmentation-system
+    type: Program
+    name: Integrated Visual Augmentation System
+    expansion: IVAS
+    relevance: 0.6
+    managed_by: unit:u-s-army
+    aliases:
+      - { surface: IVAS, strictness: 2, is_acronym: true }
+
+  - id: prog:replicator
+    type: Program
+    name: Replicator
+    summary: DoD initiative to field thousands of attritable autonomous systems at speed.
+    relevance: 0.75
+    managed_by: govt:defense-department
+    aliases:
+      - { surface: Replicator, strictness: 3 }
+
+  # ── Vendors ────────────────────────────────────────────────────────
+  - id: company:anduril-industries
+    type: Company
+    name: Anduril Industries
+    org_type: prime
+    summary: Defense technology company; Lattice is its C2 and autonomy software platform.
+    relevance: 0.95
+    aliases:
+      - { surface: Anduril, strictness: 3 }
+
+  - id: company:palantir-technologies
+    type: Company
+    name: Palantir Technologies
+    org_type: prime
+    summary: Data platform company; TITAN prime and a major Army software incumbent.
+    relevance: 0.95
+    aliases:
+      - { surface: Palantir, strictness: 3 }
+
+  - id: company:govini
+    type: Company
+    name: Govini
+    org_type: integrator
+    relevance: 0.6
+    aliases:
+      - { surface: Govini, strictness: 3 }
+
+  - id: company:scale-ai
+    type: Company
+    name: Scale AI
+    org_type: startup
+    relevance: 0.7
+    aliases:
+      - { surface: Scale AI, strictness: 3 }
+
+  - id: company:shield-ai
+    type: Company
+    name: Shield AI
+    org_type: startup
+    relevance: 0.7
+    aliases:
+      - { surface: Shield AI, strictness: 3 }
+
+  - id: company:lockheed-martin
+    type: Company
+    name: Lockheed Martin
+    org_type: prime
+    relevance: 0.6
+    aliases:
+      - { surface: Lockheed Martin, strictness: 3 }
+      - { surface: Lockheed, strictness: 3 }
+
+  - id: company:rtx
+    type: Company
+    name: RTX Corporation
+    org_type: prime
+    relevance: 0.5
+    aliases:
+      - { surface: Raytheon, strictness: 3 }
+      - { surface: RTX, strictness: 2 }
+
+  - id: company:leidos
+    type: Company
+    name: Leidos
+    org_type: integrator
+    relevance: 0.5
+    aliases:
+      - { surface: Leidos, strictness: 3 }
+
+  # `mint_id('Company', 'Booz Allen Hamilton')` -- and it has to match
+  # `profile/anchors.yaml`, which declares the same company with the same alias
+  # set. Two ids for one entity means whichever loads last wins an annotation, so
+  # `make reset` (seed then anchors) and any other order disagreed.
+  - id: company:booz-allen-hamilton
+    type: Company
+    name: Booz Allen Hamilton
+    org_type: integrator
+    relevance: 0.5
+    aliases:
+      - { surface: Booz Allen, strictness: 3 }
+
+  # ── Research organisations ─────────────────────────────────────────
+  # Not Companies, though all three hold contracts: an FFRDC advises the buyer,
+  # so it is never on the far side of a COMPETES_FOR from the primes above.
+  - id: research:mitre
+    type: ResearchOrg
+    name: MITRE Corporation
+    org_type: ffrdc
+    summary: Operates FFRDCs for DoD, FAA and others; systems engineering rather than production.
+    relevance: 0.5
+    aliases:
+      - { surface: MITRE, strictness: 2 }
+      - { surface: The MITRE Corporation, strictness: 3 }
+
+  - id: research:rand-corporation
+    type: ResearchOrg
+    name: RAND Corporation
+    org_type: think_tank
+    summary: Defense policy and analysis; its reports frequently precede acquisition decisions.
+    relevance: 0.4
+    aliases:
+      # "RAND" alone is case-sensitive on purpose: `rand` is a common token in
+      # engineering copy, and strictness 2 is the all-caps tier.
+      - { surface: RAND, strictness: 2 }
+
+  - id: research:johns-hopkins-applied-physics-laboratory
+    type: ResearchOrg
+    name: Johns Hopkins Applied Physics Laboratory
+    org_type: ffrdc
+    summary: University-affiliated research centre; heavy in undersea, space and missile work.
+    relevance: 0.4
+    aliases:
+      - { surface: APL, strictness: 2 }
+      - { surface: Johns Hopkins APL, strictness: 3 }
+      - { surface: JHU/APL, strictness: 2 }
+
+  # ── Technologies ───────────────────────────────────────────────────
+  - id: tech:edge-inference
+    type: Technology
+    name: Edge Inference
+    summary: Running model inference on-device, without a link back to cloud compute.
+    relevance: 1.0
+    aliases:
+      - { surface: edge inference, strictness: 3 }
+      - { surface: edge compute, strictness: 3 }
+      - { surface: edge computing, strictness: 3 }
+      - { surface: on-device inference, strictness: 3 }
+
+  - id: tech:ddil-operations
+    type: Technology
+    name: DDIL Operations
+    expansion: DDIL
+    summary: Operating where connectivity is contested or absent -- the core constraint on edge systems.
+    relevance: 0.95
+    aliases:
+      - { surface: DDIL, strictness: 2, is_acronym: true }
+      - { surface: disconnected operations, strictness: 3 }
+
+  - id: tech:mesh-networking
+    type: Technology
+    name: Mesh Networking
+    relevance: 0.6
+    aliases:
+      - { surface: mesh networking, strictness: 3 }
+      - { surface: mesh network, strictness: 3 }
+
+  - id: tech:electronic-warfare
+    type: Technology
+    name: Electronic Warfare
+    expansion: EW
+    relevance: 0.7
+    aliases:
+      # EW is ambiguous (electronic warfare vs early warning); never auto-match.
+      - { surface: EW, strictness: 0, is_acronym: true }
+      - { surface: electronic warfare, strictness: 3 }
+
+  - id: tech:computer-vision
+    type: Technology
+    name: Computer Vision
+    relevance: 0.85
+    aliases:
+      - { surface: computer vision, strictness: 3 }
+
+  - id: tech:sensor-fusion
+    type: Technology
+    name: Sensor Fusion
+    relevance: 0.9
+    aliases:
+      - { surface: sensor fusion, strictness: 3 }
+
+  - id: tech:modular-open-systems-approach
+    type: Technology
+    name: Modular Open Systems Approach
+    expansion: MOSA
+    summary: Acquisition and design approach mandating open interfaces so components can be swapped.
+    relevance: 0.7
+    aliases:
+      - { surface: MOSA, strictness: 2, is_acronym: true }
+
+  # ── Platforms ──────────────────────────────────────────────────────
+  - id: plat:lattice
+    type: Platform
+    name: Lattice
+    platform_type: software
+    summary: Anduril's autonomy and command-and-control software platform.
+    relevance: 0.9
+    produced_by: company:anduril-industries
+    aliases:
+      - { surface: Lattice, strictness: 3 }
+
+  - id: plat:ghost-x
+    type: Platform
+    name: Ghost-X
+    platform_type: uas
+    relevance: 0.6
+    produced_by: company:anduril-industries
+    aliases:
+      - { surface: Ghost-X, strictness: 2 }
+
+  - id: plat:maven-smart-system-platform
+    type: Platform
+    name: Maven Smart System
+    platform_type: software
+    relevance: 0.8
+    produced_by: company:palantir-technologies
+    aliases:
+      - { surface: Maven Smart System, strictness: 3 }
+      - { surface: Maven, strictness: 1 }
+
+  # ── People ─────────────────────────────────────────────────────────
+  - id: person:alex-miller
+    type: Person
+    name: Alex Miller
+    summary: Army CTO, frequently quoted on NGC2 architecture direction.
+    relevance: 0.6
+    works_for: unit:u-s-army
+    aliases:
+      - { surface: Alex Miller, strictness: 3 }
+
+# Surfaces with more than one plausible owner. Never auto-matched; the hover
+# card shows a disambiguation list instead of guessing.
+ambiguous:
+  - { surface: SDA, reason: "Space Development Agency vs software-defined anything" }
+  - { surface: TITAN, reason: "Army TITAN program vs commercial product names" }
+  - { surface: EW, reason: "electronic warfare vs early warning" }
+  - { surface: Sentinel, reason: "multiple programs and products" }
+  - { surface: Atlas, reason: "multiple programs and products" }
+
+  # Bare institutional words, each of which minted an entity naming no
+  # particular body: `org:defence` reached ACTIVE and absorbed "Australian
+  # Defence Force" as a conflict; `org:the-air-force` coined the alias "TAF".
+  # The corpus already holds five different air forces and navies. Keep in step
+  # with `profile/anchors.yaml`, which carries the same list.
+  - { surface: Defence, reason: "names no particular ministry or service" }
+  - { surface: Defense, reason: "names no particular ministry or service" }
+  - { surface: the Navy, reason: "US, Royal, German -- the article decides" }
+  - { surface: the Army, reason: "US, Australian, Ukrainian -- the article decides" }
+  - { surface: the Air Force, reason: "US, Italian, Ukrainian -- the article decides" }

@@ -1,0 +1,2492 @@
+# venona anchors -- the top level of the graph. USER-EDITABLE.
+#
+# The corpus gives you the leaves and almost never the trunk: no article states
+# that the Army is part of the Defense Department. Declaring it here is what
+# turns 109 disconnected islands into a graph you can navigate from a country.
+#
+# Loaded by `venona anchors load`, independently of `fixtures/seed/` -- that
+# fixture also ships fake documents which must never reach a live database.
+# Everything here is `method='seed'`: never demoted, and evidence for nothing.
+#
+# ── two rules ────────────────────────────────────────────────────────
+#
+# 1. DECLARE ONLY IDS THAT DO NOT EXIST. Attach existing entities in `edges:`
+#    by id; a re-declaration overwrites name, summary and relevance.
+# 2. EVERY EDGE IS TYPE-CHECKED against config/ontology.yaml at load time. If
+#    the loader rejects a line, the ontology disagrees with you -- read it.
+#
+# `PART_OF` is the org chart (child -> parent); `BASED_IN` is nationality
+# (organisation -> country). Separate, because a country inside PART_OF would
+# put a supernode in the middle of every path query.
+
+entities:
+  # ── countries ──────────────────────────────────────────────────────
+  # `name_strictness: 0` throughout: an anchor's job is structural, not
+  # annotation, and at the default "United States" wins the highlight over
+  # `U.S. Army` across two thirds of the corpus.
+  - id: country:united-states
+    type: Country
+    name: United States
+    name_strictness: 0
+    relevance: 0.3
+    summary: Sponsor above the Defense Department, and the jurisdiction of US-domiciled industry.
+    aliases:
+      - { surface: U.S., strictness: 0 }
+      - { surface: USA, strictness: 0 }
+      - { surface: United States of America, strictness: 0 }
+
+  - id: country:china
+    type: Country
+    name: China
+    name_strictness: 0
+    relevance: 0.3
+    aliases:
+      - { surface: People's Republic of China, strictness: 0 }
+      - { surface: PRC, strictness: 0 }
+
+  - id: country:taiwan
+    type: Country
+    name: Taiwan
+    name_strictness: 0
+    relevance: 0.2
+
+  - id: country:ukraine
+    type: Country
+    name: Ukraine
+    name_strictness: 0
+    relevance: 0.2
+
+  - id: country:united-kingdom
+    type: Country
+    name: United Kingdom
+    name_strictness: 0
+    relevance: 0.2
+    aliases:
+      - { surface: UK, strictness: 0 }
+      - { surface: Britain, strictness: 0 }
+
+  - id: country:france
+    type: Country
+    name: France
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:italy
+    type: Country
+    name: Italy
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:sweden
+    type: Country
+    name: Sweden
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:australia
+    type: Country
+    name: Australia
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:israel
+    type: Country
+    name: Israel
+    name_strictness: 0
+    relevance: 0.1
+
+  # These three arrived from the corpus before they were declared here, and the
+  # ids match what it minted. Declaring a country the corpus also names is the
+  # established case rather than an exception -- Ukraine has been both since v1
+  # -- and it is the one re-declaration rule 1 above is not warning about: a
+  # country's existence is not a matter of corroboration, so the seed method is
+  # exactly right for it. Without them, the manufacturers below have no home to
+  # point at from a clean database.
+  - id: country:germany
+    type: Country
+    name: Germany
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:norway
+    type: Country
+    name: Norway
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:south-korea
+    type: Country
+    name: South Korea
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:japan
+    type: Country
+    name: Japan
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:poland
+    type: Country
+    name: Poland
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:netherlands
+    type: Country
+    name: Netherlands
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:canada
+    type: Country
+    name: Canada
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:iran
+    type: Country
+    name: Iran
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:belgium
+    type: Country
+    name: Belgium
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:saudi-arabia
+    type: Country
+    name: Saudi Arabia
+    name_strictness: 0
+    relevance: 0.1
+
+  # ── the defence-industry trunk ──────────────────────────────────────
+  # 248 entities, declared rather than extracted. Measured on the first full
+  # run, 727 of 1,036 resolved surfaces MINTED a new entity -- each a
+  # provisional with one alias and a fair chance of colliding tomorrow, which is
+  # where 73 conflicts and 620 provisionals on day one came from. Every name
+  # here is a mint that does not happen, and it also fills the gazetteer, so it
+  # improves EXTRACTION before resolution is reached.
+  #
+  # IDENTITY, NEVER DEFINITIONS (invariant 3): nothing here carries a summary,
+  # and a seeded entity renders as visibly undefined until an article defines it.
+  #
+  # THREE RULES when adding to this.
+  #
+  #   1. `relevance` is load-bearing: the gazetteer sorts by it and cuts at
+  #      `llm.gazetteer_size`, so an anchor left at 0 never reaches the prompt.
+  #   2. `name_strictness: 0` on anything whose name is an ordinary word --
+  #      Fury, Bolt, Foundry, Sentinel, Planet, Raft. See the countries above.
+  #   3. An acronym alias gets strictness 2, the case-SENSITIVE tier.
+  #      `AIA` must not match "aia" inside a longer word, and `RAND` must not
+  #      match `rand` in engineering copy.
+  #
+  # A wrong alias is more expensive than a missing one: a missing one lands in
+  # the review queue, a wrong one silently merges two organisations.
+
+  # ── companies ──
+  # Ordered roughly by how much the profile cares. `relevance` is not
+  # decoration: `prompts.gazetteer` sorts by it and cuts at
+  # `llm.gazetteer_size` (400), so an anchor left at 0 never reaches the
+  # model and buys nothing but a resolver entry.
+  - id: company:anduril-industries
+    type: Company
+    name: Anduril Industries
+    org_type: startup
+    relevance: 0.9
+    aliases:
+      - { surface: Anduril, strictness: 3 }
+
+  - id: company:palantir-technologies
+    type: Company
+    name: Palantir Technologies
+    org_type: startup
+    relevance: 0.9
+    aliases:
+      - { surface: Palantir, strictness: 3 }
+
+  - id: company:shield-ai
+    type: Company
+    name: Shield AI
+    org_type: startup
+    relevance: 0.9
+
+  - id: company:scale-ai
+    type: Company
+    name: Scale AI
+    org_type: startup
+    relevance: 0.8
+
+  - id: company:applied-intuition
+    type: Company
+    name: Applied Intuition
+    org_type: startup
+    relevance: 0.7
+
+  - id: company:govini
+    type: Company
+    name: Govini
+    org_type: integrator
+    relevance: 0.5
+
+  - id: company:lockheed-martin
+    type: Company
+    name: Lockheed Martin
+    org_type: prime
+    relevance: 0.6
+    aliases:
+      - { surface: Lockheed, strictness: 3 }
+
+  - id: company:rtx
+    type: Company
+    name: RTX Corporation
+    org_type: prime
+    relevance: 0.6
+    aliases:
+      - { surface: RTX, strictness: 2 }
+      - { surface: Raytheon Technologies, strictness: 3 }
+
+  - id: company:raytheon
+    type: Company
+    name: Raytheon
+    org_type: prime
+    relevance: 0.5
+
+  - id: company:northrop-grumman
+    type: Company
+    name: Northrop Grumman
+    org_type: prime
+    relevance: 0.6
+    aliases:
+      - { surface: Northrop, strictness: 3 }
+
+  - id: company:boeing
+    type: Company
+    name: Boeing
+    org_type: prime
+    relevance: 0.5
+    aliases:
+      - { surface: The Boeing Company, strictness: 3 }
+
+  - id: company:general-dynamics
+    type: Company
+    name: General Dynamics
+    org_type: prime
+    relevance: 0.5
+    aliases:
+      - { surface: GD, strictness: 0 }
+
+  - id: company:l3harris-technologies
+    type: Company
+    name: L3Harris Technologies
+    org_type: prime
+    relevance: 0.5
+    aliases:
+      - { surface: L3Harris, strictness: 3 }
+
+  - id: company:bae-systems
+    type: Company
+    name: BAE Systems
+    org_type: prime
+    relevance: 0.5
+
+  - id: company:huntington-ingalls-industries
+    type: Company
+    name: Huntington Ingalls Industries
+    org_type: prime
+    relevance: 0.4
+    aliases:
+      - { surface: HII, strictness: 2 }
+      - { surface: Huntington Ingalls, strictness: 3 }
+
+  - id: company:general-atomics
+    type: Company
+    name: General Atomics
+    org_type: prime
+    relevance: 0.5
+    # No GA-ASI alias. General Atomics Aeronautical Systems is a subsidiary
+    # with its own programs, and declaring its name here made every mention of
+    # it evidence for the parent -- while a curator had separately ruled the
+    # pair `related`. Two human statements, opposite answers. See docs/adr/.
+
+  - id: company:textron
+    type: Company
+    name: Textron
+    org_type: prime
+    relevance: 0.4
+
+  - id: company:leidos
+    type: Company
+    name: Leidos
+    org_type: integrator
+    relevance: 0.5
+
+  - id: company:booz-allen-hamilton
+    type: Company
+    name: Booz Allen Hamilton
+    org_type: integrator
+    relevance: 0.5
+    aliases:
+      - { surface: Booz Allen, strictness: 3 }
+
+  - id: company:caci-international
+    type: Company
+    name: CACI International
+    org_type: integrator
+    relevance: 0.4
+    aliases:
+      - { surface: CACI, strictness: 2 }
+
+  - id: company:saic
+    type: Company
+    name: SAIC
+    org_type: integrator
+    relevance: 0.4
+    aliases:
+      - { surface: Science Applications International Corporation, strictness: 3 }
+
+  - id: company:peraton
+    type: Company
+    name: Peraton
+    org_type: integrator
+    relevance: 0.4
+
+  - id: company:general-dynamics-information-technology
+    type: Company
+    name: General Dynamics Information Technology
+    org_type: integrator
+    relevance: 0.4
+    aliases:
+      - { surface: GDIT, strictness: 2 }
+
+  - id: company:parsons
+    type: Company
+    name: Parsons Corporation
+    org_type: integrator
+    relevance: 0.3
+    name_strictness: 0
+
+  - id: company:amentum
+    type: Company
+    name: Amentum
+    org_type: integrator
+    relevance: 0.3
+
+  - id: company:aerovironment
+    type: Company
+    name: AeroVironment
+    org_type: startup
+    relevance: 0.5
+    aliases:
+      - { surface: AV, strictness: 0 }
+
+  - id: company:saronic
+    type: Company
+    name: Saronic Technologies
+    org_type: startup
+    relevance: 0.6
+    aliases:
+      - { surface: Saronic, strictness: 3 }
+
+  - id: company:skydio
+    type: Company
+    name: Skydio
+    org_type: startup
+    relevance: 0.6
+
+  - id: company:epirus
+    type: Company
+    name: Epirus
+    org_type: startup
+    relevance: 0.5
+
+  - id: company:kratos
+    type: Company
+    name: Kratos Defense & Security Solutions
+    org_type: startup
+    relevance: 0.5
+    aliases:
+      - { surface: Kratos, strictness: 3 }
+
+  - id: company:fortem-technologies
+    type: Company
+    name: Fortem Technologies
+    org_type: startup
+    relevance: 0.4
+    aliases:
+      - { surface: Fortem, strictness: 3 }
+
+  - id: company:axon
+    type: Company
+    name: Axon Enterprise
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: Axon, strictness: 0 }
+
+  - id: company:raft
+    type: Company
+    name: Raft
+    org_type: startup
+    relevance: 0.3
+    name_strictness: 0
+
+  - id: company:systems-and-technology-research
+    type: Company
+    name: Systems & Technology Research
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: STR, strictness: 2 }
+
+  - id: company:second-front-systems
+    type: Company
+    name: Second Front Systems
+    org_type: startup
+    relevance: 0.4
+    aliases:
+      - { surface: 2F, strictness: 0 }
+
+  - id: company:vannevar-labs
+    type: Company
+    name: Vannevar Labs
+    org_type: startup
+    relevance: 0.4
+
+  - id: company:hawkeye-360
+    type: Company
+    name: HawkEye 360
+    org_type: startup
+    relevance: 0.4
+
+  - id: company:overland-ai
+    type: Company
+    name: Overland AI
+    org_type: startup
+    relevance: 0.5
+
+  - id: company:forterra
+    type: Company
+    name: Forterra
+    org_type: startup
+    relevance: 0.4
+
+  - id: company:edge-autonomy
+    type: Company
+    name: Edge Autonomy
+    org_type: startup
+    relevance: 0.4
+    name_strictness: 0
+
+  - id: company:blue-water-autonomy
+    type: Company
+    name: Blue Water Autonomy
+    org_type: startup
+    relevance: 0.4
+
+  - id: company:castelion
+    type: Company
+    name: Castelion
+    org_type: startup
+    relevance: 0.4
+
+  - id: company:firestorm-labs
+    type: Company
+    name: Firestorm Labs
+    org_type: startup
+    relevance: 0.3
+
+  - id: company:neros-technologies
+    type: Company
+    name: Neros Technologies
+    org_type: startup
+    relevance: 0.4
+    aliases:
+      - { surface: Neros, strictness: 3 }
+
+  - id: company:spacex
+    type: Company
+    name: SpaceX
+    org_type: startup
+    relevance: 0.5
+    aliases:
+      - { surface: Space Exploration Technologies, strictness: 3 }
+
+  - id: company:rocket-lab
+    type: Company
+    name: Rocket Lab
+    org_type: startup
+    relevance: 0.4
+    aliases:
+      - { surface: Rocket Lab USA, strictness: 3 }
+
+  - id: company:sierra-space
+    type: Company
+    name: Sierra Space
+    org_type: startup
+    relevance: 0.3
+
+  - id: company:voyager-technologies
+    type: Company
+    name: Voyager Technologies
+    org_type: startup
+    relevance: 0.3
+
+  - id: company:york-space-systems
+    type: Company
+    name: York Space Systems
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: York, strictness: 0 }
+
+  - id: company:planet-labs
+    type: Company
+    name: Planet Labs
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: Planet, strictness: 0 }
+
+  - id: company:maxar-technologies
+    type: Company
+    name: Maxar Technologies
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: Maxar, strictness: 3 }
+
+  - id: company:firefly-aerospace
+    type: Company
+    name: Firefly Aerospace
+    org_type: startup
+    relevance: 0.3
+    aliases:
+      - { surface: Firefly, strictness: 0 }
+
+  - id: company:microsoft
+    type: Company
+    name: Microsoft
+    org_type: supplier
+    relevance: 0.4
+
+  - id: company:google
+    type: Company
+    name: Google
+    org_type: supplier
+    relevance: 0.4
+    aliases:
+      - { surface: Alphabet, strictness: 3 }
+      - { surface: Google Public Sector, strictness: 3 }
+
+  - id: company:amazon-web-services
+    type: Company
+    name: Amazon Web Services
+    org_type: supplier
+    relevance: 0.4
+    aliases:
+      - { surface: AWS, strictness: 2 }
+
+  - id: company:nvidia
+    type: Company
+    name: Nvidia
+    org_type: supplier
+    relevance: 0.5
+    aliases:
+      - { surface: NVIDIA, strictness: 2 }
+
+  - id: company:openai
+    type: Company
+    name: OpenAI
+    org_type: supplier
+    relevance: 0.4
+
+  - id: company:anthropic
+    type: Company
+    name: Anthropic
+    org_type: supplier
+    relevance: 0.4
+
+  - id: company:oracle
+    type: Company
+    name: Oracle
+    org_type: supplier
+    relevance: 0.3
+    name_strictness: 0
+
+  - id: company:dell-technologies
+    type: Company
+    name: Dell Technologies
+    org_type: supplier
+    relevance: 0.3
+    aliases:
+      - { surface: Dell, strictness: 3 }
+
+  - id: company:thales
+    type: Company
+    name: Thales
+    org_type: prime
+    relevance: 0.3
+
+  - id: company:thales-australia
+    type: Company
+    name: Thales Australia
+    org_type: prime
+    relevance: 0.2
+
+  - id: company:leonardo
+    type: Company
+    name: Leonardo
+    org_type: prime
+    relevance: 0.3
+    name_strictness: 0
+    aliases:
+      - { surface: Leonardo S.p.A., strictness: 3 }
+
+  - id: company:saab
+    type: Company
+    name: Saab
+    org_type: prime
+    relevance: 0.3
+    aliases:
+      - { surface: Saab AB, strictness: 3 }
+
+  - id: company:rheinmetall
+    type: Company
+    name: Rheinmetall
+    org_type: prime
+    relevance: 0.3
+
+  - id: company:elbit-systems
+    type: Company
+    name: Elbit Systems
+    org_type: prime
+    relevance: 0.3
+    aliases:
+      - { surface: Elbit, strictness: 3 }
+
+  - id: company:kongsberg
+    type: Company
+    name: Kongsberg Gruppen
+    org_type: prime
+    relevance: 0.3
+    aliases:
+      - { surface: Kongsberg, strictness: 3 }
+
+  - id: company:qinetiq
+    type: Company
+    name: QinetiQ
+    org_type: prime
+    relevance: 0.3
+
+  - id: company:bae-systems-australia
+    type: Company
+    name: BAE Systems Australia
+    org_type: prime
+    relevance: 0.2
+
+  - id: company:hanwha
+    type: Company
+    name: Hanwha
+    org_type: prime
+    relevance: 0.2
+    aliases:
+      - { surface: Hanwha Aerospace, strictness: 3 }
+
+  - id: company:moonshot-ai
+    type: Company
+    name: Moonshot AI
+    org_type: startup
+    relevance: 0.2
+
+  - id: company:bain-capital
+    type: Company
+    name: Bain Capital
+    org_type: investor
+    relevance: 0.2
+
+  - id: company:andreessen-horowitz
+    type: Company
+    name: Andreessen Horowitz
+    org_type: investor
+    relevance: 0.3
+    aliases:
+      - { surface: a16z, strictness: 2 }
+
+  - id: company:founders-fund
+    type: Company
+    name: Founders Fund
+    org_type: investor
+    relevance: 0.3
+
+  - id: company:in-q-tel
+    type: Company
+    name: In-Q-Tel
+    org_type: investor
+    relevance: 0.4
+    aliases:
+      - { surface: IQT, strictness: 2 }
+
+  # ── government bodies ──
+  - id: govt:defense-department
+    type: GovernmentBody
+    name: Department of War
+    org_type: department
+    relevance: 0.7
+    aliases:
+      - { surface: Department of Defense, strictness: 3 }
+      - { surface: DoD, strictness: 2 }
+      - { surface: DOD, strictness: 2 }
+      - { surface: DoW, strictness: 2 }
+      - { surface: Pentagon, strictness: 3 }
+
+  - id: govt:office-of-the-secretary-of-defense
+    type: GovernmentBody
+    name: Office of the Secretary of Defense
+    org_type: department
+    relevance: 0.4
+    aliases:
+      - { surface: OSD, strictness: 2 }
+
+  - id: govt:white-house
+    type: GovernmentBody
+    name: The White House
+    org_type: department
+    relevance: 0.3
+    aliases:
+      - { surface: White House, strictness: 3 }
+
+  - id: govt:department-of-homeland-security
+    type: GovernmentBody
+    name: Department of Homeland Security
+    org_type: department
+    relevance: 0.3
+    aliases:
+      - { surface: DHS, strictness: 2 }
+
+  - id: govt:u-s-department-of-commerce
+    type: GovernmentBody
+    name: U.S. Department of Commerce
+    org_type: department
+    relevance: 0.2
+    aliases:
+      - { surface: Department of Commerce, strictness: 3 }
+
+  - id: govt:defense-innovation-unit
+    type: GovernmentBody
+    name: Defense Innovation Unit
+    org_type: agency
+    relevance: 0.9
+    aliases:
+      - { surface: DIU, strictness: 2 }
+
+  - id: govt:defense-advanced-research-projects-agency
+    type: GovernmentBody
+    name: Defense Advanced Research Projects Agency
+    org_type: agency
+    relevance: 0.7
+    aliases:
+      - { surface: DARPA, strictness: 2 }
+
+  - id: govt:chief-digital-and-artificial-intelligence-office
+    type: GovernmentBody
+    name: Chief Digital and Artificial Intelligence Office
+    org_type: agency
+    relevance: 0.8
+    aliases:
+      - { surface: CDAO, strictness: 2 }
+
+  - id: govt:space-development-agency
+    type: GovernmentBody
+    name: Space Development Agency
+    org_type: agency
+    relevance: 0.5
+
+  - id: govt:missile-defense-agency
+    type: GovernmentBody
+    name: Missile Defense Agency
+    org_type: agency
+    relevance: 0.4
+    aliases:
+      - { surface: MDA, strictness: 2 }
+
+  - id: govt:national-reconnaissance-office
+    type: GovernmentBody
+    name: National Reconnaissance Office
+    org_type: agency
+    relevance: 0.4
+    aliases:
+      - { surface: NRO, strictness: 2 }
+
+  - id: govt:national-geospatial-intelligence-agency
+    type: GovernmentBody
+    name: National Geospatial-Intelligence Agency
+    org_type: agency
+    relevance: 0.5
+    aliases:
+      - { surface: NGA, strictness: 2 }
+
+  - id: govt:defense-intelligence-agency
+    type: GovernmentBody
+    name: Defense Intelligence Agency
+    org_type: agency
+    relevance: 0.3
+    aliases:
+      - { surface: DIA, strictness: 2 }
+
+  - id: govt:national-security-agency
+    type: GovernmentBody
+    name: National Security Agency
+    org_type: agency
+    relevance: 0.3
+    aliases:
+      - { surface: NSA, strictness: 2 }
+
+  - id: govt:defense-information-systems-agency
+    type: GovernmentBody
+    name: Defense Information Systems Agency
+    org_type: agency
+    relevance: 0.4
+    aliases:
+      - { surface: DISA, strictness: 2 }
+
+  - id: govt:defense-logistics-agency
+    type: GovernmentBody
+    name: Defense Logistics Agency
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: DLA, strictness: 2 }
+
+  - id: govt:cybersecurity-and-infrastructure-security-agency
+    type: GovernmentBody
+    name: Cybersecurity and Infrastructure Security Agency
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: CISA, strictness: 2 }
+
+  - id: govt:national-aeronautics-and-space-administration
+    type: GovernmentBody
+    name: National Aeronautics and Space Administration
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: NASA, strictness: 2 }
+
+  - id: govt:national-institute-of-standards-and-technology
+    type: GovernmentBody
+    name: National Institute of Standards and Technology
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: NIST, strictness: 2 }
+
+  - id: govt:peo-c3n
+    type: GovernmentBody
+    name: PEO Command, Control, Communications and Network
+    org_type: program_office
+    relevance: 0.9
+    aliases:
+      - { surface: PEO C3N, strictness: 3 }
+      - { surface: PEO C3T, strictness: 3 }
+
+  - id: govt:peo-iews
+    type: GovernmentBody
+    name: PEO Intelligence, Electronic Warfare and Sensors
+    org_type: program_office
+    relevance: 0.9
+    aliases:
+      - { surface: "PEO IEW&S", strictness: 3 }
+      - { surface: PEO IEWS, strictness: 3 }
+
+  - id: govt:pm-tactical-network
+    type: GovernmentBody
+    name: PM Tactical Network
+    org_type: program_office
+    relevance: 0.7
+
+  - id: govt:peo-soldier
+    type: GovernmentBody
+    name: PEO Soldier
+    org_type: program_office
+    relevance: 0.5
+
+  - id: govt:peo-aviation
+    type: GovernmentBody
+    name: PEO Aviation
+    org_type: program_office
+    relevance: 0.4
+
+  - id: govt:peo-ground-combat-systems
+    type: GovernmentBody
+    name: PEO Ground Combat Systems
+    org_type: program_office
+    relevance: 0.4
+    aliases:
+      - { surface: PEO GCS, strictness: 3 }
+
+  - id: govt:peo-missiles-and-space
+    type: GovernmentBody
+    name: PEO Missiles and Space
+    org_type: program_office
+    relevance: 0.4
+
+  - id: govt:naval-sea-systems-command
+    type: GovernmentBody
+    name: Naval Sea Systems Command
+    org_type: program_office
+    relevance: 0.3
+    aliases:
+      - { surface: NAVSEA, strictness: 2 }
+
+  - id: govt:naval-air-systems-command
+    type: GovernmentBody
+    name: Naval Air Systems Command
+    org_type: program_office
+    relevance: 0.3
+    aliases:
+      - { surface: NAVAIR, strictness: 2 }
+
+  - id: govt:naval-information-warfare-systems-command
+    type: GovernmentBody
+    name: Naval Information Warfare Systems Command
+    org_type: program_office
+    relevance: 0.4
+    aliases:
+      - { surface: NAVWAR, strictness: 2 }
+
+  - id: govt:air-force-life-cycle-management-center
+    type: GovernmentBody
+    name: Air Force Life Cycle Management Center
+    org_type: program_office
+    relevance: 0.3
+    aliases:
+      - { surface: AFLCMC, strictness: 2 }
+
+  - id: govt:rapid-capabilities-and-critical-technologies-office
+    type: GovernmentBody
+    name: Rapid Capabilities and Critical Technologies Office
+    org_type: program_office
+    relevance: 0.5
+    aliases:
+      - { surface: RCCTO, strictness: 2 }
+
+  - id: govt:senate-armed-services-committee
+    type: GovernmentBody
+    name: Senate Armed Services Committee
+    org_type: legislative
+    relevance: 0.4
+    aliases:
+      - { surface: SASC, strictness: 2 }
+
+  - id: govt:house-armed-services-committee
+    type: GovernmentBody
+    name: House Armed Services Committee
+    org_type: legislative
+    relevance: 0.4
+    aliases:
+      - { surface: HASC, strictness: 2 }
+
+  - id: govt:senate-appropriations-committee
+    type: GovernmentBody
+    name: Senate Appropriations Committee
+    org_type: legislative
+    relevance: 0.3
+
+  - id: govt:house-appropriations-committee
+    type: GovernmentBody
+    name: House Appropriations Committee
+    org_type: legislative
+    relevance: 0.3
+
+  - id: govt:government-accountability-office
+    type: GovernmentBody
+    name: Government Accountability Office
+    org_type: legislative
+    relevance: 0.3
+    aliases:
+      - { surface: GAO, strictness: 2 }
+
+  - id: govt:congressional-budget-office
+    type: GovernmentBody
+    name: Congressional Budget Office
+    org_type: legislative
+    relevance: 0.2
+    aliases:
+      - { surface: CBO, strictness: 2 }
+
+  - id: govt:ministry-of-defence
+    type: GovernmentBody
+    # QUALIFIED, because the bare form names no particular ministry: the corpus
+    # already holds a Dutch, an Israeli and a Japanese one, and a bare entity
+    # beside them had absorbed two different states' contracts into one id. The
+    # same reason `unit:u-s-army` is not called "the Army". The id is unchanged
+    # and immutable (C4), so every edge already pointing here still does.
+    name: UK Ministry of Defence
+    org_type: department
+    relevance: 0.2
+    aliases:
+      - { surface: MoD, strictness: 2 }
+
+  - id: govt:nato
+    type: GovernmentBody
+    name: North Atlantic Treaty Organization
+    org_type: multinational
+    relevance: 0.3
+    aliases:
+      - { surface: NATO, strictness: 0 }
+
+  - id: govt:european-union
+    type: GovernmentBody
+    name: European Union
+    org_type: multinational
+    relevance: 0.2
+    aliases:
+      - { surface: EU, strictness: 0 }
+
+  - id: govt:nato-diana
+    type: GovernmentBody
+    name: NATO DIANA
+    org_type: multinational
+    relevance: 0.3
+    aliases:
+      - { surface: Defence Innovation Accelerator for the North Atlantic, strictness: 3 }
+      - { surface: DIANA, strictness: 2 }
+
+  # ── military units ──
+  - id: unit:u-s-army
+    type: MilitaryUnit
+    name: United States Army
+    org_type: service
+    relevance: 0.9
+    aliases:
+      - { surface: U.S. Army, strictness: 3 }
+      - { surface: US Army, strictness: 3 }
+      - { surface: the Army, strictness: 1 }
+      - { surface: Army, strictness: 0 }
+
+  - id: unit:u-s-navy
+    type: MilitaryUnit
+    name: United States Navy
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Navy, strictness: 3 }
+      - { surface: US Navy, strictness: 3 }
+      - { surface: the Navy, strictness: 0 }
+      - { surface: Navy, strictness: 0 }
+
+  - id: unit:u-s-air-force
+    type: MilitaryUnit
+    name: United States Air Force
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Air Force, strictness: 3 }
+      - { surface: USAF, strictness: 2 }
+      - { surface: the Air Force, strictness: 0 }
+
+  - id: unit:u-s-space-force
+    type: MilitaryUnit
+    name: United States Space Force
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Space Force, strictness: 3 }
+      - { surface: USSF, strictness: 2 }
+      - { surface: Space Force, strictness: 3 }
+
+  - id: unit:marine-corps
+    type: MilitaryUnit
+    name: United States Marine Corps
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Marine Corps, strictness: 3 }
+      - { surface: USMC, strictness: 2 }
+      - { surface: Marine Corps, strictness: 3 }
+      - { surface: Marines, strictness: 3 }
+
+  - id: unit:u-s-coast-guard
+    type: MilitaryUnit
+    name: United States Coast Guard
+    org_type: service
+    relevance: 0.2
+    aliases:
+      - { surface: USCG, strictness: 2 }
+
+  - id: unit:us-central-command
+    type: MilitaryUnit
+    name: U.S. Central Command
+    org_type: combatant_command
+    relevance: 0.4
+    aliases:
+      - { surface: CENTCOM, strictness: 2 }
+
+  - id: unit:us-indo-pacific-command
+    type: MilitaryUnit
+    name: U.S. Indo-Pacific Command
+    org_type: combatant_command
+    relevance: 0.5
+    aliases:
+      - { surface: INDOPACOM, strictness: 2 }
+
+  - id: unit:us-european-command
+    type: MilitaryUnit
+    name: U.S. European Command
+    org_type: combatant_command
+    relevance: 0.3
+    aliases:
+      - { surface: EUCOM, strictness: 2 }
+
+  - id: unit:us-northern-command
+    type: MilitaryUnit
+    name: U.S. Northern Command
+    org_type: combatant_command
+    relevance: 0.4
+    aliases:
+      - { surface: NORTHCOM, strictness: 2 }
+      - { surface: Northcom, strictness: 3 }
+      # The bare surface minted a second entity holding both live mentions,
+      # while this one held the edges. No filer could see the pair: the two
+      # names differ by a nationality prefix, which is neither a corporate form
+      # nor a generic tail, so the duplicate detector's key never matched.
+      # Other states field a Northern Command; none appears in this corpus, and
+      # the moment one does this belongs in `ambiguous` instead.
+      - { surface: Northern Command, strictness: 3 }
+
+  - id: unit:us-southern-command
+    type: MilitaryUnit
+    name: U.S. Southern Command
+    org_type: combatant_command
+    relevance: 0.2
+    aliases:
+      - { surface: SOUTHCOM, strictness: 2 }
+
+  - id: unit:us-africa-command
+    type: MilitaryUnit
+    name: U.S. Africa Command
+    org_type: combatant_command
+    relevance: 0.2
+    aliases:
+      - { surface: AFRICOM, strictness: 2 }
+
+  - id: unit:us-special-operations-command
+    type: MilitaryUnit
+    name: U.S. Special Operations Command
+    org_type: combatant_command
+    relevance: 0.7
+    aliases:
+      - { surface: SOCOM, strictness: 2 }
+      - { surface: USSOCOM, strictness: 2 }
+
+  - id: unit:us-space-command
+    type: MilitaryUnit
+    name: U.S. Space Command
+    org_type: combatant_command
+    relevance: 0.4
+    aliases:
+      - { surface: SPACECOM, strictness: 2 }
+      - { surface: USSPACECOM, strictness: 2 }
+
+  - id: unit:us-strategic-command
+    type: MilitaryUnit
+    name: U.S. Strategic Command
+    org_type: combatant_command
+    relevance: 0.2
+    aliases:
+      - { surface: STRATCOM, strictness: 2 }
+
+  - id: unit:us-transportation-command
+    type: MilitaryUnit
+    name: U.S. Transportation Command
+    org_type: combatant_command
+    relevance: 0.1
+    aliases:
+      - { surface: TRANSCOM, strictness: 2 }
+
+  - id: unit:norad
+    type: MilitaryUnit
+    name: North American Aerospace Defense Command
+    org_type: combatant_command
+    relevance: 0.3
+    aliases:
+      - { surface: NORAD, strictness: 2 }
+
+  - id: unit:army-futures-command
+    type: MilitaryUnit
+    name: Army Futures Command
+    org_type: formation
+    relevance: 0.8
+    aliases:
+      - { surface: AFC, strictness: 2 }
+
+  - id: unit:army-space-and-missile-defense-command
+    type: MilitaryUnit
+    name: Army Space and Missile Defense Command
+    org_type: formation
+    relevance: 0.4
+    aliases:
+      - { surface: SMDC, strictness: 2 }
+
+  - id: unit:i-corps
+    type: MilitaryUnit
+    name: I Corps
+    org_type: formation
+    relevance: 0.3
+    name_strictness: 0
+
+  - id: unit:xviii-airborne-corps
+    type: MilitaryUnit
+    name: XVIII Airborne Corps
+    org_type: formation
+    relevance: 0.4
+
+  - id: unit:4th-infantry-division
+    type: MilitaryUnit
+    name: 4th Infantry Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:25th-infantry-divisions
+    type: MilitaryUnit
+    name: 25th Infantry Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:82nd-airborne-division
+    type: MilitaryUnit
+    name: 82nd Airborne Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:101st-airborne-division
+    type: MilitaryUnit
+    name: 101st Airborne Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:space-systems-command
+    type: MilitaryUnit
+    name: Space Systems Command
+    org_type: formation
+    relevance: 0.5
+    aliases:
+      - { surface: SSC, strictness: 2 }
+
+  - id: unit:air-combat-command
+    type: MilitaryUnit
+    name: Air Combat Command
+    org_type: formation
+    relevance: 0.3
+    aliases:
+      - { surface: ACC, strictness: 0 }
+
+  - id: unit:air-force-test-pilot-school
+    type: MilitaryUnit
+    name: U.S. Air Force Test Pilot School
+    org_type: formation
+    relevance: 0.2
+    aliases:
+      - { surface: Test Pilot School, strictness: 3 }
+
+  - id: unit:joint-interagency-task-force-south-jiatf-s
+    type: MilitaryUnit
+    name: Joint Interagency Task Force South
+    org_type: task_force
+    relevance: 0.2
+    aliases:
+      - { surface: JIATF-South, strictness: 3 }
+      - { surface: JIATF-S, strictness: 2 }
+
+  - id: unit:joint-interagency-task-force-401
+    type: MilitaryUnit
+    name: Joint Interagency Task Force 401
+    org_type: task_force
+    relevance: 0.4
+    aliases:
+      - { surface: JIATF-401, strictness: 3 }
+
+  - id: unit:british-army
+    type: MilitaryUnit
+    name: British Army
+    org_type: service
+    relevance: 0.2
+
+  - id: unit:royal-navy
+    type: MilitaryUnit
+    name: Royal Navy
+    org_type: service
+    relevance: 0.2
+
+  - id: unit:royal-air-force
+    type: MilitaryUnit
+    name: Royal Air Force
+    org_type: service
+    relevance: 0.2
+    aliases:
+      - { surface: RAF, strictness: 2 }
+
+  - id: unit:australian-defence-force
+    type: MilitaryUnit
+    name: Australian Defence Force
+    org_type: service
+    relevance: 0.2
+    aliases:
+      - { surface: ADF, strictness: 2 }
+
+  # ── research organisations ──
+  - id: research:mitre
+    type: ResearchOrg
+    name: MITRE Corporation
+    org_type: ffrdc
+    relevance: 0.5
+    aliases:
+      - { surface: MITRE, strictness: 2 }
+
+  - id: research:rand-corporation
+    type: ResearchOrg
+    name: RAND Corporation
+    org_type: think_tank
+    relevance: 0.4
+    aliases:
+      - { surface: RAND, strictness: 2 }
+
+  - id: research:johns-hopkins-applied-physics-laboratory
+    type: ResearchOrg
+    name: Johns Hopkins Applied Physics Laboratory
+    org_type: ffrdc
+    relevance: 0.4
+    aliases:
+      - { surface: JHU/APL, strictness: 2 }
+      - { surface: Johns Hopkins APL, strictness: 3 }
+      - { surface: APL, strictness: 2 }
+
+  - id: research:mit-lincoln-laboratory
+    type: ResearchOrg
+    name: MIT Lincoln Laboratory
+    org_type: ffrdc
+    relevance: 0.5
+    aliases:
+      - { surface: Lincoln Laboratory, strictness: 3 }
+
+  - id: research:institute-for-defense-analyses
+    type: ResearchOrg
+    name: Institute for Defense Analyses
+    org_type: ffrdc
+    relevance: 0.3
+    aliases:
+      - { surface: IDA, strictness: 2 }
+
+  - id: research:aerospace-corporation
+    type: ResearchOrg
+    name: The Aerospace Corporation
+    org_type: ffrdc
+    relevance: 0.3
+    aliases:
+      - { surface: Aerospace Corporation, strictness: 3 }
+
+  - id: research:sandia-national-laboratories
+    type: ResearchOrg
+    name: Sandia National Laboratories
+    org_type: national_lab
+    relevance: 0.3
+    aliases:
+      - { surface: Sandia, strictness: 3 }
+
+  - id: research:lawrence-livermore-national-laboratory
+    type: ResearchOrg
+    name: Lawrence Livermore National Laboratory
+    org_type: national_lab
+    relevance: 0.2
+    aliases:
+      - { surface: LLNL, strictness: 2 }
+
+  - id: research:los-alamos-national-laboratory
+    type: ResearchOrg
+    name: Los Alamos National Laboratory
+    org_type: national_lab
+    relevance: 0.2
+    aliases:
+      - { surface: LANL, strictness: 2 }
+
+  - id: research:air-force-research-laboratory
+    type: ResearchOrg
+    name: Air Force Research Laboratory
+    org_type: national_lab
+    relevance: 0.6
+    aliases:
+      - { surface: AFRL, strictness: 2 }
+
+  - id: research:army-research-laboratory
+    type: ResearchOrg
+    name: Army Research Laboratory
+    org_type: national_lab
+    relevance: 0.6
+    aliases:
+      - { surface: ARL, strictness: 2 }
+      - { surface: DEVCOM Army Research Laboratory, strictness: 3 }
+
+  - id: research:naval-research-laboratory
+    type: ResearchOrg
+    name: Naval Research Laboratory
+    org_type: national_lab
+    relevance: 0.4
+    aliases:
+      - { surface: NRL, strictness: 2 }
+
+  - id: research:center-for-strategic-and-international-studies
+    type: ResearchOrg
+    name: Center for Strategic and International Studies
+    org_type: think_tank
+    relevance: 0.3
+    aliases:
+      - { surface: CSIS, strictness: 2 }
+
+  - id: research:center-for-strategic-and-budgetary-assessments
+    type: ResearchOrg
+    name: Center for Strategic and Budgetary Assessments
+    org_type: think_tank
+    relevance: 0.3
+    aliases:
+      - { surface: CSBA, strictness: 2 }
+
+  - id: research:center-for-a-new-american-security
+    type: ResearchOrg
+    name: Center for a New American Security
+    org_type: think_tank
+    relevance: 0.3
+    aliases:
+      - { surface: CNAS, strictness: 2 }
+
+  - id: research:hudson-institute
+    type: ResearchOrg
+    name: Hudson Institute
+    org_type: think_tank
+    relevance: 0.2
+
+  - id: research:atlantic-council
+    type: ResearchOrg
+    name: Atlantic Council
+    org_type: think_tank
+    relevance: 0.2
+
+  - id: research:royal-united-services-institute
+    type: ResearchOrg
+    name: Royal United Services Institute
+    org_type: think_tank
+    relevance: 0.2
+    aliases:
+      - { surface: RUSI, strictness: 2 }
+
+  - id: research:naval-postgraduate-school
+    type: ResearchOrg
+    name: Naval Postgraduate School
+    org_type: academic
+    relevance: 0.2
+    aliases:
+      - { surface: NPS, strictness: 2 }
+
+  - id: research:georgia-tech-research-institute
+    type: ResearchOrg
+    name: Georgia Tech Research Institute
+    org_type: academic
+    relevance: 0.2
+    aliases:
+      - { surface: GTRI, strictness: 2 }
+
+  - id: research:aerospace-industries-association
+    type: ResearchOrg
+    name: Aerospace Industries Association
+    org_type: think_tank
+    relevance: 0.2
+    aliases:
+      - { surface: AIA, strictness: 2 }
+
+  - id: research:national-defense-industrial-association
+    type: ResearchOrg
+    name: National Defense Industrial Association
+    org_type: think_tank
+    relevance: 0.2
+    aliases:
+      - { surface: NDIA, strictness: 2 }
+
+  - id: research:center-for-space-standards-and-innovation
+    type: ResearchOrg
+    name: Center for Space Standards and Innovation
+    org_type: academic
+    relevance: 0.1
+    aliases:
+      - { surface: CSSI, strictness: 2 }
+
+
+  # ── programs ──
+  - id: prog:next-generation-command-and-control
+    type: Program
+    name: Next Generation Command and Control
+    relevance: 1.0
+    aliases:
+      - { surface: NGC2, strictness: 2 }
+
+  - id: prog:titan
+    type: Program
+    name: Tactical Intelligence Targeting Access Node
+    relevance: 0.9
+    aliases:
+      - { surface: TITAN, strictness: 0 }
+
+  - id: prog:joint-all-domain-command-and-control
+    type: Program
+    name: Joint All-Domain Command and Control
+    relevance: 0.7
+    aliases:
+      - { surface: JADC2, strictness: 2 }
+
+  - id: prog:combined-joint-all-domain-command-and-control
+    type: Program
+    name: Combined Joint All-Domain Command and Control
+    relevance: 0.6
+    aliases:
+      - { surface: CJADC2, strictness: 2 }
+
+  - id: prog:project-convergence
+    type: Program
+    name: Project Convergence
+    relevance: 0.7
+
+  - id: prog:advanced-battle-management-system
+    type: Program
+    name: Advanced Battle Management System
+    relevance: 0.6
+    aliases:
+      - { surface: ABMS, strictness: 2 }
+
+  - id: prog:integrated-battle-command-system
+    type: Program
+    name: Integrated Battle Command System
+    relevance: 0.5
+    aliases:
+      - { surface: IBCS, strictness: 2 }
+
+  - id: prog:maven-smart-system
+    type: Program
+    name: Maven Smart System
+    relevance: 0.8
+    aliases:
+      - { surface: Project Maven, strictness: 3 }
+      - { surface: MSS, strictness: 2 }
+
+  - id: prog:replicator
+    type: Program
+    name: Replicator
+    relevance: 0.7
+
+  - id: prog:integrated-visual-augmentation-system
+    type: Program
+    name: Integrated Visual Augmentation System
+    relevance: 0.5
+    aliases:
+      - { surface: IVAS, strictness: 2 }
+
+  - id: prog:soldier-borne-mission-command
+    type: Program
+    name: Soldier Borne Mission Command
+    relevance: 0.6
+    aliases:
+      - { surface: SBMC, strictness: 2 }
+
+  - id: prog:golden-dome
+    type: Program
+    name: Golden Dome
+    relevance: 0.6
+
+  - id: prog:infantry-last-tactical-mile
+    type: Program
+    name: Infantry Last Tactical Mile
+    relevance: 0.6
+    aliases:
+      - { surface: ILTM, strictness: 2 }
+
+  - id: prog:next-generation-c-uas-missile
+    type: Program
+    name: Next Generation C-UAS Missile
+    relevance: 0.5
+    aliases:
+      - { surface: NGCM, strictness: 2 }
+
+  - id: prog:low-altitude-stalking-and-strike-ordnance
+    type: Program
+    name: Low Altitude Stalking and Strike Ordnance
+    relevance: 0.5
+    aliases:
+      - { surface: LASSO, strictness: 0 }
+
+  - id: prog:skyfoundry
+    type: Program
+    name: SkyFoundry
+    relevance: 0.6
+
+  - id: prog:fixed-site-low-slow-small-uas-integrated-defeat-system
+    type: Program
+    name: "Fixed Site Low, Slow, Small UAS Integrated Defeat System"
+    relevance: 0.5
+    aliases:
+      - { surface: FS-LIDS, strictness: 2 }
+
+  - id: prog:mobile-low-slow-small-uas-integrated-defeat-system
+    type: Program
+    name: "Mobile Low, Slow, Small UAS Integrated Defeat System"
+    relevance: 0.4
+    aliases:
+      - { surface: M-LIDS, strictness: 2 }
+
+  - id: prog:collaborative-combat-aircraft
+    type: Program
+    name: Collaborative Combat Aircraft
+    relevance: 0.7
+    aliases:
+      - { surface: CCA, strictness: 2 }
+
+  - id: prog:future-long-range-assault-aircraft
+    type: Program
+    name: Future Long Range Assault Aircraft
+    relevance: 0.4
+    aliases:
+      - { surface: FLRAA, strictness: 2 }
+
+  - id: prog:future-tactical-uas
+    type: Program
+    name: Future Tactical Unmanned Aircraft System
+    relevance: 0.6
+    aliases:
+      - { surface: FTUAS, strictness: 2 }
+
+  - id: prog:precision-strike-missile
+    type: Program
+    name: Precision Strike Missile
+    relevance: 0.3
+    aliases:
+      - { surface: PrSM, strictness: 2 }
+
+  - id: prog:long-range-hypersonic-weapon
+    type: Program
+    name: Long Range Hypersonic Weapon
+    relevance: 0.3
+    aliases:
+      - { surface: LRHW, strictness: 2 }
+      - { surface: Dark Eagle, strictness: 3 }
+
+  - id: prog:xm30
+    type: Program
+    name: XM30 Mechanized Infantry Combat Vehicle
+    relevance: 0.4
+    aliases:
+      - { surface: XM30, strictness: 2 }
+
+  - id: prog:m1e3
+    type: Program
+    name: M1E3 Abrams
+    relevance: 0.3
+    aliases:
+      - { surface: M1E3, strictness: 2 }
+
+  - id: prog:proliferated-warfighter-space-architecture
+    type: Program
+    name: Proliferated Warfighter Space Architecture
+    relevance: 0.5
+    aliases:
+      - { surface: PWSA, strictness: 2 }
+
+  - id: prog:space-data-network
+    type: Program
+    name: Space Data Network
+    relevance: 0.4
+    aliases:
+      - { surface: SDN, strictness: 0 }
+
+  - id: prog:space-based-air-moving-target-indicator
+    type: Program
+    name: Space-Based Air Moving Target Indicator
+    relevance: 0.4
+    aliases:
+      - { surface: SB-AMTI, strictness: 2 }
+
+  - id: prog:orca-xluuv
+    type: Program
+    name: Orca Extra Large Unmanned Undersea Vehicle
+    relevance: 0.5
+    aliases:
+      - { surface: Orca XLUUV, strictness: 3 }
+
+  - id: prog:large-unmanned-surface-vessel
+    type: Program
+    name: Large Unmanned Surface Vessel
+    relevance: 0.4
+    aliases:
+      - { surface: LUSV, strictness: 2 }
+
+  - id: prog:medium-unmanned-surface-vessel
+    type: Program
+    name: Medium Unmanned Surface Vessel
+    relevance: 0.3
+    aliases:
+      - { surface: MUSV, strictness: 2 }
+
+  - id: prog:ghost-shark
+    type: Program
+    name: Ghost Shark
+    relevance: 0.4
+
+  - id: prog:aukus-pillar-2
+    type: Program
+    name: AUKUS Pillar 2
+    relevance: 0.4
+
+  - id: prog:sentinel
+    type: Program
+    name: Sentinel
+    relevance: 0.2
+    name_strictness: 0
+
+  # ── technologies ──
+  - id: tech:edge-inference
+    type: Technology
+    name: Edge Inference
+    relevance: 1.0
+    aliases:
+      - { surface: on-device inference, strictness: 3 }
+      - { surface: on-platform inference, strictness: 3 }
+      - { surface: edge AI, strictness: 3 }
+
+  - id: tech:sensor-fusion
+    type: Technology
+    name: Sensor Fusion
+    relevance: 0.8
+
+  - id: tech:computer-vision
+    type: Technology
+    name: Computer Vision
+    relevance: 0.7
+    aliases:
+      - { surface: CV, strictness: 0 }
+
+  - id: tech:autonomy
+    type: Technology
+    name: Autonomy
+    relevance: 0.8
+    name_strictness: 0
+    aliases:
+      - { surface: autonomous systems, strictness: 3 }
+
+  - id: tech:machine-learning
+    type: Technology
+    name: Machine Learning
+    relevance: 0.6
+    name_strictness: 0
+
+  - id: tech:ddil-operations
+    type: Technology
+    name: DDIL Operations
+    relevance: 0.9
+    name_strictness: 0
+    aliases:
+      - { surface: "denied, degraded, intermittent and limited", strictness: 3 }
+      - { surface: DDIL, strictness: 2 }
+      - { surface: degraded operations, strictness: 3 }
+      - { surface: disconnected operations, strictness: 3 }
+
+  - id: tech:mesh-networking
+    type: Technology
+    name: Mesh Networking
+    relevance: 0.6
+
+  - id: tech:electronic-warfare
+    type: Technology
+    name: Electronic Warfare
+    relevance: 0.5
+    aliases:
+      - { surface: EW, strictness: 0 }
+
+  - id: tech:synthetic-aperture-radar
+    type: Technology
+    name: Synthetic Aperture Radar
+    relevance: 0.5
+    aliases:
+      - { surface: SAR, strictness: 0 }
+
+  - id: tech:ground-moving-target-indicator
+    type: Technology
+    name: Ground Moving Target Indicator
+    relevance: 0.5
+    aliases:
+      - { surface: GMTI, strictness: 2 }
+
+  - id: tech:full-motion-video
+    type: Technology
+    name: Full Motion Video
+    relevance: 0.6
+    aliases:
+      - { surface: FMV, strictness: 2 }
+
+  - id: tech:positioning-navigation-and-timing
+    type: Technology
+    name: "Positioning, Navigation and Timing"
+    relevance: 0.5
+    aliases:
+      - { surface: PNT, strictness: 2 }
+      - { surface: assured PNT, strictness: 3 }
+
+  - id: tech:counter-uas
+    type: Technology
+    name: Counter-UAS
+    relevance: 0.7
+    aliases:
+      - { surface: C-UAS, strictness: 2 }
+      - { surface: counter-drone, strictness: 3 }
+
+  - id: tech:swarming
+    type: Technology
+    name: Swarming
+    relevance: 0.6
+    name_strictness: 0
+
+  - id: tech:model-retraining-at-the-edge
+    type: Technology
+    name: Model Retraining at the Edge
+    relevance: 0.9
+
+  - id: tech:zero-trust-architecture
+    type: Technology
+    name: Zero Trust Architecture
+    relevance: 0.4
+    aliases:
+      - { surface: zero trust, strictness: 3 }
+
+  - id: tech:digital-engineering
+    type: Technology
+    name: Digital Engineering
+    relevance: 0.4
+
+  - id: tech:modular-open-systems-approach
+    type: Technology
+    name: Modular Open Systems Approach
+    relevance: 0.7
+    aliases:
+      - { surface: MOSA, strictness: 2 }
+
+  - id: tech:acoustic-detection
+    type: Technology
+    name: Acoustic Detection
+    relevance: 0.4
+
+  - id: tech:radio-frequency-sensing
+    type: Technology
+    name: Radio Frequency Sensing
+    relevance: 0.5
+    aliases:
+      - { surface: RF sensing, strictness: 3 }
+
+  # ── platforms ──
+  - id: plat:lattice
+    type: Platform
+    name: Lattice
+    platform_type: software
+    relevance: 0.9
+    name_strictness: 0
+    aliases:
+      - { surface: Lattice OS, strictness: 3 }
+
+  - id: plat:hivemind
+    type: Platform
+    name: Hivemind
+    platform_type: software
+    relevance: 0.9
+
+  - id: plat:gotham
+    type: Platform
+    name: Palantir Gotham
+    platform_type: software
+    relevance: 0.6
+    aliases:
+      - { surface: Gotham, strictness: 0 }
+
+  - id: plat:foundry
+    type: Platform
+    name: Palantir Foundry
+    platform_type: software
+    relevance: 0.6
+    aliases:
+      - { surface: Foundry, strictness: 0 }
+
+  - id: plat:maven-smart-system-platform
+    type: Platform
+    name: Maven Smart System
+    platform_type: software
+    relevance: 0.7
+
+  - id: plat:edgeos
+    type: Platform
+    name: EdgeOS
+    platform_type: software
+    relevance: 0.7
+
+  - id: plat:ghost-x
+    type: Platform
+    name: Ghost-X
+    platform_type: uas
+    relevance: 0.6
+
+  - id: plat:bolt
+    type: Platform
+    name: Bolt
+    platform_type: uas
+    relevance: 0.5
+    name_strictness: 0
+
+  - id: plat:barracuda
+    type: Platform
+    name: Barracuda
+    platform_type: uas
+    relevance: 0.4
+    name_strictness: 0
+
+  - id: plat:roadrunner
+    type: Platform
+    name: Roadrunner
+    platform_type: uas
+    relevance: 0.5
+    name_strictness: 0
+
+  - id: plat:fury
+    type: Platform
+    name: Fury
+    platform_type: uas
+    relevance: 0.6
+    name_strictness: 0
+
+  - id: plat:v-bat
+    type: Platform
+    name: V-BAT
+    platform_type: uas
+    relevance: 0.6
+
+  - id: plat:switchblade
+    type: Platform
+    name: Switchblade
+    platform_type: uas
+    relevance: 0.5
+
+  - id: plat:coyote
+    type: Platform
+    name: Coyote
+    platform_type: uas
+    relevance: 0.4
+    name_strictness: 0
+
+  - id: plat:mq-9-reaper
+    type: Platform
+    name: MQ-9 Reaper
+    platform_type: uas
+    relevance: 0.3
+    aliases:
+      - { surface: MQ-9, strictness: 2 }
+
+  - id: plat:mq-20-avenger
+    type: Platform
+    name: MQ-20 Avenger
+    platform_type: uas
+    relevance: 0.4
+    aliases:
+      - { surface: MQ-20, strictness: 2 }
+
+  - id: plat:x-62a-vista
+    type: Platform
+    name: X-62A VISTA
+    platform_type: uas
+    relevance: 0.4
+    aliases:
+      - { surface: VISTA, strictness: 2 }
+
+  - id: plat:starlink
+    type: Platform
+    name: Starlink
+    platform_type: satellite
+    relevance: 0.4
+
+  - id: plat:starshield
+    type: Platform
+    name: Starshield
+    platform_type: satellite
+    relevance: 0.5
+
+  - id: plat:nemesis
+    type: Platform
+    name: Saronic Corsair
+    platform_type: usv
+    relevance: 0.4
+    aliases:
+      - { surface: Corsair, strictness: 0 }
+
+  - id: plat:dive-xl
+    type: Platform
+    name: Dive-XL
+    platform_type: usv
+    relevance: 0.4
+
+  # ── promoted from the corpus ───────────────────────────────────────
+  # These arrived from articles and earned a place: each is a permanent
+  # institution the corpus keeps naming, and each was floating with nothing
+  # attached. Declaring one costs what declaring anything costs -- it stops
+  # being a matter of corroboration, so it will never go dormant -- which is
+  # the right trade for a body that does not stop existing. The ids are the
+  # ones the corpus already minted, so nothing forks.
+  - id: govt:congress
+    type: GovernmentBody
+    name: Congress
+    org_type: legislative
+    relevance: 0.4
+
+  - id: govt:u-s-department-of-state
+    type: GovernmentBody
+    name: U.S. Department of State
+    org_type: department
+    relevance: 0.3
+
+  - id: govt:office-of-management-and-budget
+    type: GovernmentBody
+    name: Office of Management and Budget
+    org_type: agency
+    relevance: 0.3
+    aliases:
+      - { surface: OMB, strictness: 2 }
+
+  - id: govt:federal-aviation-administration
+    type: GovernmentBody
+    name: Federal Aviation Administration
+    org_type: regulator
+    relevance: 0.3
+    aliases:
+      - { surface: FAA, strictness: 2 }
+
+  - id: govt:federal-communications-commission
+    type: GovernmentBody
+    name: Federal Communications Commission
+    org_type: regulator
+    relevance: 0.2
+    aliases:
+      - { surface: FCC, strictness: 2 }
+
+  - id: govt:office-of-strategic-capital
+    type: GovernmentBody
+    name: Office of Strategic Capital
+    org_type: agency
+    relevance: 0.3
+
+  - id: unit:75th-ranger-regiment
+    type: MilitaryUnit
+    name: 75th Ranger Regiment
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:us-pacific-air-forces
+    type: MilitaryUnit
+    name: US Pacific Air Forces
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:japan-s-ground-self-defense-forces
+    type: MilitaryUnit
+    name: Japan's Ground Self-Defense Forces
+    org_type: service
+    relevance: 0.2
+
+
+edges:
+  # ── US executive branch ────────────────────────────────────────────
+  - { src: govt:defense-department, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:white-house, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:department-of-homeland-security, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:national-aeronautics-and-space-administration, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:government-accountability-office, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:u-s-department-of-commerce, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:national-institute-of-standards-and-technology, predicate: PART_OF, dst: govt:u-s-department-of-commerce, kind: org_hierarchy }
+  - { src: govt:cybersecurity-and-infrastructure-security-agency, predicate: PART_OF, dst: govt:department-of-homeland-security, kind: org_hierarchy }
+
+  # ── services under the department ──────────────────────────────────
+  - { src: unit:u-s-army, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-navy, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-air-force, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-space-force, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:marine-corps, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+
+  # ── agencies and combatant commands under the department ───────────
+  - { src: govt:defense-advanced-research-projects-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:defense-innovation-unit, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:space-development-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:missile-defense-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:national-reconnaissance-office, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:chief-digital-and-artificial-intelligence-office, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-central-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:joint-interagency-task-force-south-jiatf-s, predicate: PART_OF, dst: unit:us-central-command, kind: joint }
+
+  # ── formations under their service ─────────────────────────────────
+  - { src: unit:i-corps, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:4th-infantry-division, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:25th-infantry-divisions, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:space-systems-command, predicate: PART_OF, dst: unit:u-s-space-force, kind: org_hierarchy }
+  - { src: unit:air-force-test-pilot-school, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+
+  # ── US industry ────────────────────────────────────────────────────
+  - { src: company:anduril-industries, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:lockheed-martin, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:northrop-grumman, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:boeing, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:rtx, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:raytheon, predicate: PART_OF, dst: company:rtx, kind: corporate }
+  - { src: company:l3harris-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:palantir-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:leidos, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:booz-allen-hamilton, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:general-dynamics-information-technology, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:caci-international, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:spacex, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:rocket-lab, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:sierra-space, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:aerovironment, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:shield-ai, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:applied-intuition, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:fortem-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:axon, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:raft, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:systems-and-technology-research, predicate: BASED_IN, dst: country:united-states }
+
+  # ── US technology industry ─────────────────────────────────────────
+  - { src: company:anthropic, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:openai, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:google, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:microsoft, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:nvidia, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:amazon-web-services, predicate: BASED_IN, dst: country:united-states }
+
+  # ── US institutions ────────────────────────────────────────────────
+  - { src: research:center-for-strategic-and-international-studies, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:aerospace-industries-association, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:center-for-space-standards-and-innovation, predicate: BASED_IN, dst: country:united-states }
+
+  # ── allied and adversary ───────────────────────────────────────────
+  - { src: govt:ministry-of-defence, predicate: BASED_IN, dst: country:united-kingdom }
+  - { src: unit:british-army, predicate: PART_OF, dst: govt:ministry-of-defence, kind: org_hierarchy }
+  - { src: unit:royal-navy, predicate: PART_OF, dst: govt:ministry-of-defence, kind: org_hierarchy }
+  - { src: company:thales, predicate: BASED_IN, dst: country:france }
+  - { src: company:leonardo, predicate: BASED_IN, dst: country:italy }
+  - { src: company:saab, predicate: BASED_IN, dst: country:sweden }
+  - { src: company:bae-systems-australia, predicate: BASED_IN, dst: country:australia }
+  - { src: company:moonshot-ai, predicate: BASED_IN, dst: country:china }
+
+  # ── unified combatant commands ─────────────────────────────────────
+  # Declared as nodes since v1 and never given a parent, so every one of them
+  # floated. NORAD is deliberately absent: it is a BINATIONAL command, not a US
+  # one, and `PART_OF` the US department would be a tidy wrong answer.
+  - { src: unit:us-indo-pacific-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-european-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-northern-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-southern-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-africa-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-special-operations-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-space-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-strategic-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-transportation-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+
+  # ── formations, attached to the most specific parent declared ──────
+  # The 82nd and the 101st hang off the corps rather than the service: a
+  # shortcut past a middle that EXISTS is a wrong edge hiding the real one.
+  - { src: unit:army-futures-command, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:army-space-and-missile-defense-command, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:xviii-airborne-corps, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:82nd-airborne-division, predicate: PART_OF, dst: unit:xviii-airborne-corps, kind: org_hierarchy }
+  - { src: unit:101st-airborne-division, predicate: PART_OF, dst: unit:xviii-airborne-corps, kind: org_hierarchy }
+  - { src: unit:air-combat-command, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+
+  # The Coast Guard is the one US service that is not under the defense
+  # department, which is exactly why no blanket rule on `org_type` could place
+  # these: the field carries no nationality and no exception.
+  - { src: unit:u-s-coast-guard, predicate: PART_OF, dst: govt:department-of-homeland-security, kind: org_hierarchy }
+
+  # ── defense agencies and the secretariat ───────────────────────────
+  - { src: govt:office-of-the-secretary-of-defense, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:national-geospatial-intelligence-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:defense-intelligence-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:national-security-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:defense-information-systems-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:defense-logistics-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+
+  # ── acquisition: the buying side of each service ───────────────────
+  - { src: govt:peo-iews, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:peo-soldier, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:peo-aviation, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:peo-ground-combat-systems, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:peo-missiles-and-space, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:peo-c3n, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:pm-tactical-network, predicate: PART_OF, dst: govt:peo-c3n, kind: org_hierarchy }
+  - { src: govt:rapid-capabilities-and-critical-technologies-office, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: govt:naval-sea-systems-command, predicate: PART_OF, dst: unit:u-s-navy, kind: org_hierarchy }
+  - { src: govt:naval-air-systems-command, predicate: PART_OF, dst: unit:u-s-navy, kind: org_hierarchy }
+  - { src: govt:naval-information-warfare-systems-command, predicate: PART_OF, dst: unit:u-s-navy, kind: org_hierarchy }
+  # Air Force Materiel Command sits between this centre and the service and is
+  # not declared, so the service is the most specific parent available here.
+  - { src: govt:air-force-life-cycle-management-center, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+
+  # ── the appropriators and the oversight bodies ─────────────────────
+  # The legislature itself is declared below, so these take it. A country is
+  # what you assert when the real parent is absent from the file, not something
+  # to leave in place once it arrives.
+  - { src: govt:senate-armed-services-committee, predicate: PART_OF, dst: govt:congress, kind: org_hierarchy }
+  - { src: govt:house-armed-services-committee, predicate: PART_OF, dst: govt:congress, kind: org_hierarchy }
+  - { src: govt:senate-appropriations-committee, predicate: PART_OF, dst: govt:congress, kind: org_hierarchy }
+  - { src: govt:house-appropriations-committee, predicate: PART_OF, dst: govt:congress, kind: org_hierarchy }
+  - { src: govt:congressional-budget-office, predicate: PART_OF, dst: govt:congress, kind: org_hierarchy }
+
+  # ── allied structure ───────────────────────────────────────────────
+  # A national military is never PART_OF its country -- that is what BASED_IN is
+  # for -- so the ADF takes the country and the RAF takes the ministry that is
+  # declared above it. NATO and the EU are deliberately absent: neither is an
+  # organ of any one state, and BASED_IN would put a headquarters address where
+  # a nationality belongs.
+  - { src: unit:royal-air-force, predicate: PART_OF, dst: govt:ministry-of-defence, kind: org_hierarchy }
+  - { src: unit:australian-defence-force, predicate: BASED_IN, dst: country:australia }
+  - { src: govt:nato-diana, predicate: PART_OF, dst: govt:nato, kind: org_hierarchy }
+
+
+  # ── industry, by home country ──────────────────────────────────────
+  # Nationality, and nothing more: BASED_IN is one per organisation and means
+  # where a firm is incorporated, not where it sells. It is declared out of
+  # `allShortestPaths` in the ontology, so filling it in cannot turn every route
+  # between two US firms into "both are American".
+  - { src: company:scale-ai, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:govini, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:general-dynamics, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:huntington-ingalls-industries, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:general-atomics, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:textron, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:saic, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:peraton, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:parsons, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:amentum, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:saronic, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:skydio, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:epirus, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:kratos, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:second-front-systems, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:vannevar-labs, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:hawkeye-360, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:overland-ai, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:forterra, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:edge-autonomy, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:blue-water-autonomy, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:castelion, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:firestorm-labs, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:neros-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:voyager-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:york-space-systems, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:planet-labs, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:maxar-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:firefly-aerospace, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:oracle, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:dell-technologies, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:bain-capital, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:andreessen-horowitz, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:founders-fund, predicate: BASED_IN, dst: country:united-states }
+  - { src: company:in-q-tel, predicate: BASED_IN, dst: country:united-states }
+
+  # Non-US primes and suppliers, where the nationality is the point.
+  - { src: company:bae-systems, predicate: BASED_IN, dst: country:united-kingdom }
+  - { src: company:qinetiq, predicate: BASED_IN, dst: country:united-kingdom }
+  - { src: company:rheinmetall, predicate: BASED_IN, dst: country:germany }
+  - { src: company:elbit-systems, predicate: BASED_IN, dst: country:israel }
+  - { src: company:kongsberg, predicate: BASED_IN, dst: country:norway }
+  - { src: company:hanwha, predicate: BASED_IN, dst: country:south-korea }
+  - { src: company:thales-australia, predicate: BASED_IN, dst: country:australia }
+
+  # A named local subsidiary takes its own BASED_IN and reaches its parent by
+  # PART_OF -- re-homing the parent is the miss the ontology calls out.
+  - { src: company:thales-australia, predicate: PART_OF, dst: company:thales, kind: corporate }
+
+  # ── the labs and the institutes ────────────────────────────────────
+  # The three service laboratories take the service: a parent that is declared
+  # and true beats a country that is merely true.
+  - { src: research:air-force-research-laboratory, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+  - { src: research:army-research-laboratory, predicate: PART_OF, dst: unit:army-futures-command, kind: org_hierarchy }
+  - { src: research:naval-research-laboratory, predicate: PART_OF, dst: unit:u-s-navy, kind: org_hierarchy }
+  - { src: research:naval-postgraduate-school, predicate: PART_OF, dst: unit:u-s-navy, kind: org_hierarchy }
+
+  # The energy laboratories answer to a department that is not declared here, so
+  # the country is the most specific true parent available.
+  - { src: research:mitre, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:rand-corporation, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:johns-hopkins-applied-physics-laboratory, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:mit-lincoln-laboratory, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:institute-for-defense-analyses, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:aerospace-corporation, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:sandia-national-laboratories, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:lawrence-livermore-national-laboratory, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:los-alamos-national-laboratory, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:center-for-strategic-and-budgetary-assessments, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:center-for-a-new-american-security, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:hudson-institute, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:atlantic-council, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:georgia-tech-research-institute, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:national-defense-industrial-association, predicate: BASED_IN, dst: country:united-states }
+  - { src: research:royal-united-services-institute, predicate: BASED_IN, dst: country:united-kingdom }
+
+  # ── who holds the money for each effort ────────────────────────────
+  # MANAGES is acquisition authority, and the subject is the most specific
+  # sponsor declared: a program office where one exists, the service where it
+  # does not. Six declared programmes are deliberately absent, because their
+  # sponsor is a guess rather than a fact and a wrong edge here is invisible:
+  # Maven Smart System, AUKUS Pillar 2, Infantry Last Tactical Mile, SkyFoundry,
+  # Space Data Network, and Space-Based Air Moving Target Indicator. They are
+  # what the proposal queue is for.
+  - { src: govt:peo-c3n, predicate: MANAGES, dst: prog:next-generation-command-and-control }
+  - { src: govt:peo-iews, predicate: MANAGES, dst: prog:titan }
+  - { src: govt:peo-soldier, predicate: MANAGES, dst: prog:integrated-visual-augmentation-system }
+  - { src: govt:peo-soldier, predicate: MANAGES, dst: prog:soldier-borne-mission-command }
+  - { src: govt:peo-missiles-and-space, predicate: MANAGES, dst: prog:precision-strike-missile }
+  - { src: govt:peo-ground-combat-systems, predicate: MANAGES, dst: prog:xm30 }
+  - { src: govt:peo-ground-combat-systems, predicate: MANAGES, dst: prog:m1e3 }
+  - { src: govt:peo-aviation, predicate: MANAGES, dst: prog:future-long-range-assault-aircraft }
+  - { src: govt:peo-aviation, predicate: MANAGES, dst: prog:future-tactical-uas }
+  - { src: govt:rapid-capabilities-and-critical-technologies-office, predicate: MANAGES, dst: prog:long-range-hypersonic-weapon }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:project-convergence }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:integrated-battle-command-system }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:low-altitude-stalking-and-strike-ordnance }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:next-generation-c-uas-missile }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:fixed-site-low-slow-small-uas-integrated-defeat-system }
+  - { src: unit:u-s-army, predicate: MANAGES, dst: prog:mobile-low-slow-small-uas-integrated-defeat-system }
+  - { src: unit:u-s-air-force, predicate: MANAGES, dst: prog:advanced-battle-management-system }
+  - { src: unit:u-s-air-force, predicate: MANAGES, dst: prog:collaborative-combat-aircraft }
+  - { src: unit:u-s-air-force, predicate: MANAGES, dst: prog:sentinel }
+  - { src: unit:u-s-navy, predicate: MANAGES, dst: prog:orca-xluuv }
+  - { src: unit:u-s-navy, predicate: MANAGES, dst: prog:large-unmanned-surface-vessel }
+  - { src: unit:u-s-navy, predicate: MANAGES, dst: prog:medium-unmanned-surface-vessel }
+  - { src: govt:space-development-agency, predicate: MANAGES, dst: prog:proliferated-warfighter-space-architecture }
+  - { src: govt:defense-innovation-unit, predicate: MANAGES, dst: prog:replicator }
+  - { src: govt:defense-department, predicate: MANAGES, dst: prog:joint-all-domain-command-and-control }
+  - { src: govt:defense-department, predicate: MANAGES, dst: prog:combined-joint-all-domain-command-and-control }
+  - { src: govt:defense-department, predicate: MANAGES, dst: prog:golden-dome }
+  - { src: unit:australian-defence-force, predicate: MANAGES, dst: prog:ghost-shark }
+
+  # ── who builds each thing ──────────────────────────────────────────
+  # Three are deliberately absent. EdgeOS and the X-62A VISTA have more than one
+  # plausible builder and the file should not guess between them; Coyote's maker
+  # is declared here twice, as `company:rtx` and `company:raytheon`, so naming
+  # either would pick a side of a split that curation has not settled.
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:lattice }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:ghost-x }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:bolt }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:barracuda }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:roadrunner }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:fury }
+  - { src: company:anduril-industries, predicate: PRODUCES, dst: plat:dive-xl }
+  - { src: company:palantir-technologies, predicate: PRODUCES, dst: plat:gotham }
+  - { src: company:palantir-technologies, predicate: PRODUCES, dst: plat:foundry }
+  - { src: company:palantir-technologies, predicate: PRODUCES, dst: plat:maven-smart-system-platform }
+  - { src: company:shield-ai, predicate: PRODUCES, dst: plat:hivemind }
+  - { src: company:shield-ai, predicate: PRODUCES, dst: plat:v-bat }
+  - { src: company:general-atomics, predicate: PRODUCES, dst: plat:mq-9-reaper }
+  - { src: company:general-atomics, predicate: PRODUCES, dst: plat:mq-20-avenger }
+  - { src: company:aerovironment, predicate: PRODUCES, dst: plat:switchblade }
+  - { src: company:spacex, predicate: PRODUCES, dst: plat:starlink }
+  - { src: company:spacex, predicate: PRODUCES, dst: plat:starshield }
+  - { src: company:saronic, predicate: PRODUCES, dst: plat:nemesis }
+
+  # ── the promoted bodies, placed ────────────────────────────────────
+  - { src: govt:congress, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:u-s-department-of-state, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:office-of-management-and-budget, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:federal-aviation-administration, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:federal-communications-commission, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:office-of-strategic-capital, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:75th-ranger-regiment, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:us-pacific-air-forces, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+  - { src: unit:japan-s-ground-self-defense-forces, predicate: BASED_IN, dst: country:japan }
+
+# No `merges:` block: v3 split Organization on an empty database, so no `org:`
+# id was ever minted and there is nothing to retype. The machinery still exists
+# and is still right next time -- `venona anchors load --apply-merges`.
+
+# Surfaces with more than one plausible owner. Never auto-matched on the name
+# alone, and checked BEFORE the exact-alias rung, so this outranks every alias
+# below.
+#
+# `readings:` is optional and changes what happens when the surface appears. A
+# surface without it declines, always, and the mention is lost to both meanings.
+# With it, the resolver looks for the one reading THIS document names -- the
+# full title, or the country it is based in -- and takes it only when exactly
+# one is present. Two named, or none, and it declines exactly as before. So the
+# failure mode stays a missing mention rather than a wrong one, which is the
+# whole reason the surface is on this list.
+#
+# List a reading even when it is uncorroborated: an entity that is not active
+# yet is skipped rather than picked, and the line starts working the day it is
+# promoted.
+#
+# DUPLICATED in `fixtures/seed/entities.yaml` on purpose: the fixture serves
+# `make reset`, this serves `make bootstrap`, and an instance built from anchors
+# alone would otherwise start with the resolver's first guard empty. Add to both.
+ambiguous:
+  - { surface: SDA, reason: "Space Development Agency vs software-defined anything" }
+  - { surface: TITAN, reason: "Army TITAN program vs commercial product names" }
+  - { surface: EW, reason: "electronic warfare vs early warning" }
+  - { surface: Sentinel, reason: "multiple programs and products" }
+  - { surface: Atlas, reason: "multiple programs and products" }
+
+  # Bare institutional words, each of which minted an entity naming no
+  # particular body: `org:defence` reached ACTIVE and absorbed "Australian
+  # Defence Force" as a conflict; `org:the-air-force` coined the alias "TAF".
+  # The corpus already holds five different air forces and navies.
+  - { surface: Defence, reason: "names no particular ministry or service" }
+  - { surface: Defense, reason: "names no particular ministry or service" }
+  - surface: the Navy
+    reason: "US, Royal, German -- the article decides"
+    readings: [unit:u-s-navy, unit:royal-navy]
+  - surface: the Army
+    reason: "US, Australian, Ukrainian -- the article decides"
+    readings: [unit:u-s-army, unit:british-army]
+  - surface: the Air Force
+    reason: "US, Italian, Ukrainian -- the article decides"
+    readings: [unit:u-s-air-force, unit:royal-air-force]
+  - surface: Ministry of Defence
+    reason: "names no particular ministry; the corpus holds several"
+    readings: [govt:ministry-of-defence, govt:dutch-ministry-of-defence]
+  # No readings: the two it carried were merged away, and followed to their
+  # survivors they picked Israel's ministry for a story about an unnamed NATO
+  # member's, because the supplier was Israeli. A home country is weak evidence
+  # for a ministry.
+  - surface: Ministry of Defense
+    reason: "names no particular ministry; the corpus holds several"
+
+  # Each of these held one entity that collected several countries' bodies:
+  # every one of its fifteen mentions on 2026-10-25 was a specific ministry
+  # (Japan, India, Ukraine, Russia, Thailand, Taiwan, Germany) and every one
+  # was linked to the catch-all. No readings, because the ministries an
+  # article could mean mostly carry no home country to pick them by, and a
+  # replay picked none: declining is the same outcome without a wrong pick.
+  - { surface: Defense Ministry, reason: "names no particular ministry; the article decides" }
+  - { surface: Defence Ministry, reason: "names no particular ministry; the article decides" }
+  - { surface: the Defense Ministry, reason: "names no particular ministry; the article decides" }
+  - { surface: the Defence Ministry, reason: "names no particular ministry; the article decides" }
+  - { surface: Aeronautics, reason: "Saab's business area and Rafael's drone maker both write it bare" }
+  - { surface: Marine, reason: "an adjective in every mention: Marine snipers, Marine units" }
+  - { surface: the Department, reason: "whichever department the article is about" }
+
+  # New in v3: each minted an Organization and each is a category error -- a
+  # publisher we read, a conference, a city hosting a depot. Belt to the
+  # ontology guidance's braces.
+  - { surface: War on the Rocks, reason: "a publisher we read, not an actor" }
+  - { surface: Breaking Defense, reason: "a publisher we read, not an actor" }
+  - { surface: DefenseScoop, reason: "a publisher we read, not an actor" }
+  - { surface: Forge, reason: "multiple products and program offices" }
+  - { surface: Hunter, reason: "multiple programs and products" }

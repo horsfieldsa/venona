@@ -1,0 +1,394 @@
+# venona anchors -- the top level of the graph. USER-EDITABLE.
+#
+# The corpus gives you the leaves and almost never the trunk: no article states
+# that the Army is part of the Defense Department. Declaring it here is what
+# turns 109 disconnected islands into a graph you can navigate from a country.
+#
+# Loaded by `venona anchors load`, independently of `fixtures/seed/` -- that
+# fixture also ships fake documents which must never reach a live database.
+# Everything here is `method='seed'`: never demoted, and evidence for nothing.
+#
+# ── two rules ────────────────────────────────────────────────────────
+#
+# 1. DECLARE ONLY IDS THAT DO NOT EXIST. Attach existing entities in `edges:`
+#    by id; a re-declaration overwrites name, summary and relevance.
+# 2. EVERY EDGE IS TYPE-CHECKED against config/ontology.yaml at load time. If
+#    the loader rejects a line, the ontology disagrees with you -- read it.
+#
+# `PART_OF` is the org chart (child -> parent); `BASED_IN` is nationality
+# (organisation -> country). Separate, because a country inside PART_OF would
+# put a supernode in the middle of every path query.
+
+entities:
+  # ── countries ──────────────────────────────────────────────────────
+  # `name_strictness: 0` throughout: an anchor's job is structural, not
+  # annotation, and at the default "United States" wins the highlight over
+  # `U.S. Army` across two thirds of the corpus.
+  - id: country:united-states
+    type: Country
+    name: United States
+    name_strictness: 0
+    relevance: 0.3
+    summary: Sponsor above the Defense Department, and the jurisdiction of US-domiciled industry.
+    aliases:
+      - { surface: U.S., strictness: 0 }
+      - { surface: USA, strictness: 0 }
+      - { surface: United States of America, strictness: 0 }
+
+  - id: country:china
+    type: Country
+    name: China
+    name_strictness: 0
+    relevance: 0.3
+    aliases:
+      - { surface: People's Republic of China, strictness: 0 }
+      - { surface: PRC, strictness: 0 }
+
+  - id: country:taiwan
+    type: Country
+    name: Taiwan
+    name_strictness: 0
+    relevance: 0.2
+
+  - id: country:ukraine
+    type: Country
+    name: Ukraine
+    name_strictness: 0
+    relevance: 0.2
+
+  - id: country:united-kingdom
+    type: Country
+    name: United Kingdom
+    name_strictness: 0
+    relevance: 0.2
+    aliases:
+      - { surface: UK, strictness: 0 }
+      - { surface: Britain, strictness: 0 }
+
+  - id: country:france
+    type: Country
+    name: France
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:italy
+    type: Country
+    name: Italy
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:sweden
+    type: Country
+    name: Sweden
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:australia
+    type: Country
+    name: Australia
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:israel
+    type: Country
+    name: Israel
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:poland
+    type: Country
+    name: Poland
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:netherlands
+    type: Country
+    name: Netherlands
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:canada
+    type: Country
+    name: Canada
+    name_strictness: 0
+    relevance: 0.1
+
+  - id: country:iran
+    type: Country
+    name: Iran
+    name_strictness: 0
+    relevance: 0.1
+  # ── the bodies the edges below actually name ───────────────────────
+  # Every endpoint in `edges:` is declared HERE, because that is the rule the
+  # file is held to: an edge naming something undeclared is dropped, silently
+  # and completely. An excerpt that broke its own rule taught the shape of a
+  # document that loses all of its structure on load.
+
+  - id: govt:defense-department
+    type: GovernmentBody
+    name: Department of War
+    org_type: department
+    relevance: 0.7
+    aliases:
+      - { surface: Department of Defense, strictness: 3 }
+      - { surface: DoD, strictness: 2 }
+
+  - id: govt:white-house
+    type: GovernmentBody
+    name: The White House
+    org_type: department
+    relevance: 0.3
+    aliases:
+      - { surface: White House, strictness: 3 }
+
+  - id: govt:department-of-homeland-security
+    type: GovernmentBody
+    name: Department of Homeland Security
+    org_type: department
+    relevance: 0.3
+    aliases:
+      - { surface: DHS, strictness: 2 }
+
+  - id: govt:national-aeronautics-and-space-administration
+    type: GovernmentBody
+    name: National Aeronautics and Space Administration
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: NASA, strictness: 2 }
+
+  - id: govt:government-accountability-office
+    type: GovernmentBody
+    name: Government Accountability Office
+    org_type: legislative
+    relevance: 0.3
+    aliases:
+      - { surface: GAO, strictness: 2 }
+
+  - id: govt:u-s-department-of-commerce
+    type: GovernmentBody
+    name: U.S. Department of Commerce
+    org_type: department
+    relevance: 0.2
+    aliases:
+      - { surface: Department of Commerce, strictness: 3 }
+
+  - id: govt:national-institute-of-standards-and-technology
+    type: GovernmentBody
+    name: National Institute of Standards and Technology
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: NIST, strictness: 2 }
+
+  - id: govt:cybersecurity-and-infrastructure-security-agency
+    type: GovernmentBody
+    name: Cybersecurity and Infrastructure Security Agency
+    org_type: agency
+    relevance: 0.2
+    aliases:
+      - { surface: CISA, strictness: 2 }
+
+  - id: unit:u-s-army
+    type: MilitaryUnit
+    name: United States Army
+    org_type: service
+    relevance: 0.9
+    aliases:
+      - { surface: U.S. Army, strictness: 3 }
+      - { surface: US Army, strictness: 3 }
+
+  - id: unit:u-s-navy
+    type: MilitaryUnit
+    name: United States Navy
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Navy, strictness: 3 }
+      - { surface: US Navy, strictness: 3 }
+
+  - id: unit:u-s-air-force
+    type: MilitaryUnit
+    name: United States Air Force
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Air Force, strictness: 3 }
+      - { surface: USAF, strictness: 2 }
+
+  - id: unit:u-s-space-force
+    type: MilitaryUnit
+    name: United States Space Force
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Space Force, strictness: 3 }
+      - { surface: USSF, strictness: 2 }
+
+  - id: unit:marine-corps
+    type: MilitaryUnit
+    name: United States Marine Corps
+    org_type: service
+    relevance: 0.6
+    aliases:
+      - { surface: U.S. Marine Corps, strictness: 3 }
+      - { surface: USMC, strictness: 2 }
+
+  - id: govt:defense-advanced-research-projects-agency
+    type: GovernmentBody
+    name: Defense Advanced Research Projects Agency
+    org_type: agency
+    relevance: 0.7
+    aliases:
+      - { surface: DARPA, strictness: 2 }
+
+  - id: govt:defense-innovation-unit
+    type: GovernmentBody
+    name: Defense Innovation Unit
+    org_type: agency
+    relevance: 0.9
+    aliases:
+      - { surface: DIU, strictness: 2 }
+
+  - id: govt:space-development-agency
+    type: GovernmentBody
+    name: Space Development Agency
+    org_type: agency
+    relevance: 0.5
+
+  - id: govt:missile-defense-agency
+    type: GovernmentBody
+    name: Missile Defense Agency
+    org_type: agency
+    relevance: 0.4
+    aliases:
+      - { surface: MDA, strictness: 2 }
+
+  - id: govt:national-reconnaissance-office
+    type: GovernmentBody
+    name: National Reconnaissance Office
+    org_type: agency
+    relevance: 0.4
+    aliases:
+      - { surface: NRO, strictness: 2 }
+
+  - id: govt:chief-digital-and-artificial-intelligence-office
+    type: GovernmentBody
+    name: Chief Digital and Artificial Intelligence Office
+    org_type: agency
+    relevance: 0.8
+    aliases:
+      - { surface: CDAO, strictness: 2 }
+
+  - id: unit:us-central-command
+    type: MilitaryUnit
+    name: U.S. Central Command
+    org_type: combatant_command
+    relevance: 0.4
+    aliases:
+      - { surface: CENTCOM, strictness: 2 }
+
+  - id: unit:joint-interagency-task-force-south-jiatf-s
+    type: MilitaryUnit
+    name: Joint Interagency Task Force South
+    org_type: task_force
+    relevance: 0.2
+    aliases:
+      - { surface: JIATF-South, strictness: 3 }
+      - { surface: JIATF-S, strictness: 2 }
+
+  - id: unit:i-corps
+    type: MilitaryUnit
+    name: I Corps
+    org_type: formation
+    name_strictness: 0
+    relevance: 0.3
+
+  - id: unit:4th-infantry-division
+    type: MilitaryUnit
+    name: 4th Infantry Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:25th-infantry-divisions
+    type: MilitaryUnit
+    name: 25th Infantry Division
+    org_type: formation
+    relevance: 0.3
+
+  - id: unit:space-systems-command
+    type: MilitaryUnit
+    name: Space Systems Command
+    org_type: formation
+    relevance: 0.5
+    aliases:
+      - { surface: SSC, strictness: 2 }
+
+  - id: unit:air-force-test-pilot-school
+    type: MilitaryUnit
+    name: U.S. Air Force Test Pilot School
+    org_type: formation
+    relevance: 0.2
+    aliases:
+      - { surface: Test Pilot School, strictness: 3 }
+
+edges:
+  # ── US executive branch ────────────────────────────────────────────
+  - { src: govt:defense-department, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:white-house, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:department-of-homeland-security, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:national-aeronautics-and-space-administration, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:government-accountability-office, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:u-s-department-of-commerce, predicate: BASED_IN, dst: country:united-states }
+  - { src: govt:national-institute-of-standards-and-technology, predicate: PART_OF, dst: govt:u-s-department-of-commerce, kind: org_hierarchy }
+  - { src: govt:cybersecurity-and-infrastructure-security-agency, predicate: PART_OF, dst: govt:department-of-homeland-security, kind: org_hierarchy }
+
+  # ── services under the department ──────────────────────────────────
+  - { src: unit:u-s-army, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-navy, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-air-force, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:u-s-space-force, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:marine-corps, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+
+  # ── agencies and combatant commands under the department ───────────
+  - { src: govt:defense-advanced-research-projects-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:defense-innovation-unit, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:space-development-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:missile-defense-agency, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:national-reconnaissance-office, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: govt:chief-digital-and-artificial-intelligence-office, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:us-central-command, predicate: PART_OF, dst: govt:defense-department, kind: org_hierarchy }
+  - { src: unit:joint-interagency-task-force-south-jiatf-s, predicate: PART_OF, dst: unit:us-central-command, kind: joint }
+
+  # ── formations under their service ─────────────────────────────────
+  - { src: unit:i-corps, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:4th-infantry-division, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:25th-infantry-divisions, predicate: PART_OF, dst: unit:u-s-army, kind: org_hierarchy }
+  - { src: unit:space-systems-command, predicate: PART_OF, dst: unit:u-s-space-force, kind: org_hierarchy }
+  - { src: unit:air-force-test-pilot-school, predicate: PART_OF, dst: unit:u-s-air-force, kind: org_hierarchy }
+
+ambiguous:
+  - { surface: SDA, reason: "Space Development Agency vs software-defined anything" }
+  - { surface: TITAN, reason: "Army TITAN program vs commercial product names" }
+  - { surface: EW, reason: "electronic warfare vs early warning" }
+  - { surface: Sentinel, reason: "multiple programs and products" }
+  - { surface: Atlas, reason: "multiple programs and products" }
+
+  # Bare institutional words, each of which minted an entity naming no
+  # particular body: `org:defence` reached ACTIVE and absorbed "Australian
+  # Defence Force" as a conflict; `org:the-air-force` coined the alias "TAF".
+  # The corpus already holds five different air forces and navies.
+  - { surface: Defence, reason: "names no particular ministry or service" }
+  - { surface: Defense, reason: "names no particular ministry or service" }
+  - { surface: the Navy, reason: "US, Royal, German -- the article decides" }
+  - { surface: the Army, reason: "US, Australian, Ukrainian -- the article decides" }
+  - { surface: the Air Force, reason: "US, Italian, Ukrainian -- the article decides" }
+
+  # New in v3: each minted an Organization and each is a category error -- a
+  # publisher we read, a conference, a city hosting a depot. Belt to the
+  # ontology guidance's braces.
+  - { surface: War on the Rocks, reason: "a publisher we read, not an actor" }
+  - { surface: Breaking Defense, reason: "a publisher we read, not an actor" }
+  - { surface: DefenseScoop, reason: "a publisher we read, not an actor" }
+  - { surface: Forge, reason: "multiple products and program offices" }
+  - { surface: Hunter, reason: "multiple programs and products" }

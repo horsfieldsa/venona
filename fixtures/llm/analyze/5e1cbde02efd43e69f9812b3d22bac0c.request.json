@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "eb89fbc8b0de8589e34994f8f5816448d91de2828e17e3c93197c62faff52967",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Europe wants ITAR-free weapons. US firms are trying to adjust.",
+  "user_content_sha": "4fa759291ca613e381e515386440feea9d310d96b19fe325754fd542e8e72f90"
+}

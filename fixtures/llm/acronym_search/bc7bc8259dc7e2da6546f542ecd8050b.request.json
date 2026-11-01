@@ -1,0 +1,16 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "acronym",
+    "candidate_urls"
+  ],
+  "system_prompt_sha": "b985267c901141b0bcbb64ce383ce0a413e2e819150d223deed2ab3a3bd9d335",
+  "task": "acronym_search",
+  "tools": [
+    "WebSearch",
+    "WebFetch"
+  ],
+  "user_content_preview": "Find authoritative pages that define the acronym 'XLUUV' in a US defense context.",
+  "user_content_sha": "1869c7d776e0a04c7018c6c94c1acc683d23e44d459d0d225abdce26c9f1f585"
+}

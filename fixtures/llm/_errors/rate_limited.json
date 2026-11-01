@@ -1,0 +1,23 @@
+{
+  "type": "result",
+  "subtype": "error",
+  "is_error": true,
+  "stop_reason": null,
+  "structured_output": null,
+  "result": "rate_limit_error: too many requests",
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    }
+  },
+  "modelUsage": {},
+  "total_cost_usd": 0.0,
+  "permission_denials": [],
+  "api_error_status": 429,
+  "duration_ms": 240
+}

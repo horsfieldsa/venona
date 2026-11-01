@@ -1,0 +1,13 @@
+-- When the invoice that set the current notice was created, in Stripe's clock.
+--
+-- The subscription handler already orders itself with `stripe_updated_at`, but
+-- invoices are a SECOND timeline over the same row and nothing ordered them.
+-- Stripe redelivers a failed webhook for about three days, so a decline that
+-- could not be applied at the time can land after the `invoice.paid` that
+-- resolved it -- rewriting a cleared banner back to "your payment failed", on a
+-- subscription that is paid up, at a weight the reader cannot dismiss.
+--
+-- Separate from `stripe_updated_at` rather than shared: they are two different
+-- objects' timestamps, and one column would let an invoice discard a newer
+-- subscription event or the reverse.
+ALTER TABLE subscriptions ADD COLUMN notice_updated_at TIMESTAMPTZ;

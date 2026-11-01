@@ -1,0 +1,276 @@
+# What a person ruled about what a run found.
+#
+# The sibling of `decisions.yaml`, and it does a different job. That file
+# decides whether two entities are one thing, and three deterministic consumers
+# are asserted against every row -- so a case there drives the classifier, the
+# merger and the resolver at once.
+#
+# NOTHING DETERMINISTIC DECIDES WHAT IS IN THIS FILE. The scorer is a model and
+# so is the extractor, so "this story should have led" and "that quote does not
+# support that relationship" have nothing offline to be checked against. The
+# job here is MEMORY: `graph_health.py effectiveness` reads it and files a ruled
+# row under "already judged" instead of putting it back in the sample. A report
+# that re-raises a settled row every audit is a report that teaches people to
+# skim it -- the same argument `settled_pairs` makes for identity.
+#
+# EVERY ROW CARRIES `reason`, and the loader refuses one without it. These are
+# judgements about real organisations and real reporting, and a future reader
+# has to be able to audit one without re-deriving it.
+#
+# `check` names the deterministic thing a row implies, where there is one, so
+# the verdict is not the end of it:
+#
+#   retracted  the assertion should carry `retracted_at`
+#   ambiguous  the surface belongs on the ambiguous list, so the resolver stops
+#   merged     an active mapping should fold the id away
+#   none       judgement with a reason, and suppression is the whole of it
+#
+# IDS ARE PER INSTANCE, exactly as in `decisions.yaml`. A row written against
+# one corpus never matches another, which is the right failure: it goes inert
+# rather than ruling on something it has not seen.
+
+cases:
+  # ── relationships whose own quote does not carry them ─────────────
+  #
+  # All three were the first six rows the effectiveness sample printed on
+  # 2026-09-21, which is the argument for reading quotes rather than counting
+  # edges: nothing about these rows is anomalous except what they say.
+  - key: parnell-works-for-department-of-war
+    kind: relation
+    subject: 06aae8ae-6cd0-7d21-8000-32705d1b18a5
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote is about treating suboptimal hormone levels and investing in
+      the health of warfighters. It neither names Sean Parnell nor says
+      anything about who employs him, so there is no sentence behind this edge.
+      A reader following the evidence arrives at a paragraph that does not
+      mention the person on either end of it.
+
+  - key: north-star-campaign-fields-b1b
+    kind: relation
+    subject: 06aae8cc-75bd-715b-8000-72773a796b29
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says the campaign is meant to increase the number of
+      mission-capable B-52 and B-1 aircraft. A readiness campaign raises the
+      availability of aircraft that are already fielded; it does not field
+      them, and the sentence does not claim it does. The predicate is the
+      error, not the pairing.
+
+  - key: north-star-campaign-fields-b52
+    kind: relation
+    subject: 06aae8cc-75b8-722b-8000-c09286f821f5
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The twin of the B-1B row above, out of the same sentence: the extractor
+      turned one clause naming two aircraft into two FIELDS edges, and both are
+      wrong the same way. Recorded separately because they are separate
+      assertions, but they are one error, and a predicate that produces a pair
+      like this from a single readiness sentence is worth watching rather than
+      correcting row by row.
+
+  - key: ground-entry-points-component-of-satellites
+    kind: relation
+    subject: 06ab12df-d39f-7215-8000-d13bb90c8d02
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says the solicitation covers ground entry points FOR the
+      tracking satellites. Ground entry points are ground stations that talk to
+      the constellation, so they are not components of it, and "for" is the
+      whole of what the sentence supports. Worth watching whether COMPONENT_OF
+      keeps absorbing "for" relationships, which would be an ontology question
+      rather than one bad row.
+
+  - key: afmc-part-of-usaf-unevidenced
+    kind: relation
+    subject: 06aae8cc-75ae-7a66-8000-c92b88fc2c41
+    verdict: true_but_unevidenced
+    check: none
+    reason: >-
+      Air Force Materiel Command is part of the Air Force, so retracting this
+      would throw away a fact. The quote behind it is a panel attribution that
+      states neither half of the relationship. Recorded rather than retracted
+      because the two failures want opposite treatment: a wrong edge should go,
+      and a right edge resting on the wrong sentence should be re-evidenced.
+
+  # ── names that are things, so the sample stops offering them ──────
+  #
+  # A mint sighted once stays at the top of a sample ordered by fewest
+  # sightings until something sights it again, which for a minor supplier may
+  # be never. Ruling on it is what takes it out of the way of the next reader.
+  - key: bayern-chemie-is-a-company
+    kind: entity
+    subject: company:bayern-chemie
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote as the builder of a rocket first stage. A real German
+      propulsion manufacturer, correctly typed, correctly scoped.
+
+  - key: ceska-letecka-servisni-is-a-company
+    kind: entity
+    subject: company:ceska-letecka-servisni
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote as the firm Sikorsky certified as a parts
+      distribution centre. A real company, and the diacritics survived the
+      surface intact, which is the other thing worth checking on a mint.
+
+  - key: auterion-government-solutions-is-a-company
+    kind: entity
+    subject: company:auterion-government-solutions
+    verdict: real
+    check: none
+    reason: >-
+      Named in a list of trial participants. A real subsidiary, and a list is
+      thin evidence for what a company DOES while being perfectly good evidence
+      that it exists, which is all a mint claims.
+
+  - key: ag3-labs-is-a-company
+    kind: entity
+    subject: company:ag3-labs
+    verdict: real
+    check: none
+    reason: >-
+      Named in the same list of trial participants as the entry above, and a
+      real company. Recorded separately rather than folded into that row
+      because suppression is keyed on the subject: one row cannot take two
+      names out of the sample.
+
+  # ── the 2026-10-25 audit: the six least confident edges and six mints ──
+  #
+  # All six relations were wrong in some way, and two of them are COMPONENT_OF
+  # absorbing a relationship it does not name, which is the trend the
+  # ground-entry-points row above asked to be watched.
+  - key: typhon-component-of-sm6
+    kind: relation
+    subject: 06adb666-67c4-78ff-8000-ef7ce60e6b21
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says Typhon can FIRE SM-6 missiles. Typhon is a launcher and
+      SM-6 a round it carries, so the edge is backwards even on its own terms,
+      and "fires" is not containment in either direction. COMPONENT_OF
+      absorbing a launch relationship is the same failure as "for" above.
+
+  - key: gambit-component-of-fq42
+    kind: relation
+    subject: 06ade01b-d426-73b7-8000-1ac48a93c528
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says the Gambit Series is DERIVED FROM work on FQ-42, XQ-67A
+      and MQ-20. Lineage is not composition: Gambit is a family of aircraft in
+      its own right, not a part of FQ-42. A third shape COMPONENT_OF has
+      absorbed, after "for" and "fires".
+
+  - key: leidos-competes-with-bae
+    kind: relation
+    subject: 06adb604-b596-7552-8000-68b8e8ef8f84
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says Leidos and BAE Systems both secured positions on both
+      tracks of an award. Two firms winning places on the same vehicle are
+      co-awardees; the sentence states nothing about them competing. The
+      object is also BAE's Technology Solutions and Services sector, which
+      the sentence does not name; it says "BAE Systems".
+
+  - key: second-cavalry-part-of-army-unevidenced
+    kind: relation
+    subject: 06adb661-046c-7144-8000-958df28efcee
+    verdict: true_but_unevidenced
+    check: none
+    reason: >-
+      The 2nd Cavalry Regiment is a U.S. Army regiment, so the edge is right
+      and retracting it would throw away a fact. The quote is the article's
+      lede about a casualty evacuation demonstration and names neither the
+      regiment nor its parent.
+
+  - key: north-atlantic-council-manages-scsp
+    kind: relation
+    subject: 06adcafd-ac09-7f7a-8000-644c7e236f57
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote says the North Atlantic Council APPROVED NSPA's authority to
+      contract with Ukrainian industry. Approving another body's authority is
+      not managing a program, and the sentence does not name the Security
+      Cooperation Support Partnership at all.
+
+  - key: simmons-leads-f-fcd
+    kind: relation
+    subject: 06adb5e2-d6bf-7cde-8000-fc6f9b01644e
+    verdict: unsupported
+    check: retracted
+    reason: >-
+      The quote names Col. Doug Simmons as director of the F-FCD Fires
+      EXPERIMENTATION DIVISION, which is a division inside the directorate.
+      He leads the division, not the Fires Future Capability Directorate, and
+      a reader following this edge would be told he runs the whole body.
+
+  - key: agneyastra-energetics-is-a-company
+    kind: entity
+    subject: company:agneyastra-energetics-limited-ael
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote as the wholly owned subsidiary Kalyani Strategic
+      Systems is investing in. A real Indian energetics company, correctly
+      typed.
+
+  - key: alabuga-complex-is-a-thing
+    kind: entity
+    subject: company:alabuga-complex
+    verdict: real
+    check: none
+    reason: >-
+      The Alabuga drone production complex in Tatarstan, named in the quote
+      as the plant that builds decoy drones. It exists and it produces things.
+      Company is a loose fit for a state-run industrial site, but no other
+      kind in the ontology is closer and the edge it carries is a production
+      edge.
+
+  - key: azak-is-a-company
+    kind: entity
+    subject: company:azak
+    verdict: real
+    check: none
+    reason: >-
+      A sibling quote names Azak's CEO, Ben Meager, handing the 2nd Cavalry
+      Regiment its first vehicles. A real ground robotics company. Its Stoat
+      is held separately as a platform, which is right.
+
+  - key: barzan-holdings-is-a-company
+    kind: entity
+    subject: company:barzan-holdings
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote through its group CEO. Qatar's state defence
+      holding company, correctly typed.
+
+  - key: belma-is-a-company
+    kind: entity
+    subject: company:belma-s-a
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote as a member of the PGZ-AMUNICJA consortium. A real
+      Polish manufacturer of mines and fuzes, and the legal form survived as
+      part of the name, which is how the consortium sentence spells it.
+
+  - key: bharat-forge-is-a-company
+    kind: entity
+    subject: company:bharat-forge
+    verdict: real
+    check: none
+    reason: >-
+      Named in the quote as the parent investing in Kalyani Strategic Systems.
+      A real Indian company, with no second id for "Bharat Forge Limited" to
+      fold into: the quote's own spelling resolved to this one.

@@ -1,0 +1,76 @@
+# Scoring rubric. USER-EDITABLE.
+#
+# The model's JSON Schema is GENERATED from this file at runtime, so axis ids
+# are never hardcoded. The model scores each axis 0-5; `overall` is computed in
+# PYTHON as round(100 * sum(score/5 * weight)), never by the model.
+#
+# Reweighting is FREE -- `POST /api/rescore` recomputes from stored axis scores.
+# Editing a DESCRIPTION changes what the model is asked, so it needs re-analysis
+# and real spend; the UI warns first.
+
+scale:
+  min: 0
+  max: 5
+
+# Must sum to 1.0; validation rejects otherwise.
+axes:
+  - id: product_overlap
+    weight: 0.26
+    description: >-
+      How directly does this touch the capability the profile describes as ours?
+      Score 5 for inference running on-platform in a disconnected setting;
+      3 for sensor processing with an edge angle; 0 for anything that assumes a
+      reliable link to central compute.
+
+  - id: competitive_threat
+    weight: 0.16
+    description: >-
+      Does a named competitor gain ground here? Score 5 for a competitor winning
+      or being selected for a slot we want; 3 for a capability announcement that
+      overlaps ours; 0 for no competitor involvement.
+
+  - id: customer_program
+    weight: 0.18
+    description: >-
+      Does this involve a program or buying office in the profile's customer
+      set? Score 5 for a named program we track with a concrete development;
+      2 for the right service but a peripheral program; 0 for none.
+
+  - id: technology_signal
+    weight: 0.18
+    description: >-
+      Does this shift the technical direction the profile bets on -- especially
+      edge versus cloud? Score 5 for explicit requirements or architecture
+      decisions favouring on-platform inference or degraded-mode operation.
+      Score high for strong COUNTER-signals too: evidence the department is
+      moving back toward centralized analytics is exactly as important to know,
+      and the note must say which direction it points.
+
+  - id: budget_procurement
+    weight: 0.10
+    description: >-
+      Money or acquisition-pathway movement: awards, vehicles, OTAs, budget
+      lines, protests, schedule changes. Score 5 for a named award or a pathway
+      change that alters who can compete.
+
+  - id: partnership_channel
+    weight: 0.06
+    description: >-
+      Teaming, reseller, integration or channel movement that could open or
+      close a route to a customer. Score 5 for a teaming arrangement on a
+      program we track.
+
+  - id: talent_people
+    weight: 0.06
+    description: >-
+      Personnel moves that change a relationship or signal a direction -- a
+      program lead changing, a competitor hiring against our thesis. Score 5 for
+      a named leader of a tracked program moving.
+
+# Cut points for `overall`, used to rank and filter the brief. Set against what
+# a SINGULAR story can actually reach: the three core axes at 5/5 tops out at 62
+# under the weights above, so the old cut of 70 was unreachable in principle.
+tiers:
+  must_read: 50
+  worth_knowing: 25
+  background: 10

@@ -1,0 +1,16 @@
+You are given the text of a document and an acronym.
+
+If the text explicitly defines the acronym, return the expansion and the
+verbatim sentence containing it. Copy the sentence character for character from
+the supplied text -- it is checked against the source, and a paraphrase is
+rejected.
+
+The sentence must contain BOTH the acronym and the expansion. A heading that is
+merely the expanded name is not a definition: "United States Code" on its own
+does not say that USC means it, and is rejected. Look for the sentence that
+connects the two -- "..., commonly called IDIQ contracts, ...", "(USC)",
+"abbreviated USC".
+
+If the text does not define it, return found=false with nulls. Do NOT supply an
+expansion from your own knowledge; an ungrounded definition is worse than none,
+because it becomes an alias and corrupts entity resolution downstream.

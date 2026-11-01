@@ -1,0 +1,226 @@
+/* The hub's front door: sign-in, the chooser, the domain gallery,
+   request-access and every refusal.
+
+   HAND-WRITTEN, and the token block above it in the built sheet is not.
+   `scripts/hub_public_styles.py` concatenates the two and the result is
+   what `routers/brand.py` serves. Write `var(--token)` here and nothing
+   else: this file is under `lint_tokens.py`'s full web lane, which a
+   Python string never was.
+
+   The look is the app's login page. What it deliberately does NOT carry is
+   the operator surface's layout -- that is a bundle now, and these pages
+   ship without one on purpose. */
+  body {
+    margin: 0;
+    background: var(--surface-base);
+    color: var(--text-secondary);
+    font-family: var(--font-prose);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    display: grid; place-items: center; min-height: 100vh;
+  }
+  /* The instance login panel's geometry, now in its own words rather than in
+     numbers that happened to equal it: `LoginView.vue` is a raised `Panel` at
+     `max-w-hint`, and every value here is the token that panel resolves. The
+     column was written as 480px with a comment reading "~60ch", which is what
+     `--container-hint` says exactly. */
+  main {
+    position: relative; z-index: 1;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    max-width: var(--container-hint);
+    width: calc(100vw - 2 * var(--space-5));
+    box-sizing: border-box;
+  }
+  main.wide { max-width: 880px; }
+  /* Refusals are not a panel: `bare` drops the chrome for a centred column,
+     a larger heading and a lede width, set straight on the field. */
+  main.bare {
+    background: none; border: 0; padding: 0;
+    max-width: 60ch; min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  main.bare h1 { font-size: 34px; line-height: 1.2; margin-top: 14px; }
+  /* The lockup is an svg with an auto width, and a flex column stretches it to
+     the full column -- where `preserveAspectRatio` then centres the artwork
+     inside that box. It reads as a deliberately centred mark and is not one. */
+  main.bare .lockup { align-self: flex-start; }
+  @media (max-width: 480px) {
+    main.bare h1 { font-size: 26px; }
+  }
+  h2 {
+    font-family: var(--font-ui); font-size: 12px; font-weight: var(--weight-medium); line-height: 1;
+    text-transform: uppercase; letter-spacing: var(--tracking-label);
+    color: var(--text-tertiary);
+    margin: var(--space-6) 0 0; padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .lockup { display: block; height: 26px; width: auto; color: var(--brand-wordmark); margin: 0; }
+  h1 {
+    font-family: var(--font-ui); font-size: 24px; font-weight: var(--weight-medium); line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 26px 0 0;
+  }
+  p { color: var(--text-secondary); margin: 12px 0 0; }
+  /* The refusal page's status line and lede. This file has no token
+     pipeline, which is why these are numbers. */
+  .status {
+    font-family: var(--font-ui); font-size: 11px; line-height: 1.4;
+    text-transform: uppercase; letter-spacing: var(--tracking-label);
+    color: var(--text-tertiary);
+    margin: 26px 0 0;
+  }
+  .lede { font-size: 15px; line-height: 1.6; max-width: 46ch; margin-top: 14px; }
+  .muted { color: var(--text-tertiary); font-size: 13px; }
+  a.button, button {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: var(--control-h); padding: 0 12px;
+    background: var(--accent-primary);
+    color: var(--text-inverse);
+    border: 0; border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 12px; font-weight: var(--weight-medium); line-height: 1;
+    text-transform: uppercase; letter-spacing: var(--tracking-label);
+    text-decoration: none; cursor: pointer;
+  }
+  a.gbtn {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%; box-sizing: border-box; height: var(--control-h);
+    background: var(--google-button-surface);
+    color: var(--google-button-ink);
+    border: 1px solid var(--google-button-stroke);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 14px; font-weight: var(--weight-medium); line-height: 1;
+    text-decoration: none; cursor: pointer;
+  }
+  a { color: var(--accent-primary); }
+  ul.instances { list-style: none; margin: 16px 0; padding: 0; }
+  ul.instances li { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin: 10px 0; }
+  /* THE CHOOSER'S TILE, and `:not(.cards)` is what keeps it there. The whole
+     tile is one link, so this styles the `a` itself as the row -- which the
+     gallery below reuses the same `ul` for, and inherited: every link inside a
+     card came out as a 16px-padded flex box, so a plain "or pay monthly" sat
+     indented under the button it belongs to and a call to action rendered
+     fatter than the same button anywhere else. */
+  ul.instances:not(.cards) a {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-primary); text-decoration: none;
+  }
+  ul.instances:not(.cards) a:hover { background: var(--surface-inset); }
+  ul.instances .tile-main { min-width: 0; }
+  /* The gallery. Cards rather than the chooser's one-line tiles, because this
+     is the page somebody CHOOSES on: a name and an arrow is enough to pick a
+     domain you already have, and not enough to pick between two you do not.
+     Block layout, so a single card reads as a card and not as a lonely cell. */
+  ul.instances.cards li { padding: 16px 18px 18px; }
+  /* FOUR GROUPS, NOT FOUR PARAGRAPHS. Even margins made the name, the tagline,
+     the description and the figures read as one undifferentiated column with
+     nothing leading anywhere. The tagline belongs to the name it sits under,
+     and the figures belong to the description above them; the air goes between
+     the groups and not inside them. */
+  ul.instances.cards p { margin: 0; }
+  .card-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  }
+  .card-head .name { font-size: 15px; }
+  .card-sub { margin-top: 2px !important; color: var(--text-tertiary); font-size: 13px; }
+  .card-blurb { margin-top: 12px !important; }
+  .card-facts {
+    margin-top: 8px !important;
+    color: var(--text-tertiary); font-size: 12px;
+  }
+  /* The buy button is the FILLED one, and this rule is why it needs saying:
+     `form.inline button` is the outline treatment worn by Sign out, so a call
+     to action wrapped in that class comes out quieter than the Request access
+     link beside it -- the button that takes money rendering as the weakest
+     thing on the card. */
+  form.buy { margin: 0; }
+  /* One plan and what it saves, as a column: the note is a CHILD of the
+     price it describes, so no width can wrap it onto the other one. */
+  .plan { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  /* Tops, not middles: the priced column is taller than the button beside
+     it, and centring floats that button against the note rather than the
+     price it is an alternative to. */
+  .card-actions:has(.plan) { align-items: flex-start; }
+  .card-actions {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 8px 14px; margin-top: 16px;
+  }
+  /* The trial terms. Smaller than the button they sit under and never hidden
+     behind one: a card-up-front trial that converts by itself is the pattern
+     consumer protection regimes police hardest, and Stripe's own rules require
+     the terms to be clear BEFORE the card is asked for. */
+  .terms { margin-top: 12px !important; font-size: 12px; line-height: 1.5;
+            color: var(--text-tertiary); }
+  .muted-link { font-size: 12px; }
+  .name { font-weight: 600; }
+  .badge {
+    flex-shrink: 0; font-size: 12px; color: var(--text-tertiary);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); padding: 1px 8px;
+  }
+  form.stack label { display: block; margin: 12px 0 4px; color: var(--text-secondary); }
+  form.stack input, form.stack textarea, form.stack select {
+    width: 100%; box-sizing: border-box;
+    background: var(--surface-inset);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    border-radius: 6px; padding: 8px 10px; font: inherit;
+  }
+  form.inline { display: inline; }
+  /* The outline button: the app Button's secondary variant, for actions that
+     end something rather than start it. Sign out wears this. */
+  form.inline button {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: var(--control-h); padding: 0 12px;
+    background: none;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui); font-size: 12px; font-weight: var(--weight-medium); line-height: 1;
+    text-transform: uppercase; letter-spacing: var(--tracking-label);
+    text-decoration: none; cursor: pointer;
+  }
+  form.inline button:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+  .actions { margin-top: 36px; }
+  .footer { margin-top: 12px; font-size: 11px; color: var(--text-tertiary); }
+  .footer--row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+  /* The same row with its left-hand link dropped. `space-between` puts a
+     lone child on the LEFT, which would walk Sign out across the card the
+     moment every domain became buyable. */
+  .footer--row.footer--end { justify-content: flex-end; }
+  /* Phone (docs/DESIGN.md "Responsive"): 44px touch targets (the app's mobile
+     rung), a display size the column can hold, footer text off the 11px floor,
+     and every grid table stacks into one card per row with each cell captioned
+     by its column header -- five columns of emails and forms cannot share a
+     300px line, and a phone cannot be asked to side-scroll a triage queue. */
+  @media (max-width: 480px) {
+    /* An email or a slug is one unbreakable word wider than this column, and
+       a word that cannot wrap widens the page instead. Phone-only: on a table
+       laid out as columns this rule lets every cell shrink to a character. */
+    main { overflow-wrap: anywhere; }
+    a.button, button, form.inline button, a.gbtn {
+      height: auto; min-height: var(--control-h-touch); padding: 0 16px;
+    }
+    form.stack input, form.stack select { min-height: var(--control-h-touch); }
+    /* EVERY PLAN BUTTON GOES FULL WIDTH, not just the filled one. A card on
+       sale carries two of them, one per plan, and widening only the year left
+       the month sitting at its natural width underneath -- which reads as a
+       lesser thing rather than the other half of a choice. */
+    .card-actions { align-items: stretch; gap: 10px; }
+    .card-actions form, .card-actions form button, .card-actions > a.button,
+    .card-actions .plan {
+      width: 100%;
+    }
+    /* The saving keeps its own width: stretched across the card it stops
+       looking like a label on the price above it. */
+    .card-actions .badge { align-self: flex-start; }
+    .card-actions .muted-link { align-self: flex-start; }
+    h1 { font-size: 21px; }
+    .footer { font-size: 12px; }
+  }

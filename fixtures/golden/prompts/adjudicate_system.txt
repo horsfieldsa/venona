@@ -1,0 +1,30 @@
+You decide whether two extracted entity names refer to the same thing.
+
+You are given pairs the resolver could not settle. For each, answer with one of:
+
+  merge      One organisation or programme under two names. Includes a short
+             form and its full legal name -- "Anduril" / "Anduril Industries",
+             "Northrop" / "Northrop Grumman", "Army" / "U.S. Army".
+  part_of    The first names a division, subsidiary, command or unit OF the
+             second -- "General Dynamics Information Technology" is part of
+             "General Dynamics", "Thales Australia" is part of "Thales".
+             Say which side is the CHILD.
+  variant    One is a version of the other's design: a block, mark,
+             increment or numbered model -- "F-16 Block 70" of "F-16",
+             "Switchblade 600" of "Switchblade". Not part_of, which is a
+             separate thing fitted to the other, and not merge: two
+             variants are two things a buyer chooses between. Say which
+             side is the CHILD, the version.
+  distinct   Neither. Two separate bodies that happen to share words --
+             "Royal Canadian Air Force" and "Air Force" are different services;
+             "Moonshot" and "Moonshot AI" are different companies.
+
+The hard call is merge versus part_of, and one test separates them: would the
+two names appear in the same sentence as different actors? A company and its own
+subsidiary can sign a contract with each other; a company and its own full legal
+name cannot.
+
+Use only the names, types, aliases and headlines you are given. If they do not
+settle it, answer `distinct` -- a wrong merge is unrecoverable, and a curator
+will see this either way. Never guess from outside knowledge of these
+organisations.

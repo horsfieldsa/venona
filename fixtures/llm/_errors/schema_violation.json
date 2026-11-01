@@ -1,0 +1,27 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "stop_reason": "end_turn",
+  "structured_output": "not an object",
+  "result": "not an object",
+  "usage": {
+    "input_tokens": 10,
+    "output_tokens": 5,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    }
+  },
+  "modelUsage": {
+    "claude-sonnet-5": {
+      "costUSD": 0.0009
+    }
+  },
+  "total_cost_usd": 0.0009,
+  "permission_denials": [],
+  "api_error_status": null,
+  "duration_ms": 900
+}

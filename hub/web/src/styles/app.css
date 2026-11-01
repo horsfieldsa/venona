@@ -1,0 +1,16 @@
+/* The design system, imported rather than copied.
+ *
+ * These three files are `web/src/styles/`'s own -- the token values, the closed
+ * Tailwind theme built over them, and the reset. Importing them across the
+ * package boundary is what makes `h-control` and `bg-surface-inset` mean the
+ * same thing here as they do in the app, so a component in this directory is a
+ * copy of the app's class list rather than an approximation of its design.
+ * `extension/src/content/card.css` reaches for `theme.css` the same way.
+ *
+ * The order is load-bearing and matches `web/src/main.ts`: values, then the
+ * theme that reads every one of them, then the reset -- which has to land after
+ * Tailwind's preflight or preflight undoes it.
+ */
+@import '../../../../web/src/styles/tokens.css';
+@import '../../../../web/src/styles/theme.css';
+@import '../../../../web/src/styles/base.css';

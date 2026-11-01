@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Colombia buys 2 KC-390s from Embraer in $336 million deal",
+  "user_content_sha": "006dea082a0a8e16e1b3a62ff4397d15e1c32dce20bcd9b29c75ae28e89ffef6"
+}

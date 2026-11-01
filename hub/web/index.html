@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- NO `data-theme` here, and its absence is the feature: an absent attribute
+     is System, so pinning one on this line would decide for every reader before
+     `theme-boot.js` could read their choice. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/svg+xml" href="/venona-mark.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- `--aqua-600`. A `<meta>` cannot read a custom property and this chrome
+         is painted before any stylesheet loads, which is why `lint_tokens.py`
+         does not scan .html. Move it when that token moves. -->
+    <meta name="theme-color" content="#1891ac" />
+    <title>Admin · Venona</title>
+    <script src="/app/theme-boot.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+# Seed glossary. Jargon that is NOT an entity -- MOSA, TRL and OTA are concepts,
+# not organisations, so they live here rather than polluting the graph.
+#
+# Invariant 3 applies to every row: `grounding_quote` and `grounding_article_id`
+# are mandatory at status `active`, and an ungrounded entry renders as undefined.
+#
+# Deliberately included for the negative-case suite:
+#   * two `undefined` entries (no grounded definition was found)
+#   * two `ambiguous` surfaces (>=2 accepted expansions -> disambiguation, not a guess)
+
+definitions:
+  - surface: MOSA
+    expansion: Modular Open Systems Approach
+    entity_id: tech:modular-open-systems-approach
+    method: in_article
+    confidence: 1.0
+    status: active
+    grounding_article_id: doc:seed-ngc2-overview
+    grounding_quote: >-
+      The service is mandating a Modular Open Systems Approach (MOSA) so that
+      individual components can be replaced without re-competing the whole stack.
+
+  - surface: TRL
+    expansion: Technology Readiness Level
+    method: in_article
+    confidence: 1.0
+    status: active
+    grounding_article_id: doc:seed-edge-ai
+    grounding_quote: >-
+      Most of the submissions cleared Technology Readiness Level (TRL) 6 in a
+      laboratory setting but had never been run on a vehicle.
+
+  - surface: OTA
+    expansion: Other Transaction Authority
+    method: in_article
+    confidence: 1.0
+    status: active
+    grounding_article_id: doc:seed-ngc2-competition
+    grounding_quote: >-
+      The award was issued under Other Transaction Authority (OTA), which lets
+      the service skip much of the traditional acquisition timeline.
+
+  - surface: DDIL
+    expansion: Denied Degraded Intermittent and Limited
+    entity_id: tech:ddil-operations
+    method: in_article
+    confidence: 1.0
+    status: active
+    grounding_article_id: doc:seed-edge-ai
+    grounding_quote: >-
+      Systems must keep working in Denied, Degraded, Intermittent and Limited
+      (DDIL) conditions, where a link back to a data centre cannot be assumed.
+
+  - surface: ATO
+    expansion: Authority to Operate
+    method: in_corpus
+    confidence: 0.9
+    status: active
+    grounding_article_id: doc:seed-ngc2-competition
+    grounding_quote: >-
+      Vendors still need an Authority to Operate (ATO) before anything touches
+      an operational network.
+
+  - surface: PEO
+    expansion: Program Executive Office
+    method: in_article
+    confidence: 1.0
+    status: active
+    grounding_article_id: doc:seed-ngc2-overview
+    grounding_quote: >-
+      The Program Executive Office (PEO) structure concentrates acquisition
+      authority for a portfolio under a single officer.
+
+  # ── undefined: seen repeatedly, no grounded definition found ───────
+  # These render with a neutral dotted underline and a "look this up" button.
+  # Visibly honest beats confidently wrong.
+  - surface: CJADC2
+    method: undefined
+    confidence: 0.0
+    status: undefined
+    sighting_count: 4
+    article_count: 2
+
+  - surface: PNT
+    method: undefined
+    confidence: 0.0
+    status: undefined
+    sighting_count: 3
+    article_count: 2
+
+  # ── ambiguous: two accepted expansions, so we never pick one ───────
+  - surface: SDA
+    expansion: Space Development Agency
+    method: in_article
+    confidence: 0.8
+    status: ambiguous
+    grounding_article_id: doc:seed-edge-ai
+    grounding_quote: >-
+      The Space Development Agency (SDA) is buying proliferated low-earth-orbit
+      transport layers on two-year cycles.
+
+  - surface: SDA
+    expansion: Software Defined Architecture
+    method: in_corpus
+    confidence: 0.6
+    status: ambiguous
+    grounding_article_id: doc:seed-ngc2-overview
+    grounding_quote: >-
+      Program officials describe a Software Defined Architecture (SDA) in which
+      capability arrives as updates rather than new hardware.

@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "eb89fbc8b0de8589e34994f8f5816448d91de2828e17e3c93197c62faff52967",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: US used ‘virtually all’ long-range precision missiles during Iran war, sources say",
+  "user_content_sha": "8ac3a278b430c420c8d2486aa62c90fbf37274d4ac06344ba7f39deff6e97491"
+}

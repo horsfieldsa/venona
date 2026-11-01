@@ -1,0 +1,16 @@
+{
+  "effort": "medium",
+  "model": "sonnet",
+  "schema_keys": [
+    "entities",
+    "flags",
+    "key_facts",
+    "relations",
+    "relevance"
+  ],
+  "system_prompt_sha": "9daff44aeb3b9e146f3a825e16df5cd97d88242abea3033588b10c02b5214ec2",
+  "task": "analyze",
+  "tools": [],
+  "user_content_preview": "TITLE: Lockheed seeks US mineral supplies after Trump supply-chain push, sources say",
+  "user_content_sha": "e8eb1b097a9ba2c012ee06215b47a0b7ad59a9f87fb32dbde16e9bd7bda053c2"
+}

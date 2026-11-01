@@ -1,0 +1,209 @@
+/* The reading surface. The one place in the app set in a PROPORTIONAL face, and
+ * the one place with generous typography -- everything else is fixed-pitch
+ * chrome. That split is the whole voice of the interface: a terminal reads as a
+ * terminal because the chrome is mono, and sustained reading in mono is a pose.
+ *
+ * Entity mentions use a 1px dotted underline and NEVER a background fill. In a
+ * paragraph with fifteen mentions, background fills turn the page into a
+ * highlighter accident; the dotted rule reads as annotation and leaves the
+ * reading rhythm intact.
+ */
+
+@layer components {
+.prose {
+  font-family: var(--font-prose);
+  font-size: var(--text-md);
+  line-height: var(--leading-prose);
+  /* Inter sets slightly loose at reading size. This is the only place tracking
+     goes negative, and it is why `--tracking-tight` exists. */
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-body);
+  /* The measure is the grid track (`--measure` on `ViewShell`'s prose column),
+     so this sets none of its own: two competing max-widths mean the narrower
+     always wins and the column's real width is whichever of the two nobody is
+     looking at. */
+  max-width: 100%;
+}
+
+/* Narrative headings: the pre-item archive and any markdown the model writes.
+   The item format styles its headlines in `BriefItem.vue`; these are the same
+   voice for the markdown path, where the preflight zeroes h1-h6 and a story
+   heading otherwise paints at body size and weight -- structure the model
+   wrote, invisible on the page.
+
+   `:not([class])` is what keeps them off STRUCTURE. `BriefBlock` renders the
+   markdown path's headings with no class at all, while every heading the app
+   itself places carries its own utilities -- and a desk label placed by
+   `SectionHead` names no margin, so it took this rule's 36px top and paid it
+   once per desk on a document that opens one desk per story or two. */
+.prose :is(h2, h3, h4):not([class]) {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--text-primary);
+  text-wrap: balance;
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+.prose h2:not([class]) {
+  font-size: var(--text-xl);
+}
+
+.prose h3:not([class]) {
+  font-size: var(--text-lg);
+}
+
+.prose h4:not([class]) {
+  font-size: var(--text-md);
+}
+
+.prose p,
+.prose li,
+.prose blockquote {
+  margin-bottom: var(--space-4);
+  /* Last-line orphans, not the whole paragraph. `pretty` only asks the browser
+     to avoid leaving one word alone on the final line; `balance` would even up
+     every line and is for headings of a few words, which is why the brief's
+     title and item headlines carry `text-balance` and this does not. At a
+     reading measure `balance` is also capped at a handful of lines and stops
+     applying silently. */
+  text-wrap: pretty;
+}
+
+.prose li {
+  margin-left: var(--space-5);
+  /* Square, not disc. A round bullet is the one soft shape on a page drawn
+     entirely with square corners. */
+  list-style: square;
+}
+
+.prose blockquote {
+  padding-left: var(--space-4);
+  /* A hairline in the deep accent, not a 2px neutral bar. One edge is a region
+     boundary; the deep rung reads as a rule rather than as something you can
+     act on, which `--accent-primary` would. */
+  border-left: 1px solid var(--accent-deep);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.prose pre,
+.prose code {
+  font-family: var(--font-mono);
+  /* A rung below the prose body: mono at the same nominal size reads larger,
+     and `--text-md` is the prose size itself. `letter-spacing: 0` undoes the
+     inherited `--tracking-tight` -- it is set for Inter, and applying it to a
+     fixed-pitch face closes up code that is already tight. */
+  font-size: var(--text-sm);
+  letter-spacing: 0;
+}
+
+.prose pre {
+  padding: var(--space-3);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin-bottom: var(--space-4);
+}
+
+/* ── entity mentions ──────────────────────────────────────────────── */
+
+.mention {
+  border-bottom: 1px dotted currentColor;
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--motion-ease);
+  /* Square. The 1px radius was there when `--radius-hair` was 1px; on a page
+     drawn on a character grid a rounded mention is the only soft edge in the
+     paragraph. */
+  border-radius: 0;
+}
+
+/* No `:focus-visible` here. It painted the wash on a mention the reader had
+ * merely clicked once the browser handed focus back on window return -- the
+ * same stale-modality problem as the focus ring in `base.css`. */
+.mention:hover,
+.mention.is-active {
+  /* A faint wash only on the ACTIVE mention -- enough to confirm which one the
+   * card belongs to, not enough to disturb the paragraph at rest.
+   *
+   * A function of `currentColor`, not a value: the wash is 14% of whatever this
+   * entity's own hue already is, which the token layer cannot express because
+   * it depends on the element. */
+  background: color-mix(in srgb, currentColor 14%, transparent); /* token-lint: ok */
+}
+
+.mention--entity {
+  color: var(--text-primary);
+}
+
+/* Colour comes from the C4 id prefix, so there is no lookup table anywhere. */
+.mention--company {
+  border-bottom-color: var(--entity-company);
+}
+.mention--govt {
+  border-bottom-color: var(--entity-govt);
+}
+.mention--unit {
+  border-bottom-color: var(--entity-unit);
+}
+.mention--research {
+  border-bottom-color: var(--entity-research);
+}
+.mention--prog {
+  border-bottom-color: var(--entity-prog);
+}
+.mention--tech {
+  border-bottom-color: var(--entity-tech);
+}
+.mention--plat {
+  border-bottom-color: var(--entity-plat);
+}
+.mention--person {
+  border-bottom-color: var(--entity-person);
+}
+/* `country:` is a live C4 prefix and `BriefBlock.vue` derives the class from
+   the prefix, so a country mention drew a `currentColor` underline and read as
+   an entity of no particular type. Missed for as long as it has, because the
+   brief surface sees countries rarely; the extension hits them on the first
+   trade-press article it annotates. */
+.mention--country {
+  border-bottom-color: var(--entity-country);
+}
+
+.mention--glossary {
+  color: var(--text-secondary);
+  border-bottom-color: var(--entity-glossary);
+  border-bottom-style: dotted;
+}
+
+/* Undefined acronyms are visibly undefined. Being honest about a gap beats
+ * showing a confident wrong definition. */
+.mention--undefined {
+  color: var(--text-tertiary);
+  border-bottom-color: var(--entity-undefined);
+  border-bottom-style: dashed;
+}
+
+/* Named by ONE publisher and not yet corroborated.
+ *
+ * A modifier, so the entity keeps its own hue and its own kind -- only the line
+ * under it changes, from solid-dotted to dashed. That is the same vocabulary
+ * the graph already uses for the same claim: `useCytoscape` dashes an edge
+ * whose `source_count` is 1, and `.mention--undefined` dashes a term with no
+ * grounded definition. Dashed means "venona has seen this once" everywhere it
+ * appears, which is why this needs no new colour.
+ *
+ * Deliberately NOT a lower opacity: `.mention--low` already owns that, and it
+ * means something different -- a match the RESOLVER is unsure of, rather than a
+ * subject the CORPUS is unsure of. An entity can be either, both or neither,
+ * and stacking two opacities would make a doubly-hedged mention vanish. */
+.mention--uncorroborated {
+  border-bottom-style: dashed;
+}
+
+/* Low-confidence matches read lighter -- the annotation is a guess. */
+.mention--low {
+  opacity: 0.75;
+}
+}

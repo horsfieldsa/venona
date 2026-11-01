@@ -1,0 +1,37 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "stop_reason": "tool_use",
+  "structured_output": {
+    "acronym": "MOSA",
+    "candidate_urls": []
+  },
+  "result": "{\"acronym\":\"MOSA\",\"candidate_urls\":[]}",
+  "usage": {
+    "input_tokens": 4,
+    "output_tokens": 40,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 9255,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    }
+  },
+  "modelUsage": {
+    "claude-sonnet-5": {
+      "costUSD": 0.0413
+    }
+  },
+  "total_cost_usd": 0.0413,
+  "permission_denials": [
+    {
+      "tool_name": "WebSearch"
+    },
+    {
+      "tool_name": "WebFetch"
+    }
+  ],
+  "api_error_status": null,
+  "duration_ms": 3120
+}

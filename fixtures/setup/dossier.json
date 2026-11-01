@@ -1,0 +1,966 @@
+{
+ "_sweeps": [
+  {
+   "id": "sweep_frontier_labs",
+   "name": "Sweep: frontier labs & model releases",
+   "rationale": "The core capability race between OpenAI, Anthropic, Google DeepMind, xAI, and Meta is the pipeline's primary anchor desk; version releases and benchmark claims move fastest and are least likely to be fully covered by any single feed.",
+   "tags": [
+    "gpt5",
+    "gemini3",
+    "claude_models",
+    "grok",
+    "llama4",
+    "lmarena_elo"
+   ]
+  },
+  {
+   "id": "sweep_compute_infra",
+   "name": "Sweep: compute, chips & infrastructure",
+   "rationale": "Chip generations, foundry capacity, and hyperscaler capex now set the pace of the whole industry as much as model releases do, and this coverage lives mostly in specialist and financial press outside the core AI feeds.",
+   "tags": [
+    "nvidia_blackwell_rubin",
+    "tsmc_cowos",
+    "hbm_supply",
+    "hyperscaler_capex",
+    "data_center_buildout",
+    "custom_silicon"
+   ]
+  },
+  {
+   "id": "sweep_safety_alignment",
+   "name": "Sweep: AI safety, security & alignment",
+   "rationale": "Safety framework updates, third-party evals (METR, Apollo, UK AISI), and disclosed agentic-AI incidents are distinct from product-release news and are covered by a different set of publishers and government sources.",
+   "tags": [
+    "interpretability",
+    "red_teaming",
+    "responsible_scaling_policy",
+    "model_evaluations",
+    "scheming_deception",
+    "ai_incidents"
+   ]
+  },
+  {
+   "id": "sweep_policy_geopolitics",
+   "name": "Sweep: policy, regulation & geopolitics",
+   "rationale": "Binding regulation (EU AI Act enforcement, US state laws, export controls) and US-China dynamics are a standing desk with its own cadence of government and legal-press sources not captured by general tech feeds.",
+   "tags": [
+    "eu_ai_act_enforcement",
+    "us_state_ai_law",
+    "china_export_controls",
+    "cac_ai_approval",
+    "ai_safety_summits",
+    "sovereign_ai"
+   ]
+  },
+  {
+   "id": "sweep_enterprise_agents",
+   "name": "Sweep: enterprise adoption, agents & applications",
+   "rationale": "The shift from chatbots to production agents (coding tools, enterprise platforms, vertical deployments) is where model capability actually meets revenue and is undercovered by pure-research feeds.",
+   "tags": [
+    "coding_agents",
+    "computer_use_agents",
+    "enterprise_ai_deployment",
+    "copilot_agentforce_aip",
+    "vertical_ai",
+    "agent_security"
+   ]
+  },
+  {
+   "id": "sweep_funding_deals",
+   "name": "Sweep: funding, deals & corporate strategy",
+   "rationale": "Funding rounds, cloud/compute partnerships, and the running capex-bubble debate drive a large share of daily coverage and are reported primarily by business press rather than lab or research feeds.",
+   "tags": [
+    "vc_mega_rounds",
+    "valuations",
+    "compute_supply_deals",
+    "ma_acquihire",
+    "ipo_speculation",
+    "capex_bubble_debate"
+   ]
+  },
+  {
+   "id": "sweep_open_source_research",
+   "name": "Sweep: open source & research ecosystem",
+   "rationale": "Open-weight model drops and the academic pipeline (arXiv, NeurIPS/ICML, benchmark leaderboards) move on their own schedule, increasingly led by Chinese labs, and need dedicated discovery beyond arXiv's own feed.",
+   "tags": [
+    "open_weight_releases",
+    "deepseek_qwen_kimi_glm",
+    "arxiv_papers",
+    "huggingface_leaderboards",
+    "neurips_icml",
+    "fine_tuning_techniques"
+   ]
+  },
+  {
+   "id": "sweep_talent_orgs",
+   "name": "Sweep: talent & org dynamics",
+   "rationale": "High-profile researcher departures, spin-outs, and internal restructurings are a recurring signal of where frontier capability is migrating, and are typically broken by scoop-driven outlets rather than official channels.",
+   "tags": [
+    "researcher_moves",
+    "lab_spinouts",
+    "leadership_shakeups",
+    "compensation_wars",
+    "safe_superintelligence",
+    "thinking_machines_lab"
+   ]
+  },
+  {
+   "id": "sweep_robotics_embodied",
+   "name": "Sweep: robotics & embodied AI",
+   "rationale": "Physical/embodied AI is a fast-growing, capital-intensive beat that is genuinely contested as its own desk versus a subset of Enterprise Applications, so it needs explicit discovery rather than incidental pickup.",
+   "tags": [
+    "humanoid_robots",
+    "figure_optimus_1x",
+    "world_models",
+    "robot_foundation_models",
+    "boston_dynamics",
+    "embodied_ai_funding"
+   ]
+  }
+ ],
+ "jargon": {
+  "items": [
+   {
+    "detail": "The base noun for the whole beat; almost every story is ultimately about an LLM release, benchmark, or failure mode.",
+    "name": "LLM (Large Language Model)",
+    "url": null
+   },
+   {
+    "detail": "Contested term for human-level general capability; labs (OpenAI, DeepMind) use it in charters/mission statements with no agreed technical definition, so quotes using it should be treated as aspirational/marketing as much as technical.",
+    "name": "AGI (Artificial General Intelligence)",
+    "url": null
+   },
+   {
+    "detail": "Capability beyond AGI; increasingly used by safety-focused writers and by Ilya Sutskever's lab Safe Superintelligence Inc. (SSI), whose name literalizes the term.",
+    "name": "ASI (Artificial Superintelligence)",
+    "url": "https://ssi.inc"
+   },
+   {
+    "detail": "The standard post-training alignment technique since InstructGPT/ChatGPT; Anthropic's variant using AI-generated feedback against a written 'constitution' instead of human raters is called RLAIF / Constitutional AI (CAI).",
+    "name": "RLHF (Reinforcement Learning from Human Feedback)",
+    "url": null
+   },
+   {
+    "detail": "Standard architecture pattern for grounding model output in external documents; the acronym collides with the ordinary word 'rag,' so it needs context to disambiguate in text search.",
+    "name": "RAG (Retrieval-Augmented Generation)",
+    "url": null
+   },
+   {
+    "detail": "Refers both to the prompting technique and to the visible/hidden reasoning traces that 'reasoning models' (o-series, Claude extended thinking, Gemini 'Thinking') generate before an answer.",
+    "name": "CoT (Chain of Thought)",
+    "url": null
+   },
+   {
+    "detail": "Sparse-activation architecture used by GPT-4-class, Mixtral, DeepSeek-V3, and Grok models; commonly discussed via 'active vs. total parameters.'",
+    "name": "MoE (Mixture of Experts)",
+    "url": null
+   },
+   {
+    "detail": "The instruction-tuning stage before preference optimization; usually mentioned alongside RLHF/DPO in model/system cards' training pipeline description.",
+    "name": "SFT (Supervised Fine-Tuning)",
+    "url": null
+   },
+   {
+    "detail": "Simpler alternative to PPO-based RLHF that optimizes directly on preference pairs; widely adopted by open-model fine-tuners since 2023.",
+    "name": "DPO (Direct Preference Optimization)",
+    "url": null
+   },
+   {
+    "detail": "The two dominant reinforcement-learning algorithms in the space: PPO (Proximal Policy Optimization) is the original Schulman-era OpenAI technique behind classic RLHF; GRPO (Group Relative Policy Optimization), popularized by DeepSeek's R1 paper, is the cheaper alternative now widely used for reasoning-model training.",
+    "name": "PPO / GRPO",
+    "url": null
+   },
+   {
+    "detail": "Anthropic's open standard (Nov 2024) for connecting LLM apps/agents to external tools and data; the acronym is otherwise overloaded (e.g., 'master control program'), so confirm context in general text.",
+    "name": "MCP (Model Context Protocol)",
+    "url": "https://www.anthropic.com/news/model-context-protocol"
+   },
+   {
+    "detail": "Ubiquitous shorthand in benchmark reporting; watch for 'SOTA' claims that quietly mean 'best on one cherry-picked eval.'",
+    "name": "SOTA (State of the Art)",
+    "url": null
+   },
+   {
+    "detail": "The 2024-26 shift toward spending more compute at answer-generation time (reasoning models) rather than only at training time; core to the o1/o3, Claude 'thinking,' and Gemini 'Thinking' narrative.",
+    "name": "Test-time compute / TTC / inference-time scaling",
+    "url": null
+   },
+   {
+    "detail": "Standard label for multimodal image+text models (e.g., GPT-4V lineage, Gemini, Claude with vision); often used loosely to mean any multimodal model.",
+    "name": "VLM (Vision-Language Model)",
+    "url": null
+   },
+   {
+    "detail": "The memory technology (HBM3e, HBM4) that is often the actual bottleneck in AI-chip supply stories, not raw compute.",
+    "name": "HBM (High Bandwidth Memory)",
+    "url": null
+   },
+   {
+    "detail": "Nvidia's proprietary parallel-compute software platform; the 'CUDA moat' is standard shorthand for Nvidia's software lock-in versus AMD/TPU/custom silicon.",
+    "name": "CUDA",
+    "url": "https://developer.nvidia.com/cuda-toolkit"
+   },
+   {
+    "detail": "Floating-point operations per second is the standard compute unit; training runs are often sized in total FLOPs and compared against export-control thresholds defined in FLOPs.",
+    "name": "FLOP/s and exaFLOP/petaFLOP",
+    "url": null
+   },
+   {
+    "detail": "Ambiguous capitalization collision: lowercase-x 'xAI' is Elon Musk's company (maker of Grok, folded into what is now sometimes branded SpaceXAI as of early 2026); capital-X 'XAI' is the unrelated academic field of explainable AI.",
+    "name": "xAI vs. XAI",
+    "url": "https://x.ai"
+   },
+   {
+    "detail": "Anthropic's model family, named after Claude Shannon; also just a common first name, so 'Claude' needs entity-linking care in text (Claude Opus, Sonnet, Haiku tiers).",
+    "name": "Claude",
+    "url": "https://www.anthropic.com/claude"
+   },
+   {
+    "detail": "Google DeepMind's flagship model family; also NASA's 1960s Gemini program and the zodiac sign, both of which surface as false-positive matches in naive text search.",
+    "name": "Gemini",
+    "url": "https://deepmind.google/technologies/gemini/"
+   },
+   {
+    "detail": "xAI's chatbot/model family; the word predates the company by decades as SF slang (from Heinlein's 'Stranger in a Strange Land') meaning to understand deeply — a common false-positive source.",
+    "name": "Grok",
+    "url": "https://x.ai/grok"
+   },
+   {
+    "detail": "Meta's open-weight model family (Llama 2/3/4); collides constantly with the animal in generic text.",
+    "name": "Llama",
+    "url": "https://ai.meta.com/llama/"
+   },
+   {
+    "detail": "Both the French AI lab and its flagship model line; also a Mediterranean wind and a historic French fighter jet, so disambiguation depends heavily on surrounding context.",
+    "name": "Mistral",
+    "url": "https://mistral.ai"
+   },
+   {
+    "detail": "Google's original ChatGPT-competitor chatbot (2023), later rebranded to Gemini; still appears in older sources and retrospectives, and is a common English word (poet) otherwise.",
+    "name": "Bard",
+    "url": null
+   },
+   {
+    "detail": "Anthropic's naming convention for Claude's capability tiers (largest to smallest); each name is also an ordinary literary/musical-form word, requiring context to read as a Claude model reference.",
+    "name": "Opus / Sonnet / Haiku",
+    "url": "https://www.anthropic.com/claude"
+   },
+   {
+    "detail": "Amazon's in-house foundation model family (Amazon Nova); also a generic astronomy term and used as a product name across many unrelated companies.",
+    "name": "Nova",
+    "url": "https://aws.amazon.com/ai/generative-ai/nova/"
+   },
+   {
+    "detail": "Microsoft Research's small/efficient language model family; collides with the Greek letter used constantly in math/ML notation.",
+    "name": "Phi",
+    "url": "https://azure.microsoft.com/en-us/products/phi"
+   },
+   {
+    "detail": "Open-weight model family from UAE's Technology Innovation Institute (TII); also the bird, and shares a name with unrelated 'Falcon' products/rockets in other industries.",
+    "name": "Falcon",
+    "url": "https://falconllm.tii.ae"
+   },
+   {
+    "detail": "Alibaba Cloud's open-weight model family, one of the most widely used bases for Chinese and open-source fine-tunes.",
+    "name": "Qwen",
+    "url": "https://qwenlm.github.io"
+   },
+   {
+    "detail": "Chinese AI lab and its eponymous model family (DeepSeek-V3, DeepSeek-R1); the company name and model name are used near-interchangeably in coverage, which can blur lab-vs-model references.",
+    "name": "DeepSeek",
+    "url": "https://www.deepseek.com"
+   },
+   {
+    "detail": "Microsoft's branded product line (GitHub Copilot, Microsoft Copilot); also drifted into generic industry usage as a synonym for any AI coding/work assistant, so 'a copilot' vs. 'Copilot' the product need distinguishing.",
+    "name": "Copilot",
+    "url": "https://copilot.microsoft.com"
+   },
+   {
+    "detail": "OpenAI's text/image-to-video model; a common Japanese given name and word ('sky'), so context matters for disambiguation.",
+    "name": "Sora",
+    "url": "https://openai.com/sora/"
+   },
+   {
+    "detail": "DeepMind's recognizable 'Alpha-' naming convention for landmark research systems (games, protein folding, math, code); good signal that a story is about DeepMind-lineage research rather than product releases.",
+    "name": "AlphaGo / AlphaFold / AlphaZero / AlphaCode / AlphaProof",
+    "url": "https://deepmind.google/discover/"
+   },
+   {
+    "detail": "OpenAI's 2025 open-weight model release, whose name embeds the ambiguous acronym OSS (open-source software) even though the license is 'open weights,' not full open source in the traditional sense.",
+    "name": "gpt-oss",
+    "url": "https://openai.com/index/gpt-oss-model-card/"
+   },
+   {
+    "detail": "A load-bearing distinction the industry is sloppy about: 'open weights' (Llama, Mistral, Qwen, DeepSeek, gpt-oss) means downloadable parameters under a license, not necessarily open training data/code, unlike strict open-source definitions.",
+    "name": "Open weights vs. open source",
+    "url": null
+   },
+   {
+    "detail": "Lab-specific voluntary safety-scaling policies: Anthropic's Responsible Scaling Policy (with ASL-1 through ASL-4 AI Safety Levels), OpenAI's Preparedness Framework, and Google DeepMind's Frontier Safety Framework — same concept, different names per lab, frequently confused.",
+    "name": "RSP / Preparedness Framework / Frontier Safety Framework",
+    "url": "https://www.anthropic.com/responsible-scaling-policy"
+   },
+   {
+    "detail": "The crowdsourced head-to-head model ranking (formerly LMSYS Chatbot Arena, now under the LMArena org) that reports rankings as chess-style Elo scores; a widely cited but contested proxy for 'best model.'",
+    "name": "Chatbot Arena / LMSYS / Elo",
+    "url": "https://lmarena.ai"
+   },
+   {
+    "detail": "The recurring benchmark-name shorthand set: MMLU (broad knowledge), GPQA (graduate-level science Q&A), SWE-bench (real-world software-engineering tasks, often cited as 'SWE-bench Verified'), and ARC-AGI (abstraction/reasoning, positioned as an AGI-adjacent test resistant to memorization).",
+    "name": "MMLU / GPQA / SWE-bench / ARC-AGI",
+    "url": null
+   },
+   {
+    "detail": "The recurring safety-vocabulary cluster: 'jailbreak' for adversarial prompts that bypass safety training, 'red-teaming' for structured adversarial testing before release, 'guardrails' for runtime safety filters, and 'hallucination' for confidently fabricated output.",
+    "name": "Jailbreak / red-teaming / guardrails / hallucination",
+    "url": null
+   },
+   {
+    "detail": "Nvidia's architecture codenames (Hopper = H100/H200, Blackwell = B200/GB200/GB300) recur constantly in compute-supply reporting; 'Grace' is Nvidia's CPU (Grace Hopper / Grace Blackwell Superchip), which shares its name with computing pioneer Grace Hopper — itself the source of the Hopper codename.",
+    "name": "Chip codename generations: Hopper / Blackwell / Grace",
+    "url": "https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/"
+   }
+  ],
+  "summary": "AI-industry writing runs on a dense, fast-turning stack of acronyms (LLM, RLHF, RAG, MoE, MCP), lab-specific safety-policy names that all mean roughly the same thing (RSP, Preparedness Framework, Frontier Safety Framework), and — distinctively for this domain — a habit of naming flagship models after ordinary short words (Claude, Gemini, Grok, Llama, Mistral, Nova, Phi, Falcon, Sonnet, Opus) that collide constantly with their non-AI meanings in text. A second layer of ambiguity comes from acronym overload, where the same short string means different things depending on context (xAI the company vs. XAI the research field; MCP the Anthropic protocol vs. other uses; RAG the technique vs. the word 'rag'). A third layer is fast-moving technical shorthand for training methods (SFT, DPO, PPO/GRPO), hardware generations (H100/B200, Hopper/Blackwell, HBM, CUDA), and benchmarks (MMLU, SWE-bench, ARC-AGI, Chatbot Arena/Elo) that insiders use as compressed signals of capability and provenance. Getting these canonical — distinguishing the model from the company, the codename from the chip, the acronym from its homonym — is what keeps downstream entity extraction from silently corrupting."
+ },
+ "organizations": {
+  "items": [
+   {
+    "detail": "Creator of GPT and ChatGPT; operates under a capped-profit structure (OpenAI Global, LLC) controlled by the OpenAI nonprofit foundation, with Microsoft as its largest strategic partner/investor.",
+    "name": "OpenAI",
+    "url": "https://openai.com"
+   },
+   {
+    "detail": "Builder of the Claude model family; a public benefit corporation founded by ex-OpenAI researchers, governed in part by an independent Long-Term Benefit Trust; major backers include Google and Amazon.",
+    "name": "Anthropic",
+    "url": "https://www.anthropic.com"
+   },
+   {
+    "detail": "Alphabet's unified AI research and product lab (merger of Google Brain and DeepMind, completed 2023), builder of the Gemini model family and TPU-adjacent research.",
+    "name": "Google DeepMind",
+    "url": "https://deepmind.google"
+   },
+   {
+    "detail": "Elon Musk's AI lab, builder of the Grok model family, now merged with X (Twitter) under Musk's holding structure; experienced high-profile leadership departures in early 2026.",
+    "name": "xAI",
+    "url": "https://x.ai"
+   },
+   {
+    "detail": "Meta Platforms' AI division, historically known for open-weight Llama releases and FAIR (Fundamental AI Research); restructured into Meta Superintelligence Labs amid a stalled flagship model in 2026.",
+    "name": "Meta AI (FAIR / Meta Superintelligence Labs)",
+    "url": "https://ai.meta.com"
+   },
+   {
+    "detail": "Paris-based frontier lab and Europe's leading open-weight and commercial model builder (Mistral Large/Medium/Small families), positioned as the EU's sovereign-AI champion.",
+    "name": "Mistral AI",
+    "url": "https://mistral.ai"
+   },
+   {
+    "detail": "Dominant AI accelerator (GPU) maker and CUDA software ecosystem owner; its supply, pricing, and roadmap (Blackwell, Rubin) function as an industry-wide pacing signal.",
+    "name": "Nvidia",
+    "url": "https://www.nvidia.com"
+   },
+   {
+    "detail": "Hangzhou-based Chinese lab (High-Flyer-backed) whose efficient open-weight DeepSeek-V3/R1 releases reset assumptions about training cost and triggered market-wide reaction in early 2025.",
+    "name": "DeepSeek",
+    "url": "https://www.deepseek.com"
+   },
+   {
+    "detail": "Alibaba Cloud's Qwen model family is one of the most widely adopted open-weight series globally, anchoring China's open-source AI push.",
+    "name": "Alibaba (Qwen)",
+    "url": "https://qwenlm.github.io"
+   },
+   {
+    "detail": "Chinese lab behind the Kimi model family; released Kimi K2/K3 as among the largest open-weight models, competing aggressively on cost and long-context/coding performance.",
+    "name": "Moonshot AI",
+    "url": "https://www.moonshot.cn"
+   },
+   {
+    "detail": "Chinese lab behind the GLM model family, strong in enterprise and Chinese-language applications; rebranded consumer-facing products under the Z.ai name.",
+    "name": "Zhipu AI (Z.ai)",
+    "url": "https://z.ai"
+   },
+   {
+    "detail": "Chinese search giant and builder of the ERNIE model family; longstanding enterprise and Chinese-market AI incumbent.",
+    "name": "Baidu",
+    "url": "https://www.baidu.com"
+   },
+   {
+    "detail": "OpenAI's largest investor and cloud/compute partner (Azure); also ships its own Copilot product line and MAI in-house model research.",
+    "name": "Microsoft",
+    "url": "https://www.microsoft.com/ai"
+   },
+   {
+    "detail": "Major cloud provider and Anthropic investor; builds custom AI silicon (Trainium/Inferentia) and the Bedrock/Nova model platforms.",
+    "name": "Amazon (AWS / Amazon AI)",
+    "url": "https://aws.amazon.com/ai"
+   },
+   {
+    "detail": "Ships on-device and cloud AI (Apple Intelligence) with a privacy-emphasizing architecture; a comparatively slower-moving frontier participant but a major distribution channel via iOS.",
+    "name": "Apple",
+    "url": "https://www.apple.com/apple-intelligence"
+   },
+   {
+    "detail": "Nvidia's primary GPU/accelerator challenger (MI300/MI400 series, Helios racks); anchored by a large multi-year OpenAI compute deal disclosed in 2025-2026.",
+    "name": "AMD",
+    "url": "https://www.amd.com"
+   },
+   {
+    "detail": "Critical custom-silicon design partner for hyperscaler AI ASICs, including Google's TPUs and OpenAI's in-house accelerator program; a key but less consumer-visible infrastructure gatekeeper.",
+    "name": "Broadcom",
+    "url": "https://www.broadcom.com"
+   },
+   {
+    "detail": "Sole leading-edge foundry for nearly all frontier AI chips (Nvidia, AMD, Apple, Broadcom, Google); its CoWoS packaging capacity is a binding industry-wide constraint.",
+    "name": "TSMC (Taiwan Semiconductor Manufacturing Company)",
+    "url": "https://www.tsmc.com"
+   },
+   {
+    "detail": "US government standards body; its AI Safety Institute was renamed the Center for AI Standards and Innovation (CAISI) in 2025, shifting emphasis toward standards, security, and countering foreign over-regulation rather than broad safety framing.",
+    "name": "National Institute of Standards and Technology (NIST) / CAISI",
+    "url": "https://www.nist.gov/caisi"
+   },
+   {
+    "detail": "UK government body (formerly named the AI Safety Institute; renamed AI Security Institute in Feb 2025) that evaluates frontier models for national-security-relevant risks; publishes active technical safety research.",
+    "name": "UK AI Security Institute (AISI)",
+    "url": "https://www.aisi.gov.uk"
+   },
+   {
+    "detail": "European Commission body that both develops guidance and enforces the EU AI Act's general-purpose-AI obligations; high-risk obligations began applying broadly from August 2026.",
+    "name": "European AI Office",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/ai-office"
+   },
+   {
+    "detail": "Coalition of national AI safety/security institutes (US, UK, EU, Japan, Canada, Australia, Singapore, Korea, and others) launched from the 2023 Bletchley Summit process to coordinate frontier-model evaluation.",
+    "name": "International AI Safety Institute Network",
+    "url": "https://www.gov.uk/government/publications/international-network-of-ai-safety-institutes"
+   },
+   {
+    "detail": "OECD's AI policy arm; author of the widely cited OECD AI Principles, which underpin much subsequent national and international AI governance vocabulary.",
+    "name": "OECD.AI Policy Observatory",
+    "url": "https://oecd.ai"
+   },
+   {
+    "detail": "The FTC is the primary US enforcement agency for AI-related consumer-protection and competition actions absent comprehensive federal AI legislation; California has become a de facto US AI regulator via state law requiring frontier-developer transparency and safety disclosures.",
+    "name": "US Federal Trade Commission (FTC) and state regulators (e.g., California SB 53)",
+    "url": "https://www.ftc.gov"
+   },
+   {
+    "detail": "China's primary AI/internet regulator, responsible for generative-AI service approvals and content/algorithm registration requirements that all Chinese labs must clear before public release.",
+    "name": "Cyberspace Administration of China (CAC)",
+    "url": "http://www.cac.gov.cn"
+   },
+   {
+    "detail": "Berkeley-based nonprofit that runs independent capability and dangerous-capability evaluations on frontier models pre-deployment, frequently cited in lab system cards and government assessments.",
+    "name": "METR (Model Evaluation and Threat Research)",
+    "url": "https://metr.org"
+   },
+   {
+    "detail": "Nonprofit research group tracking compute trends, training-run scale, and model benchmarking data; a widely cited independent data source for the pace of frontier AI progress.",
+    "name": "Epoch AI",
+    "url": "https://epoch.ai"
+   },
+   {
+    "detail": "AI safety organization specializing in evaluating models for deceptive alignment and 'scheming' behavior; has published joint findings with OpenAI on this topic.",
+    "name": "Apollo Research",
+    "url": "https://www.apolloresearch.ai"
+   },
+   {
+    "detail": "The oldest dedicated AI safety research organization (est. 2000), focused on theoretical alignment and existential-risk research rather than empirical evaluation.",
+    "name": "Machine Intelligence Research Institute (MIRI)",
+    "url": "https://intelligence.org"
+   },
+   {
+    "detail": "Nonprofit behind the widely signed 2023 'statement on AI risk' and ongoing work on benchmarks and AI policy advocacy.",
+    "name": "Center for AI Safety (CAIS)",
+    "url": "https://www.safe.ai"
+   },
+   {
+    "detail": "Seattle nonprofit research lab (founded by Paul Allen) producing fully open models, datasets, and benchmarks (OLMo series); a leading source of open-science alternatives to closed frontier labs.",
+    "name": "Allen Institute for AI (Ai2)",
+    "url": "https://allenai.org"
+   },
+   {
+    "detail": "The dominant open model/dataset hosting hub and library ecosystem (Transformers, Diffusers); functions as the de facto distribution and discovery layer for open-weight AI.",
+    "name": "Hugging Face",
+    "url": "https://huggingface.co"
+   },
+   {
+    "detail": "Grassroots nonprofit open-research collective (GPT-J, GPT-NeoX, Pythia, the Pile dataset); smaller-budget peer to Ai2 in the open-research ecosystem.",
+    "name": "EleutherAI",
+    "url": "https://www.eleuther.ai"
+   },
+   {
+    "detail": "Academic policy and research hub best known for the annual AI Index Report, a widely cited benchmark-of-record for industry-wide trends.",
+    "name": "Stanford Institute for Human-Centered AI (HAI) / CRFM",
+    "url": "https://hai.stanford.edu"
+   },
+   {
+    "detail": "Montreal-based academic AI research institute (associated with Yoshua Bengio), a leading center for deep learning research and AI-safety-adjacent policy work.",
+    "name": "Mila – Quebec AI Institute",
+    "url": "https://mila.quebec"
+   },
+   {
+    "detail": "Leading venture capital firm with a dedicated AI investment strategy; among the most active backers of foundation-model and applied-AI startups.",
+    "name": "Andreessen Horowitz (a16z)",
+    "url": "https://a16z.com"
+   },
+   {
+    "detail": "Major venture firm with sustained frontier-model and applied-AI investments; participates alongside sovereign wealth funds in mega-rounds.",
+    "name": "Sequoia Capital",
+    "url": "https://www.sequoiacap.com"
+   },
+   {
+    "detail": "Josh Kushner's venture firm and one of OpenAI's most concentrated institutional backers across multiple funding rounds.",
+    "name": "Thrive Capital",
+    "url": "https://thrivecap.com"
+   },
+   {
+    "detail": "Japanese conglomerate and major OpenAI investor/compute-infrastructure partner (Stargate project), representative of sovereign-scale capital entering frontier AI.",
+    "name": "SoftBank Group",
+    "url": "https://group.softbank"
+   },
+   {
+    "detail": "Sovereign wealth vehicles (UAE's MGX, Saudi PIF, Abu Dhabi's Mubadala) increasingly co-anchoring mega-rounds and compute infrastructure deals for OpenAI, xAI, and others.",
+    "name": "MGX / Gulf sovereign wealth funds (e.g., PIF, Mubadala)",
+    "url": null
+   }
+  ],
+  "summary": "The organizations facet spans five clusters a daily reader meets constantly: (1) frontier builders — a small set of labs (US, and increasingly Chinese) shipping the models that set the pace; (2) infrastructure — chipmakers, foundries, and hyperscaler clouds whose supply constraints and capex now drive the news cycle as much as model releases; (3) capital — the VC firms and sovereign wealth vehicles writing the mega-rounds that fund frontier training runs; (4) governance — the patchwork of national institutes, regulators, and standards bodies now moving from voluntary frameworks to binding enforcement (EU AI Act enforcement began August 2026); (5) research and evaluation — nonprofits, academic labs, and open-source collectives that produce the benchmarks, safety evals, and open-weight alternatives the rest of the ecosystem cites. Corporate structures matter here (OpenAI's nonprofit/PBC split, Anthropic's Long-Term Benefit Trust, Google DeepMind's absorption into Alphabet) and several entities have recently renamed or repositioned (UK AISI → AI Security Institute; US AISI → CAISI), so canonical current names are flagged where a rename occurred."
+ },
+ "products": {
+  "items": [
+   {
+    "detail": "Anthropic's model family; as of mid-2026 the lineup is Haiku 4.5, Sonnet 5, Opus 5 and a new top tier, Fable 5 (released July 2026), with Sonnet/Opus/Fable at 1M-token context.",
+    "name": "Claude (Opus / Sonnet / Haiku / Fable)",
+    "url": "https://www.anthropic.com/claude"
+   },
+   {
+    "detail": "Anthropic's terminal-native autonomous coding agent, widely cited in coding-agent comparisons for context size and SWE-bench performance.",
+    "name": "Claude Code",
+    "url": "https://www.anthropic.com/claude-code"
+   },
+   {
+    "detail": "OpenAI's assistant product, now a broader platform (Images, Voice, Tasks, Memory, Custom GPTs) built on the GPT-5.6 model family with named tiers Sol (flagship), Terra (balanced) and Luna (cost-efficient).",
+    "name": "ChatGPT (GPT-5.6)",
+    "url": "https://openai.com/index/gpt-5-6/"
+   },
+   {
+    "detail": "OpenAI's agentic coding product/model line, also distributed via partners such as AWS Bedrock; a direct competitor to Claude Code and Cursor.",
+    "name": "OpenAI Codex",
+    "url": "https://openai.com/codex"
+   },
+   {
+    "detail": "OpenAI's text/image-to-video and audio generation model; Sora 2 improved realism, physics simulation, audio and controllability.",
+    "name": "Sora",
+    "url": "https://openai.com/sora"
+   },
+   {
+    "detail": "OpenAI-led ~$500B, multi-year US (and international) data-center buildout with SoftBank, Oracle and MGX, with confirmed sites including Abilene TX and Saline Township MI; the industry's flagship compute-infrastructure megaproject.",
+    "name": "Stargate",
+    "url": "https://openai.com/index/announcing-the-stargate-project/"
+   },
+   {
+    "detail": "Google DeepMind's current frontier model family (Pro, DeepThink, Flash variants), released from November 2025 with subsequent point releases (3.5/3.6 Flash, Flash-Lite, Flash Cyber) through 2026; also the base model for the Antigravity coding platform.",
+    "name": "Gemini 3",
+    "url": "https://deepmind.google/models/gemini/"
+   },
+   {
+    "detail": "Google DeepMind's text/image-to-video generation model (Veo 3.1 cited in 2026 for multi-input creative control), a direct competitor to Sora and Runway.",
+    "name": "Veo",
+    "url": "https://deepmind.google/models/veo/"
+   },
+   {
+    "detail": "Nvidia's prior-generation GPU architecture (GB200/GB300 systems) still in wide deployment through 2026 as the installed base ahead of Rubin.",
+    "name": "Nvidia Blackwell / Blackwell Ultra",
+    "url": "https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/"
+   },
+   {
+    "detail": "Nvidia's next-generation GPU platform (Rubin GPU + Vera CPU + NVLink 6 etc.), TSMC 3nm, shipping H2 2026 via AWS/Google Cloud/Microsoft/OCI; the chip generation the market watches most closely.",
+    "name": "Nvidia Rubin",
+    "url": "https://nvidianews.nvidia.com/news/rubin-platform-ai-supercomputer"
+   },
+   {
+    "detail": "Nvidia's parallel-computing software platform/API, the foundational lock-in layer underlying essentially all Nvidia AI hardware coverage; also anchors the DGX system line and NIM inference microservices.",
+    "name": "Nvidia CUDA",
+    "url": "https://developer.nvidia.com/cuda-toolkit"
+   },
+   {
+    "detail": "Nvidia's packaged inference microservices (including its Cosmos Reason models) for deploying on Blackwell/Rubin rack-scale systems.",
+    "name": "Nvidia NIM",
+    "url": "https://www.nvidia.com/en-us/ai/"
+   },
+   {
+    "detail": "Mistral AI's flagship 675B-parameter model (December 2025), Apache 2.0 licensed; the family also spans Medium 3.5, Small 4 and the Ministral 3 edge models (14B/8B/3B), plus specialist models like Voxtral speech and an enterprise custom-training product, Forge.",
+    "name": "Mistral Large 3",
+    "url": "https://mistral.ai/news/mistral-large"
+   },
+   {
+    "detail": "xAI's model family, current flagship Grok 4.6 (August 2026) tuned for coding/agentic work, with prior 4.5/4.3/4.1 variants and 'SuperGrok' consumer tiers.",
+    "name": "Grok",
+    "url": "https://x.ai/grok"
+   },
+   {
+    "detail": "Meta's open-weight multimodal MoE model family (Scout, Maverick released April 2025; Behemoth indefinitely delayed); the most widely deployed open-weight ecosystem as of 2026, now supplemented by Meta Superintelligence Labs' closed Muse Spark model.",
+    "name": "Llama 4",
+    "url": "https://ai.meta.com/llama/"
+   },
+   {
+    "detail": "DeepSeek's flagship Chinese open-weight MoE model, merging general and reasoning lineages, ~1M context, noted for very low token cost; successor to the market-moving R1.",
+    "name": "DeepSeek V4 (and R-series)",
+    "url": "https://www.deepseek.com"
+   },
+   {
+    "detail": "Alibaba's open-weight model family (Qwen 3.6 series and prior), the most widely downloaded open-weight family on Hugging Face; Alibaba keeps its top 'Max' tier closed. Competes with other Chinese open-weight families such as Moonshot's Kimi and Zhipu/Z.ai's GLM.",
+    "name": "Qwen",
+    "url": "https://qwenlm.github.io"
+   },
+   {
+    "detail": "AWS's managed multi-provider model API/platform (Anthropic, OpenAI, Meta and others; 130+ model variants across 19 providers by 2026), with AgentCore for agent building.",
+    "name": "Amazon Bedrock",
+    "url": "https://aws.amazon.com/bedrock/"
+   },
+   {
+    "detail": "AWS's custom AI training/inference chip line (Trainium2 in production, Trn3 UltraServer shipped Dec 2025, Trainium4 slated late 2026/2027), AWS's answer to Nvidia dependency.",
+    "name": "Amazon Trainium",
+    "url": "https://aws.amazon.com/ai/machine-learning/trainium/"
+   },
+   {
+    "detail": "Amazon's generative-AI-rewritten voice assistant, built on Bedrock-hosted LLMs, notable for its agentic task orchestration across third-party services.",
+    "name": "Alexa+",
+    "url": "https://www.aboutamazon.com/news/devices/new-alexa-generative-artificial-intelligence"
+   },
+   {
+    "detail": "Microsoft's enterprise AI stack: Copilot as the user-facing assistant across Microsoft 365/Windows, and Microsoft Foundry (formerly Azure AI Foundry) as the model-catalog and agent-building platform used by 80%+ of the Fortune 500.",
+    "name": "Microsoft Copilot / Microsoft Foundry",
+    "url": "https://azure.microsoft.com/en-us/products/ai-foundry/"
+   },
+   {
+    "detail": "Microsoft/GitHub's IDE-embedded AI coding assistant, cited with roughly 42% market share among AI coding tools in 2026.",
+    "name": "GitHub Copilot",
+    "url": "https://github.com/features/copilot"
+   },
+   {
+    "detail": "Google's seventh-generation custom AI accelerator, positioned for large-scale inference, following the Trillium generation; central to the Google Cloud/Nvidia 'superstack' narrative.",
+    "name": "Google TPU (Ironwood)",
+    "url": "https://cloud.google.com/tpu"
+   },
+   {
+    "detail": "AMD's data-center AI GPU line (MI300X-class and successors), AMD's primary challenger to Nvidia's Blackwell/Rubin GPUs.",
+    "name": "AMD Instinct MI-series",
+    "url": "https://www.amd.com/en/products/accelerators/instinct.html"
+   },
+   {
+    "detail": "Cerebras's wafer-scale AI chip and inference cloud, IPO'd on Nasdaq May 2026 (~$56B valuation); partnered with AMD in 2026 on disaggregated inference, and competes with Groq's LPU (whose chip-design team and technology Nvidia licensed for ~$20B in December 2025).",
+    "name": "Cerebras (Wafer-Scale Engine)",
+    "url": "https://www.cerebras.ai"
+   },
+   {
+    "detail": "Anysphere's AI-native code editor (VS Code fork), a benchmark product among professional developers for multi-file agentic refactors via its 'Composer' interface; competes with Windsurf (rebranded Devin Desktop under Cognition in June 2026).",
+    "name": "Cursor",
+    "url": "https://cursor.com"
+   },
+   {
+    "detail": "Perplexity AI's answer-engine/search product, also known for its open-sourced R1 1776 model (a de-censored post-train of DeepSeek-R1).",
+    "name": "Perplexity",
+    "url": "https://www.perplexity.ai"
+   },
+   {
+    "detail": "The dominant open-model hosting hub and library ecosystem (Transformers, Hub); the reference point for open-weight model download/adoption metrics cited across the industry.",
+    "name": "Hugging Face",
+    "url": "https://huggingface.co"
+   },
+   {
+    "detail": "The dominant open-source high-throughput LLM inference/serving engine, a standard reference point for self-hosted deployment performance.",
+    "name": "vLLM",
+    "url": "https://github.com/vllm-project/vllm"
+   },
+   {
+    "detail": "Salesforce's agentic-AI platform layered on CRM/Data Cloud/MuleSoft; Agentforce ARR reported at $1.2B (up 205% YoY) in 2026, Salesforce's flagship counter to Microsoft's copilot approach.",
+    "name": "Salesforce Agentforce",
+    "url": "https://www.salesforce.com/agentforce/"
+   },
+   {
+    "detail": "Palantir's enterprise/government AI ops platform emphasizing governed, auditable agent actions; central to Palantir's US commercial growth narrative in 2026.",
+    "name": "Palantir AIP (Artificial Intelligence Platform)",
+    "url": "https://www.palantir.com/platforms/aip/"
+   },
+   {
+    "detail": "The leading independent AI image-generation product, still regarded as best-in-class for artistic/photorealistic image quality; reported ~$500M revenue with a very small team.",
+    "name": "Midjourney",
+    "url": "https://www.midjourney.com"
+   },
+   {
+    "detail": "Runway's AI video generation product line (Gen-3 and successors, GWM-1), cited as the leader in physics-accurate video for film/VFX use (~$5.3B valuation in 2026); competes with Kuaishou's Kling and Google's Veo.",
+    "name": "Runway (Gen / GWM)",
+    "url": "https://runwayml.com"
+   },
+   {
+    "detail": "The leading AI voice/speech company (TTS, voice cloning, Eleven v3), reported at an $11B valuation in 2026; a standard reference point for synthetic-voice quality.",
+    "name": "ElevenLabs",
+    "url": "https://elevenlabs.io"
+   },
+   {
+    "detail": "AI music-generation product, reported ~$300M ARR (404% growth) in 2026, alongside competitor Udio, in the fast-growing AI music segment.",
+    "name": "Suno",
+    "url": "https://suno.com"
+   },
+   {
+    "detail": "Humanoid-robotics company whose robots (Figure 02/03) have a confirmed BMW production pilot and 10,000+ deployments across partner warehouses; valued ~$39B after an OpenAI-led round.",
+    "name": "Figure",
+    "url": "https://www.figure.ai"
+   },
+   {
+    "detail": "Tesla's humanoid robot program, deployed internally in Tesla factories with a stated goal of 10,000+ internal units by end of 2026 ahead of third-party sales.",
+    "name": "Tesla Optimus",
+    "url": "https://www.tesla.com/AI"
+   },
+   {
+    "detail": "1X Technologies' consumer-oriented humanoid robot (NEO), targeting home use at roughly $20,000, distinct from the industrial focus of Figure and Optimus.",
+    "name": "1X NEO",
+    "url": "https://www.1x.tech"
+   },
+   {
+    "detail": "The standard software-engineering coding benchmark (and its human-validated 'Verified' 500-task subset) used industry-wide to compare frontier and coding-agent model capability.",
+    "name": "SWE-bench (Verified)",
+    "url": "https://www.swebench.com"
+   },
+   {
+    "detail": "AI-evaluation nonprofit that benchmarks frontier model autonomous-task capability (HCAST, RE-Bench, SWAA) and publishes influential capability-trend analyses; alongside Epoch AI, one of the two most-cited independent evaluators in press coverage.",
+    "name": "METR",
+    "url": "https://metr.org"
+   }
+  ],
+  "summary": "The \"products\" facet in AI-industry press coverage spans five overlapping clusters. First, frontier foundation-model families from the labs (Claude, GPT-5.x/ChatGPT, Gemini 3, Grok, Mistral Large, Llama 4) plus the fast-moving Chinese open-weight tier (DeepSeek, Qwen, and their peers Kimi and GLM), each iterated frequently enough that version numbers themselves become news. Second, the compute-hardware layer that press treats as a product race in its own right: Nvidia's Blackwell-to-Rubin GPU transition plus its CUDA/NIM software stack, and the hyperscaler-custom-silicon response (Google TPU/Ironwood, AWS Trainium, AMD Instinct, plus specialist inference chipmakers Cerebras and Groq). Third, the applied-product layer built on those models: agentic coding tools (Claude Code, Cursor, GitHub Copilot, Codex), enterprise agent platforms (Microsoft Foundry/Copilot, Salesforce Agentforce, Palantir AIP, Amazon Bedrock/Alexa+), and generative media tools (Sora, Veo, Midjourney, Runway, ElevenLabs, Suno). Fourth, physical/embodied AI, dominated by humanoid-robot programs (Figure, Tesla Optimus, 1X) now treated as a distinct beat. Fifth, the infrastructure/measurement substrate the press relies on to make capability claims legible: open-model hubs and serving frameworks (Hugging Face, vLLM), evaluation benchmarks (SWE-bench), independent evaluators (METR, Epoch AI), and megaproject infrastructure like OpenAI's Stargate. Naming is volatile -- version suffixes (4.6, V4, 3.5 Flash) and rebrands (Windsurf→Devin Desktop, Azure AI Foundry→Microsoft Foundry) shift within months, so a pipeline should track family names as the stable anchor and treat specific version strings as time-stamped attributes."
+ },
+ "publications": {
+  "items": [
+   {
+    "detail": "OpenAI's official announcements/research blog; publishes an official RSS feed, unusual among frontier labs.",
+    "name": "OpenAI News",
+    "url": "https://openai.com/news/rss.xml"
+   },
+   {
+    "detail": "Anthropic's official blog for research, product and policy posts; no official RSS/Atom feed is published, only community-maintained mirrors exist (e.g. rsshub, GitHub Action scrapers).",
+    "name": "Anthropic News",
+    "url": "https://www.anthropic.com/news"
+   },
+   {
+    "detail": "Official research and product blog for Google DeepMind, covering both DeepMind and Google AI research; publishes an official RSS feed.",
+    "name": "Google DeepMind Blog",
+    "url": "https://deepmind.google/blog/rss.xml"
+   },
+   {
+    "detail": "NVIDIA's official corporate blog covering AI hardware, platforms and partner announcements; company-wide feed, not AI-specific.",
+    "name": "NVIDIA Blog",
+    "url": "https://blogs.nvidia.com/feed/"
+   },
+   {
+    "detail": "NVIDIA's press-release feed, distinct from the NVIDIA Blog, used for formal corporate/financial announcements.",
+    "name": "NVIDIA Newsroom",
+    "url": "https://nvidianews.nvidia.com/rss"
+   },
+   {
+    "detail": "Mistral's official news/announcements page for model and product releases; no confirmed official RSS/Atom feed as of this survey.",
+    "name": "Mistral AI News",
+    "url": "https://mistral.ai/news/"
+   },
+   {
+    "detail": "Meta's official blog for AI research and open-weight model releases (Llama family); no confirmed official RSS feed found.",
+    "name": "Meta AI Blog",
+    "url": "https://ai.meta.com/blog/"
+   },
+   {
+    "detail": "Microsoft's official research blog spanning AI and other CS topics; long-standing official RSS support.",
+    "name": "Microsoft Research Blog",
+    "url": "https://www.microsoft.com/en-us/research/blog/feed/"
+   },
+   {
+    "detail": "Official Hugging Face company/community blog covering open models, libraries and ecosystem news; official RSS feed but has had reported formatting quirks (missing per-item links in some readers).",
+    "name": "Hugging Face Blog",
+    "url": "https://huggingface.co/blog/feed.xml"
+   },
+   {
+    "detail": "Hugging Face's community-curated daily feed of notable arXiv papers, widely used as a discovery layer since Papers with Code's 2025 shutdown.",
+    "name": "Hugging Face Daily Papers",
+    "url": "https://huggingface.co/papers"
+   },
+   {
+    "detail": "xAI's (Elon Musk's lab) official announcements page for Grok models; no dedicated RSS feed identified.",
+    "name": "xAI News",
+    "url": "https://x.ai/news"
+   },
+   {
+    "detail": "Cohere's official blog for enterprise LLM product and research announcements; native RSS support is unconfirmed/inconsistent, community-generated feeds exist as a fallback.",
+    "name": "Cohere Blog",
+    "url": "https://cohere.com/blog"
+   },
+   {
+    "detail": "arXiv's official daily RSS/Atom feed for new Computer Science - Artificial Intelligence submissions; the primary firehose for preprint research, not curated or vetted.",
+    "name": "arXiv cs.AI",
+    "url": "https://rss.arxiv.org/rss/cs.AI"
+   },
+   {
+    "detail": "Major tech-industry outlet with a dedicated AI vertical covering funding, product launches and lab drama; official category RSS feed.",
+    "name": "TechCrunch (AI category)",
+    "url": "https://techcrunch.com/category/artificial-intelligence/feed/"
+   },
+   {
+    "detail": "Ars Technica's AI section, known for technically literate reporting; has a dedicated AI feed alongside its site-wide feed.",
+    "name": "Ars Technica (AI)",
+    "url": "https://arstechnica.com/ai/feed/"
+   },
+   {
+    "detail": "Enterprise-tech outlet with a long-running AI vertical (formerly 'AI Beat'/'VB Transform' coverage); official category RSS feed.",
+    "name": "VentureBeat (AI)",
+    "url": "https://venturebeat.com/category/ai/feed/"
+   },
+   {
+    "detail": "MIT Technology Review's AI topic page, home to 'The Algorithm' newsletter content; topic-level RSS feed available (feed availability/URL pattern should be verified before wiring in, as search results were inconsistent).",
+    "name": "MIT Technology Review - Artificial Intelligence",
+    "url": "https://www.technologyreview.com/topic/artificial-intelligence/"
+   },
+   {
+    "detail": "MIT Technology Review's flagship weekly AI newsletter, written by its AI reporting team; distributed by email, no separate confirmed RSS feed distinct from the site's AI topic feed.",
+    "name": "The Algorithm (MIT Technology Review)",
+    "url": "https://www.technologyreview.com/newsletters/the-algorithm/"
+   },
+   {
+    "detail": "WIRED's AI tag/section, covering culture, policy and industry angles; has tag-level RSS feeds.",
+    "name": "WIRED (Artificial Intelligence)",
+    "url": "https://www.wired.com/feed/tag/ai/latest/rss"
+   },
+   {
+    "detail": "Subscription tech-business outlet whose scoops (org-chart moves, compute deals, funding rounds) frequently set the news cycle for frontier labs; paywalled, no public RSS feed for AI coverage.",
+    "name": "The Information",
+    "url": "https://www.theinformation.com/"
+   },
+   {
+    "detail": "Independent, subscriber-funded outlet doing accountability journalism on AI companies (scraping, labor, copyright); full-text RSS feed for subscribers.",
+    "name": "404 Media",
+    "url": "https://www.404media.co/rss/"
+   },
+   {
+    "detail": "Casey Newton's newsletter on platforms and AI-industry power dynamics, co-produced with the Hard Fork podcast; free RSS feed carries excerpts only, full text is paid.",
+    "name": "Platformer",
+    "url": "https://www.platformer.news/feed"
+   },
+   {
+    "detail": "Axios's AI-focused newsletter vertical; no dedicated public RSS feed identified separate from Axios's general feeds.",
+    "name": "Axios AI+",
+    "url": "https://www.axios.com/newsletters/axios-ai-plus"
+   },
+   {
+    "detail": "Ben Thompson's strategy-analysis newsletter, frequently covering AI-lab business models and platform shifts; paid RSS feed for subscribers.",
+    "name": "Stratechery",
+    "url": "https://stratechery.com/feed/"
+   },
+   {
+    "detail": "Jack Clark's (Anthropic co-founder) long-running weekly newsletter analyzing frontier research and policy, publishing since 2016; Substack-hosted with a standard feed.",
+    "name": "Import AI",
+    "url": "https://importai.substack.com/feed"
+   },
+   {
+    "detail": "Andrew Ng's weekly newsletter/site summarizing AI business, research, and culture news with a practitioner slant; has an RSS feed.",
+    "name": "The Batch (DeepLearning.AI)",
+    "url": "https://www.deeplearning.ai/the-batch/feed/"
+   },
+   {
+    "detail": "Nathan Lambert's (Allen Institute for AI) technical newsletter on frontier model training, RLHF and post-training methods, read heavily inside labs; Substack-based feed.",
+    "name": "Interconnects",
+    "url": "https://www.interconnects.ai/feed"
+   },
+   {
+    "detail": "Zvi Mowshowitz's long-form weekly 'AI #N' roundup synthesizing the week's model releases, papers, and policy news with heavy annotation; Substack feed.",
+    "name": "Don't Worry About the Vase",
+    "url": "https://thezvi.substack.com/feed"
+   },
+   {
+    "detail": "Arvind Narayanan and Sayash Kapoor's (Princeton) skeptical, evidence-driven newsletter on AI capability claims and policy, rebranded from 'AI Snake Oil'; Substack-based feed.",
+    "name": "AI as Normal Technology (formerly AI Snake Oil)",
+    "url": "https://www.normaltech.ai/feed"
+   },
+   {
+    "detail": "Practitioner-focused blog on LLM tooling, model releases and prompt engineering from the Datasette/Django creator; long-standing Atom feed.",
+    "name": "Simon Willison's Weblog",
+    "url": "https://simonwillison.net/atom/everything/"
+   },
+   {
+    "detail": "swyx and Alessio Fanelli's newsletter and podcast aimed at AI engineers, featuring interviews with researchers and founders; Substack feed.",
+    "name": "Latent Space",
+    "url": "https://www.latent.space/feed"
+   },
+   {
+    "detail": "High-frequency AI product/launch news digest, one of the largest AI-specific newsletters by subscriber count; RSS availability via third-party aggregators, no confirmed native feed.",
+    "name": "Ben's Bites",
+    "url": "https://www.bensbites.com/"
+   },
+   {
+    "detail": "Daily bullet-point digest of AI news, research and tools aimed at engineers, part of the TLDR newsletter family; feed availability is via third-party mirrors, no confirmed native RSS.",
+    "name": "TLDR AI",
+    "url": "https://tldr.tech/ai"
+   },
+   {
+    "detail": "Daily AI newsletter with a large general-audience readership, focused on practical AI use and news summaries; no confirmed RSS feed.",
+    "name": "The Neuron",
+    "url": "https://www.theneurondaily.com/"
+   },
+   {
+    "detail": "Weekly news-roundup podcast and newsletter summarizing the past week's AI stories, research and lab announcements.",
+    "name": "Last Week in AI",
+    "url": "https://lastweekin.ai/"
+   }
+  ],
+  "summary": "AI-industry trade press splits into three layers a serious reader triangulates daily: (1) official lab/vendor channels (OpenAI, Anthropic, Google DeepMind, Nvidia, Mistral, Meta, Microsoft Research, Hugging Face, xAI, Cohere) for primary announcements, where RSS support is inconsistent -- OpenAI and DeepMind publish clean feeds, Anthropic and Mistral notably do not, forcing reliance on community-maintained scrapers; (2) broad tech-business outlets with dedicated AI verticals (TechCrunch, Ars Technica, VentureBeat, MIT Technology Review, WIRED, The Information, 404 Media, Platformer, Axios), most of which do carry AI-specific RSS feeds, though top-tier subscription outlets like The Information withhold feeds behind paywalls; and (3) independent insider newsletters written by practitioners and researchers (Import AI, The Batch, Interconnects, Don't Worry About the Vase, AI as Normal Technology, Simon Willison, Latent Space, Ben's Bites, TLDR AI), almost all Substack-hosted with standard feed conventions. A fourth, adjacent layer is raw research signal -- arXiv's cs.AI feed and Hugging Face's Daily Papers -- which the trade press itself draws from; Papers with Code, once a staple here, was retired by Meta in mid-2025. Feed URLs for smaller/independent newsletters were confirmed via search but not all were independently fetched, so treat any marked 'unconfirmed' as needing a live check before wiring into the pipeline."
+ },
+ "themes": {
+  "items": [
+   {
+    "detail": "Tracks flagship model launches and capability leapfrogging among Anthropic (Claude), OpenAI (GPT/o-series), Google DeepMind (Gemini), Mistral AI, xAI (Grok), Meta (Llama), and fast-rising Chinese labs like DeepSeek, Alibaba (Qwen), and Moonshot AI (Kimi).",
+    "name": "Frontier Labs & Model Releases",
+    "url": null
+   },
+   {
+    "detail": "Covers the physical substrate of the industry: Nvidia's GPU generations (Blackwell, Rubin) and rivals like AMD and Google's TPUs, hyperscaler capex from Microsoft, Google, Amazon and Meta, data-center buildouts, power/energy bottlenecks, and sovereign-compute programs; SemiAnalysis is a widely-cited trade source here.",
+    "name": "Compute, Chips & Infrastructure",
+    "url": "https://semianalysis.com/"
+   },
+   {
+    "detail": "Follows interpretability research, red-teaming and model evals, frontier safety frameworks such as Anthropic's Responsible Scaling Policy and OpenAI's Preparedness Framework, government safety institutes (UK AISI, US CAISI at NIST), and disclosed agentic-AI security incidents.",
+    "name": "AI Safety, Security & Alignment",
+    "url": "https://www.aisi.gov.uk/"
+   },
+   {
+    "detail": "Spans EU AI Act implementation, US federal/state AI rulemaking and executive orders, US-China export controls on advanced chips, and the international AI summit track (Bletchley/Seoul/Paris/India 'AI Action Summit' series).",
+    "name": "Policy, Regulation & Geopolitics",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+   },
+   {
+    "detail": "Covers agentic AI moving into production (coding agents, browser/computer-use agents), enterprise platforms like Microsoft Copilot and Salesforce Agentforce, and coding tools such as GitHub Copilot, Cursor and Claude Code, plus vertical deployments in healthcare, legal and finance.",
+    "name": "Enterprise Adoption, Agents & Applications",
+    "url": null
+   },
+   {
+    "detail": "Tracks mega VC rounds and valuations, compute-supply and cloud partnerships (e.g. Microsoft-OpenAI, Amazon/Google-Anthropic), M&A and lab acquihires, IPO speculation (CoreWeave and peers), and the running 'AI capex bubble' debate among analysts and investors.",
+    "name": "Funding, Deals & Corporate Strategy",
+    "url": null
+   },
+   {
+    "detail": "Follows open-weight model drops (Llama, Mistral, DeepSeek, Qwen), the academic pipeline via arXiv and venues like NeurIPS and ICML, and benchmark/leaderboard activity (MMLU, GPQA, SWE-bench, LMArena) often surfaced through Hugging Face.",
+    "name": "Open Source & Research Ecosystem",
+    "url": "https://huggingface.co/papers"
+   },
+   {
+    "detail": "Covers high-profile researcher moves, lab spin-outs (Safe Superintelligence, Thinking Machines Lab), compensation wars for AI talent, and internal restructurings or leadership shakeups at major labs.",
+    "name": "Talent & Org Dynamics",
+    "url": null
+   },
+   {
+    "detail": "Covers humanoid and embodied-AI efforts such as Figure AI, Tesla Optimus, and Boston Dynamics, plus robot foundation/world-model research, an area of rapidly growing capital and lab attention but still adjacent to the core software-model beat.",
+    "name": "Robotics & Embodied AI",
+    "url": null
+   }
+  ],
+  "summary": "In AI-industry intelligence, \"themes\" are the standing desks a daily brief organizes around rather than one-off stories: who's shipping frontier models, who's building the compute to train and serve them, whether those systems are safe and secure, how governments are regulating and geopoliticizing them, how businesses are actually deploying them (increasingly as agents), where the money is flowing, what the open-source/research community is doing, who's moving between labs, and — as a newer, fast-growing beat — physical/embodied AI. These desks overlap constantly in practice (a chip export-control story is both Compute and Policy; an agent security breach is both Safety and Enterprise), and the boundary of a ninth desk like Robotics is genuinely contested as of late 2026 — some newsrooms fold it into Enterprise Applications rather than staffing it separately. The five operator-hinted entities (Anthropic, OpenAI, Google DeepMind, Nvidia, Mistral) map respectively onto Frontier Labs, Frontier Labs, Frontier Labs, Compute/Infrastructure, and Frontier Labs/open-weight coverage, confirming those as anchor desks."
+ }
+}

@@ -1,0 +1,14 @@
+{
+  "effort": "low",
+  "model": "sonnet",
+  "schema_keys": [
+    "definition",
+    "found",
+    "sources"
+  ],
+  "system_prompt_sha": "84abe54db233c006a8f0c975b5badadd04e32191c473cb121c7308f7b7bdb743",
+  "task": "define_write",
+  "tools": [],
+  "user_content_preview": "ENTITY: North Atlantic Treaty Organization",
+  "user_content_sha": "ae7d0ad54fbab508a0b34036c9db2702bb5972ec1f5cc5324cbba488b15e22a3"
+}
